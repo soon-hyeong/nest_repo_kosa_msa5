@@ -35,10 +35,15 @@ public class ClientService {
      * @return
      * @throws IOException
      */
-    public boolean download(String command) throws IOException {
+    public void download(String command) throws IOException {
         makeDir();
-        receiveWorker.sendCommand(command);
-        return receiveWorker.downloadFile();
+        try {
+            receiveWorker.sendCommand(command);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     
     /**
