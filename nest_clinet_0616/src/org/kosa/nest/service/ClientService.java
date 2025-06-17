@@ -30,15 +30,28 @@ public class ClientService {
     }
 
     /**
-     *  파일 다운로드가 성공하면 boolean값 받아 리턴
+     *  파일 다운로드가 성공하면 boolean값 받아 리턴 <br>
      * @param command
      * @return
      * @throws IOException
      */
-    public boolean download() throws IOException {
+    public boolean download(String command) throws IOException {
         makeDir();
         receiveWorker.sendCommand(command);
         return receiveWorker.downloadFile();
+    }
+    
+    /**
+     * 클라이언트의 컴퓨터에 있는 다운로드 받은 파일 삭제 <br>
+     * @return
+     */
+    public boolean delete(String command) {
+        File file = new File(ClientConfig.REPOPATH + command);
+        boolean result = false;
+        if(file.exists())
+            result = file.delete();
+        // 존재 안하면 exception?
+        return result;
     }
 
 	public List<FileVO> list() {
