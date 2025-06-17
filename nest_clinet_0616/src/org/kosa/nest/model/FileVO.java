@@ -1,7 +1,7 @@
 package org.kosa.nest.model;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+
 
 public class FileVO {
 	private int fileId;
@@ -36,6 +36,19 @@ public class FileVO {
 		this.tag = tag;
 		this.description = description;
 	}
+	
+	/**
+	 * 단일 파일 또는 여러 파일의 정보를 불러오는데 쓰이는 생성자
+	 * @param fileLocation
+	 * @param createdAt
+	 * @param subject
+	 */
+	public FileVO(String fileLocation, LocalDateTime createdAt, String subject) {
+		super();
+		this.fileLocation = fileLocation;
+		this.createdAt = createdAt;
+		this.subject = subject;
+	}
 
 	/**
 	 * 객체를 생성하여 DB에 데이터를 저장하기 위한 생성자
@@ -64,6 +77,11 @@ public class FileVO {
 
 	public void setFileId(int fileId) {
 		this.fileId = fileId;
+	}
+
+	@Override
+	public String toString() {
+		return "[파일경로: " + fileLocation + ", 파일생성시간: " + createdAt + ", 파일제목: " + subject + "]";
 	}
 
 	public String getFileLocation() {
