@@ -30,7 +30,7 @@ public class NetworkWorker {
 	public void go() throws IOException {
 		ServerSocket serverSocket = null;
 		try {
-			serverSocket = new ServerSocket();
+			serverSocket = new ServerSocket(9876);
 			while(true){
 				Socket socket = serverSocket.accept();
 				ReceiveWorker receiveWorker = new ReceiveWorker(socket);
@@ -94,14 +94,17 @@ public class NetworkWorker {
 
 			try {
 				if(command.equalsIgnoreCase("download")) {
-					File downloadFile = serverUserService.download(command);
-					bis = new BufferedInputStream(new FileInputStream(downloadFile), 8192);
+					FileVO downloadFile = serverUserService.download(command);
+					oos.writeObject(downloadFile);
+					oos.close();
+					bis = new BufferedInputStream(new FileInputStream(downloadFile.getFileLocation()), 8192);
 					bfos = new BufferedOutputStream(socket.getOutputStream());
 					int data = bis.read();
 					while(data != -1) {
 						bfos.write(data);
 						bis.read();
 					}
+					bfos.close();
 				}
 				else if(command.equalsIgnoreCase("list") || command.equals("search")) {
 					ArrayList<FileVO> searchFileList = serverUserService.search(command);
