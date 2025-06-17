@@ -38,7 +38,7 @@ public class FileVO {
 	}
 	
 	/**
-	 * 파일 list 목록을 불러오는데 쓰이는 생성자
+	 * 단일 파일 또는 여러 파일의 정보를 불러오는데 쓰이는 생성자
 	 * @param fileLocation
 	 * @param createdAt
 	 * @param subject
