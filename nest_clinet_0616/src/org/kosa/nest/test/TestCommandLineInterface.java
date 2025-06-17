@@ -1,25 +1,22 @@
-package org.kosa.nest.client;
+package org.kosa.nest.test;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
-
 import org.kosa.nest.model.FileVO;
-import org.kosa.nest.service.ClientService;
-import org.kosa.nest.test.TestCommandLineInterface;
 
 /**
  * CommandLineInterface 클래스
  * - 사용자 입력을 받아 명령어 기반으로 기능을 수행
  * - 파일 리스트를 불러오는 명령어는 "파일 검색"으로 설정
  */
-public class CommandLineInterface {
+public class TestCommandLineInterface {
 
-    private ClientService clientService;
+    private TestClientService clientService;
 
-    public CommandLineInterface() {
-        this.clientService = new ClientService();
+    public TestCommandLineInterface() {
+        this.clientService = new TestClientService();
     }
 
     public void run() {
@@ -60,3 +57,4 @@ public class CommandLineInterface {
         new TestCommandLineInterface().run();
     }
 }
+

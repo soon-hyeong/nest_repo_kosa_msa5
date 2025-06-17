@@ -1,4 +1,4 @@
-package org.kosa.nest.service;
+package org.kosa.nest.test;
 
 import java.io.File;
 import java.time.Instant;
@@ -10,7 +10,7 @@ import java.util.List;
 import org.kosa.nest.common.ClientConfig;
 import org.kosa.nest.model.FileVO;
 
-public class ClientService {
+public class TestClientService {
 	public List<FileVO> list() {
         List<FileVO> fileList = new ArrayList<>();
 
