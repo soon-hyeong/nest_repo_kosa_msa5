@@ -5,16 +5,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.kosa.nest.common.DatabaseUtil;
 
 public class FileDao {
-    
-    public List<FileVO> getFileInfoList(String keyword) throws SQLException{
-        return null;
-    }
 	
     public List<FileVO> getAllFileInfoList() throws SQLException {
         Connection con = null;
@@ -120,4 +117,49 @@ public class FileDao {
     		DatabaseUtil.closeAll(pstmt, con);
     	}
     }
+
+    /**
+     * tag를 통해 사용자가 원하는 파일의 모든 정보를 가져옴<br>
+     * @param keyword
+     * @return
+     * @throws SQLException
+     */
+    public ArrayList<FileVO> getFileInfoList(String keyword) throws SQLException {
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        ArrayList<FileVO> list = new ArrayList<>();
+
+        try {
+            con = DatabaseUtil.getConnection();
+            String sql = "SELECT file_id, upload_time, title, tag, description, admin_id, file_create_time, filelocation " +
+                         "FROM file WHERE title LIKE ? OR tag LIKE ? OR file_create_time LIKE ?";
+            pstmt = con.prepareStatement(sql);
+
+            pstmt.setString(1, "%" + keyword + "%");
+            pstmt.setString(2, "%" + keyword + "%");
+            pstmt.setString(3, keyword + "%");
+
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                int fileId = rs.getInt("file_id");
+                LocalDateTime uploadAt = rs.getTimestamp("upload_time").toLocalDateTime();
+                String subject = rs.getString("title");
+                String tag = rs.getString("tag");
+                String description = rs.getString("description");
+                int adminId = rs.getInt("admin_id");
+                LocalDateTime createdAt = rs.getTimestamp("file_create_time").toLocalDateTime();
+                String filelocation = rs.getString("filelocation");
+
+                list.add(new FileVO(fileId, filelocation, createdAt, uploadAt, adminId, subject, tag, description));
+            }
+        } finally {
+            DatabaseUtil.closeAll(rs, pstmt, con);
+        }
+
+        return list;
+    }
+
+    
 }
