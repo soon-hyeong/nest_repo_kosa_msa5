@@ -1,9 +1,7 @@
 package org.kosa.nest.network;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -32,7 +30,7 @@ public class ReceiveWorker {
      */
     // getNetwork() 필요없고 이렇게 하면 되지 않나?
     public ReceiveWorker() throws UnknownHostException, IOException {
-        socket = new Socket(ip, 9876);
+        socket = new Socket(ip, 5252);
     }
 
 
@@ -47,7 +45,7 @@ public class ReceiveWorker {
         
         BufferedWriter bw = null;
 
-        try {
+
             bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             bw.write(command);
             
@@ -56,10 +54,7 @@ public class ReceiveWorker {
             } else if(command.equalsIgnoreCase("search") || command.equalsIgnoreCase("info")) {
                 this.receiveFileList();
             }
-        } finally {
-            if (bw != null)
-                bw.close();
-        }
+        
     }
     
     /**
@@ -100,37 +95,35 @@ public class ReceiveWorker {
         /*
          * 1. 파일들이 저장될 폴더가 디렉토리에 있는지 확인 후, 없으면 만들어야 -> Service로 옮김
          * 2. 파일을 서버로부터 받아와서
-         * 3. 내 컴퓨터 경로에 다운로드,
-         * 이 때 byteStream 사용 
-         * 8192
+         * 3. 내 컴퓨터 경로에 다운로드, 이 때 byteStream 사용 
          */
 
         BufferedOutputStream bos = null;
-        BufferedInputStream bis = null;
         ObjectInputStream ois = null;
-
+        
         try {
+            // 파일 이름 : 서버에서 객체로 들어온 FileVO에서 얻음
             ois = new ObjectInputStream(socket.getInputStream());
             FileVO file = (FileVO)ois.readObject();
             String filename = file.getSubject();
             
-            bis = new BufferedInputStream(socket.getInputStream(), 8192);
-            // tmpFileName은 나중에 서버에서 받아서 처리
-            // 내 컴퓨터에 파일로 저장.....
-            bos = new BufferedOutputStream(new FileOutputStream(ClientConfig.REPOPATH + File.separator + filename), 8192); 
-
-            // 바이트코드인 파일을 한 줄 씩 읽어서 쓰기
-            int data = bis.read();
+            // 실제 파일을 받음
+            // OutputStream을 두번 감싸지 말고 ObjectOutputStream을 그대로 사용하라. 객체 받을 때도 어차피 바이트 스트림 사용하므로.
+            // bis = new BufferedInputStream(socket.getInputStream());
+            
+            // 파일을 클라이언트 컴퓨터에 저장
+            bos = new BufferedOutputStream(new FileOutputStream(ClientConfig.REPOPATH + File.separator + filename)); 
+            int data = ois.read();
             while (data != -1) {
                 bos.write(data);
-                data = bis.read();
+                data =  ois.read();
             }
             
         } finally {
             if (bos != null)
                 bos.close();
-            if (bis != null)
-                bis.close();
+            if (ois != null)
+                ois.close();
         }
     }
 }
