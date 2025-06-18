@@ -45,9 +45,10 @@ public class ServerAdminService {
 		File inputFile = new File(inputFileInfo.getFileLocation());
 		File outputFile = new File(ServerConfig.REPOPATH + File.separator + inputFile.getName());
 		
-		// 파일 입출력
+		// 파일 입출
 		BufferedInputStream bis = new BufferedInputStream(new FileInputStream(inputFile), 8192);
 		BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(outputFile), 8192);
+		
 		
 		int data = bis.read();
 		while(data != -1) {
