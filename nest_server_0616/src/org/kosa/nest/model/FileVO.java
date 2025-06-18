@@ -1,5 +1,6 @@
 package org.kosa.nest.model;
 
+import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -56,6 +57,25 @@ public class FileVO {
 		this.tag = tag;
 		this.description = description;
 	}
+	/**
+	 * FileDao의 getFileinfoList() 메소드에서 가져올 정보만 모아놓은 생성자
+	 * @param createdAt
+	 * @param subject
+	 * @param tag
+	 */
+	public FileVO(String title, String tag, Date fileCreateTime) {
+	    this.subject = title;
+	    this.tag = tag;
+	    this.createdAt = fileCreateTime.toLocalDate().atStartOfDay(); // LocalDateTime으로 변환
+	}
+
+	@Override
+	public String toString() {
+		return "FileVO [createdAt=" + createdAt + ", subject=" + subject + ", tag=" + tag + "]";
+	}
+
+//	public FileVO(String string, String string2, Date date) {
+//	}
 
 	// Getter & Setter (필요 시 자동 생성 가능)
 	public int getFileId() {
@@ -121,5 +141,7 @@ public class FileVO {
 	public void setDescription(String description) {
 		this.description = description;
 	}
+
+	
 
 }
