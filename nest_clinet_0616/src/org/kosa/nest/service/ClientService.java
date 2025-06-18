@@ -2,6 +2,7 @@ package org.kosa.nest.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -17,6 +18,10 @@ public class ClientService {
     private ReceiveWorker receiveWorker;
     // 임시 명령어
     private String command = "download";
+    
+    public ClientService() throws UnknownHostException, IOException {
+        this.receiveWorker = new ReceiveWorker();
+    }
     
     /**
      * 클라이언트가 파일 다운로드를 시작할 때 <br>

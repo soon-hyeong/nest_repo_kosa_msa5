@@ -11,6 +11,7 @@ import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +21,11 @@ import org.kosa.nest.service.ServerUserService;
 public class NetworkWorker {
 
 	private ServerUserService serverUserService;
+	
+	//생성자로 ServerUserService를 받아옴
+	public NetworkWorker(ServerUserService serverUserService) {
+		this.serverUserService = serverUserService;
+	}
 	
 	/**
 	 * 네트워크 접속을 시작하는 메서드 <br>
@@ -62,6 +68,8 @@ public class NetworkWorker {
 				sendResult(getCommand());
 			} catch (IOException e) {
 				e.printStackTrace();
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
 		}
 		
@@ -85,40 +93,38 @@ public class NetworkWorker {
 		 * 반환받은 결과값을 stream을 통하여 user client에게 전송합니다.
 		 * @param command
 		 * @throws IOException
+		 * @throws SQLException 
 		 */
-		public void sendResult(String command) throws IOException {
+		public void sendResult(String command) throws IOException, SQLException {
 			
-			BufferedOutputStream bfos = null;
 			ObjectOutputStream oos = null;
 			BufferedInputStream bis = null;
 
 			try {
+				oos = new ObjectOutputStream(socket.getOutputStream());
 				if(command.equalsIgnoreCase("download")) {
 					FileVO downloadFile = serverUserService.download(command);
 					oos.writeObject(downloadFile);
-					oos.close();
+					oos.flush();
 					bis = new BufferedInputStream(new FileInputStream(downloadFile.getFileLocation()), 8192);
-					bfos = new BufferedOutputStream(socket.getOutputStream());
 					int data = bis.read();
 					while(data != -1) {
-						bfos.write(data);
+						oos.write(data);
 						bis.read();
 					}
-					bfos.close();
+					oos.flush();
 				}
 				else if(command.equalsIgnoreCase("list") || command.equals("search")) {
 					ArrayList<FileVO> searchFileList = serverUserService.search(command);
-					oos = new ObjectOutputStream(socket.getOutputStream());
 					oos.writeObject(searchFileList);
+					oos.flush();
 				}
 				else if(command.equalsIgnoreCase("info")) {
 					ArrayList<FileVO> infoFileList = serverUserService.info(command);
-					oos = new ObjectOutputStream(socket.getOutputStream());
 					oos.writeObject(infoFileList);
+					oos.flush();
 				}
 			} finally {
-				if(bfos != null)
-					bfos.close();
 				if(oos != null)
 					oos.close();
 				if(bis != null)

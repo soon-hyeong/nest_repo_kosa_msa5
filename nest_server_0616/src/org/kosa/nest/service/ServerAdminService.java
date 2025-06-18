@@ -33,8 +33,9 @@ public class ServerAdminService {
 	 * 사용자에게 파일의 정보를 입력받고, 지정되 저장소에 파일을 업로드한다.
 	 * @return
 	 * @throws IOException
+	 * @throws SQLException 
 	 */
-	public boolean uploadFile() throws IOException {
+	public boolean uploadFile() throws IOException, SQLException {
 		
 		FileVO inputFileInfo = getFileInformation();
 
@@ -48,19 +49,20 @@ public class ServerAdminService {
 		// 파일 입출
 		BufferedInputStream bis = new BufferedInputStream(new FileInputStream(inputFile), 8192);
 		BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(outputFile), 8192);
-		
-		
+				
 		int data = bis.read();
 		while(data != -1) {
 			bos.write(data);
 			data = bis.read();
 		}
 		
+		fileDao.createFileInfo(inputFileInfo);
+		
 		bis.close();
 		bos.close();
 		return true;
 	}
-	
+		
 	/**
 	 * 파일 업로드에 필요한 정보들을 입력받아 fileVO를 생성하고 반환하는 클래스.
 	 * uploadFile() 메서드에서 사용한다.
@@ -88,7 +90,7 @@ public class ServerAdminService {
 	}
 	
 	public void findAllList() throws SQLException {
-		List<FileVO>list = fileDao.getFileinfoList();
+		List<FileVO>list = fileDao.getFileInfoList();
 		for(FileVO vo : list)
 			System.out.println(vo.toString());
 	}
