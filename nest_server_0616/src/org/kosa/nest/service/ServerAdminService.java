@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Scanner;
 
 import org.kosa.nest.common.ServerConfig;
+import org.kosa.nest.exception.CreateRegisterException;
+import org.kosa.nest.exception.LoginException;
 import org.kosa.nest.model.AdminDao;
 import org.kosa.nest.model.AdminVO;
 import org.kosa.nest.model.FileDao;
@@ -29,156 +31,139 @@ public class ServerAdminService {
 //	private AdminVO currentLoginAdmin = new AdminVO(1, "aaa@aaa", "pwd"); // 단위 테스트를 위해 작성, 추후 삭제 예정
 	
 	/**
-	 * scanner를 통해 회원 가입하는 메서드 <br>
-	 * 회원 가입시 이메일, 비밀번호를 입력해 회원가입 진행 <br>
-	 * 예외로 등록이 불가능 하다면 예외 발생한 메세지를 띄움 <br>
-	 * 
-	 * @return
-	 * @throws SQLException
-	 */
-	public boolean register() throws SQLException {
-		Scanner scanner = new Scanner(System.in);
-		try {
-			System.out.print("등록할 이메일 : ");
-			String email = scanner.nextLine();
-			System.out.print("등록할 비밀번호 : ");
-			String password = scanner.nextLine();
-			
-			AdminVO vo = new AdminVO(0, email, password);
-			int accountNo = adminDao.register(vo); //Id는 시스템이 제공
-			
-			if(accountNo > 0 ) {
-				System.out.println("관리자 등록 완료. 계정 번호 : " + accountNo);
-				return true;
-			} else {
-				System.out.println("관리자 등록 실패.");
-				return false;
+
+		 * scanner를 통해 회원 가입하는 메서드 <br>
+		 * 회원 가입시 이메일, 비밀번호를 입력해 회원가입 진행 <br>
+		 * 예외로 등록이 불가능 하다면 예외 발생한 메세지를 띄움 <br>
+		 * 
+		 * 
+		 * @throws CreateRegisterException 
+		 */
+		public void register() throws CreateRegisterException {
+			Scanner scanner = new Scanner(System.in);
+			try {
+				System.out.print("등록할 이메일 : ");
+				String email = scanner.nextLine();
+				System.out.print("등록할 비밀번호 : ");
+				String password = scanner.nextLine();
+				
+				AdminVO vo = new AdminVO(0, email, password);
+				int accountNo = adminDao.register(vo); //Id는 시스템이 제공
+				
+				if(accountNo > 0 ) {
+					System.out.println("관리자 등록 완료. 계정 번호: " + accountNo);
+				} else {
+					throw new CreateRegisterException("관리자 등록 실패.");
+				}
+			}catch (CreateRegisterException ce) {
+				throw ce; // 사용자 정의 예외 전달
+			} catch (Exception e) {
+				throw new CreateRegisterException("예외 발생 : " + e.getMessage());
 			}
-		} catch (Exception e) {
-			System.out.println("예외 발생 : " + e.getMessage());
-			return false;
 		}
-	}
-	
-	/**
-	 * scanner를 통한 로그인 메서드 <br>
-	 * 로그인 시에 아이디와 비밀번호를 입력하면 로그인 하지만 비밀번호가 일치하지 않거나 이메일이 틀릴경우 <br>
-	 * 로그인 실패 메세지를 띄움<br>
-	 * 로그인 성공시에 ID가 아닌 email을 넣은 이유는 여러 사용자가 테스트 하기에 편리하고, 이메일처럼 <br>
-	 * 유니크한 정보를 기록에 남겨 Id로 구분이 불가한걸 이메일로 확인이 가능하게 함.<br>
-	 * email 부분은 삭제가 가능하지만 혹시 몰라 넣어봄
-	 * 
-	 * @return
-	 */
-	public boolean login() {
-		Scanner scanner = new Scanner(System.in);
-		try {
-			System.out.println("아이디: ");
-			int id = Integer.parseInt(scanner.nextLine());
-			
-			System.out.println("비밀번호: ");
-			String password = scanner.nextLine();
-			
-			AdminVO admin = adminDao.getAdminInfo(id); // Id로 정보 추출
-			
-			if(admin != null && admin.getPassword().equals(password)) {
+		
+		/**
+		 * scanner를 통한 로그인 메서드 <br>
+		 * 로그인 시에 아이디와 비밀번호를 입력하면 로그인 하지만 비밀번호가 일치하지 않거나 이메일이 틀릴경우 <br>
+		 * 로그인 실패 메세지를 띄움<br>
+		 * 로그인 성공시에 ID가 아닌 email을 넣은 이유는 여러 사용자가 테스트 하기에 편리하고, 이메일처럼 <br>
+		 * 유니크한 정보를 기록에 남겨 Id로 구분이 불가한걸 이메일로 확인이 가능하게 함.<br>
+		 * email 부분은 삭제가 가능하지만 혹시 몰라 넣어봄
+		 * @throws loginException 
+		 */
+		public void login() throws LoginException {
+			Scanner scanner = new Scanner(System.in);
+			try {
+				System.out.println("아이디: ");
+				int id = Integer.parseInt(scanner.nextLine());
+				
+				System.out.println("비밀번호: ");
+				String password = scanner.nextLine();
+				
+				AdminVO admin = adminDao.getAdminInfo(id); // Id로 정보 추출
+				
+				if(admin == null || admin.getPassword().equals(password)) {
+					throw new LoginException("비밀번호가 일치하지 않거나 존재하지 않는 관계자 입니다.");
+				}
+				// 로그인 성공 시 나오는 메세지
 				currentLoginAdmin = admin;
-				System.out.println(currentLoginAdmin.getEmail()+" 관리자 로그인 성공.");
-				return true;
-			}else {
-				System.out.println("비밀번호가 일치하지 않거나 존재하지 않는 관계자 입니다.");
-				return false;
+				System.out.println("관리자 로그인 성공: " + currentLoginAdmin.getEmail());
+				
+			}catch (LoginException e) {
+				throw e; // 사용자 정의 예외 전달
+			}catch (Exception e) {
+				throw new LoginException("로그인 중 오류 발생: "+ e.getMessage());
 			}
-		}catch (Exception e) {
-			System.out.println("로그인 중 오류 발생: "+ e.getMessage());
-			return false;
 		}
-	}
-	
-	/**
-	 * 로그아웃 하는 메서드 <br>
-	 * 로그아웃을 하게 된다면 어떤 관리자가 로그아웃을 했는지 이메일로 나오게 함 <br>
-	 * 관리자가 존재하지 않을 때 로그아웃을 한다고 하면 관리자가 없다는 메세지를 띄움 <br>
-	 * @return
-	 */
-	
-	public boolean logout() {
-		if (currentLoginAdmin != null) {
-			System.out.println("로그아웃 완료: " + currentLoginAdmin.getEmail());
-			currentLoginAdmin = null;
-			return true;
-		}else {
-			System.out.println("현재 로그인한 관리자가 없습니다.");
-			return false;
+		
+		/**
+		 * 로그아웃 하는 메서드 <br>
+		 * 로그아웃을 하게 된다면 어떤 관리자가 로그아웃을 했는지 이메일로 나오게 함 <br>
+		 * 관리자가 존재하지 않을 때 로그아웃을 한다고 하면 관리자가 없다는 메세지를 띄움 <br>
+		 * @return
+		 */
+		
+		public void logout() {
+			if (currentLoginAdmin != null) {
+				String email = currentLoginAdmin.getEmail();
+				currentLoginAdmin = null;
+				System.out.println("로그아웃 완료: " + email);
+			}else {
+				System.out.println("현재 로그인한 관리자가 없습니다.");
+			}
 		}
-	}
-	/**
-	 * 현재 로그인 된 관리자의 정보 확인 메서드 <br>
-	 * 현재 로그인 된 관리자에 대한 정보를 가져올때 <br>
-	 * AdminVO에 있는 관리자 정보를 가져옴 <br>
-	 * @return 관리자 정보
-	 */
-	public AdminVO getMyInformation() {
-		if(currentLoginAdmin != null) {
-			System.out.println("현재 로그인한 관리자 정보: ");
-			System.out.println("ID: " + currentLoginAdmin.getId());
-			System.out.println("이메일: " + currentLoginAdmin.getEmail());
-			return currentLoginAdmin;
-		}else {
-			System.out.println("로그인된 관리자가 없습니다.");
-			return null;
+		/**
+		 * 현재 로그인 된 관리자의 정보 확인 메서드 <br>
+		 * 현재 로그인 된 관리자에 대한 정보를 가져올때 <br>
+		 * AdminVO에 있는 관리자 정보를 가져옴 <br>
+		 * @return 관리자 정보
+		 */
+		public AdminVO getMyInformation() {
+			if(currentLoginAdmin != null) {
+				System.out.println("현재 로그인한 관리자 정보: ");
+				System.out.println("ID: " + currentLoginAdmin.getId());
+				System.out.println("이메일: " + currentLoginAdmin.getEmail());
+				return currentLoginAdmin;
+			}else {
+				System.out.println("로그인된 관리자가 없습니다.");
+				return null;
+			}
 		}
-	}
-	/**
-	 * 현재 로그인 된 관리자의 정보 수정 메서드 <br>
-	 * 현재 로그인이 되었는지 아닌지 확인하고 <br>
-	 * 현재 로그인 된 관리자에 대한 정보를 보여주고 <br>
-	 * email과 password를 둘 다 수정 가능하게 구현하고 <br>
-	 * 만약 둘 다 입력을 안했다면 원래 가지고 있던 관리자 정보로 두게 함 <br>
-	 * 
-	 * @return currentLoginAdmin
-	 */
-	public AdminVO updateMyInformation() {
-		if (currentLoginAdmin == null) {
-	        throw new IllegalStateException("로그인된 관리자가 없습니다. 먼저 로그인하세요.");
-	    }
-		Scanner scanner = new Scanner(System.in);
-		
-		System.out.println("현재 로그인 된 관리자: " + currentLoginAdmin);
-		System.out.println("Id: " + currentLoginAdmin.getId());
-		System.out.println("Email: " + currentLoginAdmin.getEmail());
-		System.out.println("Password: " + currentLoginAdmin.getPassword());
-		
-		System.out.println("새 이메일(변경하지 않으면 Enter): ");
-		String newEmail = scanner.nextLine();
-		
-		System.out.println("새 비밀번호(변경하지 않으면 Enter): ");
-		String newPassword = scanner.nextLine();
-		
-		// null값으로 받게 되면 기존 값 유지
-		String emailToUpdate = newEmail.isEmpty() ? currentLoginAdmin.getEmail() : newEmail;
-		String passwordToUpdate = newPassword.isEmpty() ? currentLoginAdmin.getPassword() : newPassword;
-		
-		AdminVO updatedAdmin = new AdminVO(
-				currentLoginAdmin.getId(),
-				emailToUpdate,
-				passwordToUpdate
-				);
-		
-		try {
+		/**
+		 * 현재 로그인 된 관리자의 정보 수정 메서드 <br>
+		 * 현재 로그인이 되었는지 아닌지 확인하고 <br>
+		 * 현재 로그인 된 관리자에 대한 정보를 보여주고 <br>
+		 * email과 password를 둘 다 수정 가능하게 구현하고 <br>
+		 * 만약 둘 다 입력을 안했다면 원래 가지고 있던 관리자 정보로 두게 함 <br>
+		 * 
+		 * @return currentLoginAdmin
+		 */
+		public AdminVO updateMyInformation() {
+			if (currentLoginAdmin == null) {
+		        throw new IllegalStateException("로그인된 관리자가 없습니다. 먼저 로그인하세요.");
+		    }
+			Scanner scanner = new Scanner(System.in);
+			
+			System.out.println("현재 로그인 된 관리자: " + currentLoginAdmin);
+			System.out.println("Id: " + currentLoginAdmin.getId());
+			System.out.println("Email: " + currentLoginAdmin.getEmail());
+			System.out.println("Password: " + currentLoginAdmin.getPassword());
+			
+			System.out.println("새 이메일(변경하지 않으면 Enter): ");
+			String newEmail = scanner.nextLine();
+			
+			System.out.println("새 비밀번호(변경하지 않으면 Enter): ");
+			String newPassword = scanner.nextLine();
+
+			AdminVO updatedAdmin = new AdminVO(
+					currentLoginAdmin.getId(),
+					newEmail,
+					newPassword
+					);
 			// DAO에 updateAdminInfo 존재
-			int result = adminDao.updateAdminInfo(updatedAdmin);
-			if(result>0) {
-				System.out.println("수정 완료");
-				currentLoginAdmin = updatedAdmin; // 수정된 정보 현재 관리자 갱신
-			}else {
-				System.out.println("수정 실패");
-			}
-		}catch(Exception e) {
-			System.out.println("수정 중 오류 발생: "+ e.getMessage());
+			adminDao.updateAdminInfo(updatedAdmin);
 		}
-		return currentLoginAdmin;
-	}
+
 	
 	/**
 	 * nest Server의 파일 저장소에 파일을 저장하는 메서드
