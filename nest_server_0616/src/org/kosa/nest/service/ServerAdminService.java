@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -240,9 +241,51 @@ public class ServerAdminService {
 	}
 	
 	public void findAllList() throws SQLException {
-		List<FileVO>list = fileDao.getFileInfoList();
+		List<FileVO>list = fileDao.getAllFileInfoList();
 		for(FileVO vo : list)
 			System.out.println(vo.toString());
+	}
+	/**
+	 * search : 파일의 일부 정보만 
+	 * @param keyword
+	 * @return
+	 */
+	public List<FileVO> search(String keyword) {
+	    List<FileVO> resultList = new ArrayList<>();
+
+	    try {
+	        FileDao dao = new FileDao(); // DAO 객체 생성
+	        List<FileVO> allFiles = dao.getAllFileInfoList(); // 전체 파일 목록 조회
+
+	        for (FileVO file : allFiles) {
+	            if (file.getSubject() != null && file.getSubject().contains(keyword)) {
+	                resultList.add(file); // 제목에 키워드 포함 시 추가
+	            }
+	        }
+
+	    } catch (SQLException e) {
+	        System.out.println("DB 검색 중 오류 발생: " + e.getMessage());
+	    }
+
+	    return resultList;
+	}
+	/**
+	 * info: 파일 상세 정보 확인 
+	 * @param keyword
+	 * @return
+	 */
+	public List<FileVO> info(String keyword) {
+	    List<FileVO> resultList = new ArrayList<>();
+
+	    try {
+	        FileDao dao = new FileDao();
+	        resultList = dao.getFileInfoList(keyword); // 제목, 태그, 날짜 중 하나라도 키워드 포함 시 반환
+
+	    } catch (SQLException e) {
+	        System.out.println("파일 상세 정보 조회 중 오류 발생: " + e.getMessage());
+	    }
+
+	    return resultList;
 	}
 	
 	

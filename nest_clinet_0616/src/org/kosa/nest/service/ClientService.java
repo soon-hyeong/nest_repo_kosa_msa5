@@ -94,5 +94,47 @@ public class ClientService {
 
         return fileList;
     }
+	/**
+	 * search : 파일의 일부 정보만 
+	 * @param keyword
+	 * @return
+	 */
+	public List<FileVO> search(String keyword) {
+	    List<FileVO> resultList = new ArrayList<>();
+	    String command = "searchbyfileName:" + keyword;
+
+	    try {
+	        receiveWorker.sendCommand(command1); // 명령어 전송
+
+	        // 명령어가 search 또는 info일 때, 서버로부터 FileVO 목록 수신
+	        resultList = receiveWorker.receiveFileList();
+
+	    } catch (IOException | ClassNotFoundException e) {
+	        e.printStackTrace();
+	    }
+
+	    return resultList;
+	}
+	/**
+	 * info : 파일의 상세정보 가져오기
+	 * @param keyword
+	 * @return
+	 */
+	public List<FileVO> info(String keyword) {
+	    List<FileVO> resultList = new ArrayList<>();
+	    String command = "info:" + keyword;
+
+	    try {
+	        receiveWorker.sendCommand(command1); // 서버에 info 명령어 전송
+	        resultList = receiveWorker.receiveFileList(); // 결과 리스트 수신
+	    } catch (IOException | ClassNotFoundException e) {
+	        e.printStackTrace();
+	    }
+
+	    return resultList;
+	}
+
+
+
 
 }
