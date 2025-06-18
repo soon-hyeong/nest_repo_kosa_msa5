@@ -33,9 +33,8 @@ public class ServerAdminService {
 	 * 사용자에게 파일의 정보를 입력받고, 지정되 저장소에 파일을 업로드한다.
 	 * @return
 	 * @throws IOException
-	 * @throws SQLException 
 	 */
-	public boolean uploadFile() throws IOException, SQLException {
+	public boolean uploadFile() throws IOException {
 		
 		FileVO inputFileInfo = getFileInformation();
 
@@ -46,23 +45,37 @@ public class ServerAdminService {
 		File inputFile = new File(inputFileInfo.getFileLocation());
 		File outputFile = new File(ServerConfig.REPOPATH + File.separator + inputFile.getName());
 		
-		// 파일 입출
+		// 파일 입출력
 		BufferedInputStream bis = new BufferedInputStream(new FileInputStream(inputFile), 8192);
 		BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(outputFile), 8192);
-				
+		
 		int data = bis.read();
 		while(data != -1) {
 			bos.write(data);
 			data = bis.read();
 		}
 		
-		fileDao.createFileInfo(inputFileInfo);
-		
 		bis.close();
 		bos.close();
 		return true;
 	}
-		
+	
+	/**
+	 * 저장소에 저장된 파일을 삭제하는 메서드 <br>
+	 * @param command
+	 * @return
+	 */
+    public boolean deleteFile(String fileName) {
+    	
+        File file = new File(ServerConfig.REPOPATH + fileName);
+        boolean result = false;
+        
+        if(file.exists())
+            result = file.delete();
+        fileDao.deleteFileInfo(fileName);
+        return result;
+    }
+	
 	/**
 	 * 파일 업로드에 필요한 정보들을 입력받아 fileVO를 생성하고 반환하는 클래스.
 	 * uploadFile() 메서드에서 사용한다.
