@@ -60,7 +60,7 @@ public class ServerAdminService {
 		bos.close();
 		return true;
 	}
-	
+		
 	/**
 	 * 파일 업로드에 필요한 정보들을 입력받아 fileVO를 생성하고 반환하는 클래스.
 	 * uploadFile() 메서드에서 사용한다.
@@ -88,7 +88,7 @@ public class ServerAdminService {
 	}
 	
 	public void findAllList() throws SQLException {
-		List<FileVO>list = fileDao.getFileinfoList();
+		List<FileVO>list = fileDao.getFileInfoList();
 		for(FileVO vo : list)
 			System.out.println(vo.toString());
 	}
