@@ -11,8 +11,12 @@ import java.util.List;
 import org.kosa.nest.common.DatabaseUtil;
 
 public class FileDao {
+    
+    public List<FileVO> getFileInfoList(String keyword) throws SQLException{
+        return null;
+    }
 	
-    public List<FileVO> getFileinfoList() throws SQLException {
+    public List<FileVO> getAllFileInfoList() throws SQLException {
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
