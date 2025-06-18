@@ -11,6 +11,7 @@ import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,6 +68,8 @@ public class NetworkWorker {
 				sendResult(getCommand());
 			} catch (IOException e) {
 				e.printStackTrace();
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
 		}
 		
@@ -90,13 +93,15 @@ public class NetworkWorker {
 		 * 반환받은 결과값을 stream을 통하여 user client에게 전송합니다.
 		 * @param command
 		 * @throws IOException
+		 * @throws SQLException 
 		 */
-		public void sendResult(String command) throws IOException {
+		public void sendResult(String command) throws IOException, SQLException {
 			
 			ObjectOutputStream oos = null;
 			BufferedInputStream bis = null;
 
 			try {
+				oos = new ObjectOutputStream(socket.getOutputStream());
 				if(command.equalsIgnoreCase("download")) {
 					FileVO downloadFile = serverUserService.download(command);
 					oos.writeObject(downloadFile);
@@ -111,13 +116,13 @@ public class NetworkWorker {
 				}
 				else if(command.equalsIgnoreCase("list") || command.equals("search")) {
 					ArrayList<FileVO> searchFileList = serverUserService.search(command);
-					oos = new ObjectOutputStream(socket.getOutputStream());
 					oos.writeObject(searchFileList);
+					oos.flush();
 				}
 				else if(command.equalsIgnoreCase("info")) {
 					ArrayList<FileVO> infoFileList = serverUserService.info(command);
-					oos = new ObjectOutputStream(socket.getOutputStream());
 					oos.writeObject(infoFileList);
+					oos.flush();
 				}
 			} finally {
 				if(oos != null)
