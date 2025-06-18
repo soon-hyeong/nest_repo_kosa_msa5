@@ -1,6 +1,5 @@
 package org.kosa.nest.network;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -22,7 +21,6 @@ public class ReceiveWorker {
 
     // 임시 IP
     private String ip = "127.0.0.1";
-    private String command;
 
     /**
      * ReceiveWorker 생성자로 socket 생성해 서버와 연결 <br>
@@ -32,7 +30,7 @@ public class ReceiveWorker {
      */
     // getNetwork() 필요없고 이렇게 하면 되지 않나?
     public ReceiveWorker() throws UnknownHostException, IOException {
-        socket = new Socket(ip, 1234);
+        socket = new Socket(ip, 5252);
     }
 
 
@@ -41,23 +39,22 @@ public class ReceiveWorker {
      * @param command
      * @return
      * @throws IOException
+     * @throws ClassNotFoundException 
      */
-    // 이거 불린에 관련된 것도 이야기해 봐야 겠다. -> void로 향후 변경
-    // 이 명령어를 보내서 명령어에 대한 값을 받을 때 download인지 receiveFileList인지
-    // 선택해야하는데 어디서?
-    public boolean sendCommand(String command) throws IOException {
+    public void sendCommand(String command) throws IOException, ClassNotFoundException {
         
-        this.command = command;  // 명령어 가져다 쓸 수 있게 세팅
         BufferedWriter bw = null;
 
-        try {
+
             bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             bw.write(command);
-        } finally {
-            if (bw != null)
-                bw.close();
-        }
-        return true;
+            
+            if(command.equalsIgnoreCase("download")) {
+                this.downloadFile();
+            } else if(command.equalsIgnoreCase("search") || command.equalsIgnoreCase("info")) {
+                this.receiveFileList();
+            }
+        
     }
     
     /**
@@ -68,20 +65,20 @@ public class ReceiveWorker {
      * @throws IOException 
      * @throws ClassNotFoundException 
      */
-    // 메서드 이름 receiveResult 에서 receiveFileList로
+    // 메서드 이름 receiveResult 에서 receiveFileList로 변경
     public ArrayList<FileVO> receiveFileList() throws IOException, ClassNotFoundException{
         List<FileVO> list = new ArrayList<>();
         ObjectInputStream ois = null;
         
         try {
             ois = new ObjectInputStream(socket.getInputStream());
-            list = (ArrayList)ois.readObject();
+            list = (ArrayList<FileVO>)ois.readObject();
         }finally {
             if(ois != null)
                 ois.close();
         }
         
-        return (ArrayList)list;
+        return (ArrayList<FileVO>) list;
     }
 
     /**
@@ -91,39 +88,42 @@ public class ReceiveWorker {
      * 
      * @return
      * @throws IOException
+     * @throws ClassNotFoundException 
      */
-    // 이거 불린에 관련된 것도 이야기해 봐야 겠다. -> void로 향후 변경
-    public boolean downloadFile() throws IOException {
+    public void downloadFile() throws IOException, ClassNotFoundException {
 
         /*
          * 1. 파일들이 저장될 폴더가 디렉토리에 있는지 확인 후, 없으면 만들어야 -> Service로 옮김
          * 2. 파일을 서버로부터 받아와서
-         * 3. 내 컴퓨터 경로에 다운로드,
-         * 이 때 byteStream 사용 8192
+         * 3. 내 컴퓨터 경로에 다운로드, 이 때 byteStream 사용 
          */
 
         BufferedOutputStream bos = null;
-        BufferedInputStream bis = null;
-
+        ObjectInputStream ois = null;
+        
         try {
-            // 서버에서 다운로드 받을 파일을 받아옴
-            bis = new BufferedInputStream(socket.getInputStream(), 8192);
-            // tmpFileName은 나중에 서버에서 받아서 처리
-            // 내 컴퓨터에 파일로 저장.....
-            bos = new BufferedOutputStream(new FileOutputStream(ClientConfig.REPOPATH + File.separator + "tmpFileName"), 8192); 
-
-            // 바이트코드인 파일을 한 줄 씩 읽어서 쓰기
-            int data = bis.read();
+            // 파일 이름 : 서버에서 객체로 들어온 FileVO에서 얻음
+            ois = new ObjectInputStream(socket.getInputStream());
+            FileVO file = (FileVO)ois.readObject();
+            String filename = file.getSubject();
+            
+            // 실제 파일을 받음
+            // OutputStream을 두번 감싸지 말고 ObjectOutputStream을 그대로 사용하라. 객체 받을 때도 어차피 바이트 스트림 사용하므로.
+            // bis = new BufferedInputStream(socket.getInputStream());
+            
+            // 파일을 클라이언트 컴퓨터에 저장
+            bos = new BufferedOutputStream(new FileOutputStream(ClientConfig.REPOPATH + File.separator + filename)); 
+            int data = ois.read();
             while (data != -1) {
                 bos.write(data);
-                data = bis.read();
+                data =  ois.read();
             }
+            
         } finally {
             if (bos != null)
                 bos.close();
-            if (bis != null)
-                bis.close();
+            if (ois != null)
+                ois.close();
         }
-        return true;
     }
 }
