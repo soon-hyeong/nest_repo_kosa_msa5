@@ -15,8 +15,8 @@ public class ServerUserService {
 	
 	FileDao fileDao;
 	
-	public ServerUserService(FileDao fileDao) {
-		this.fileDao = fileDao;
+	public ServerUserService() {
+		this.fileDao = new FileDao();
 	}
 	
 	/**
@@ -25,11 +25,12 @@ public class ServerUserService {
 	 * @param commandLine
 	 * @return
 	 * @throws FileNotFoundException 
+	 * @throws SQLException 
 	 */
-	public ArrayList<FileVO> download(String commandLine) throws FileNotFoundException {
+	public FileVO download(String commandLine) throws FileNotFoundException, SQLException {
 		
 		//반환할 FileVO
-		ArrayList<FileVO> resultFileInfo = null;
+		FileVO resultFileInfo = null;
 		
 		//StringTokenizer를 이용하여 명령어에서 키워드를 분리
 		StringTokenizer st = new StringTokenizer(commandLine);
@@ -37,7 +38,7 @@ public class ServerUserService {
 		String keyword = st.nextToken();
 		
 		//fileDao를 이용하여 키워드에 해당하는 파일의 정보를 찾아옴
-		resultFileInfo = fileDao.getFileInfoList(keyword);
+		resultFileInfo = fileDao.getFileInfoList(keyword).get(0);
 		//저장소에 해당 파일이 없다면 fildDao를 이용하여 db에 파일 정보 삭제하고 null값 반환
 		if(resultFileInfo != null && !new File(resultFileInfo.getFileLocation()).isFile()) {
 			throw new FileNotFoundException();
@@ -49,7 +50,10 @@ public class ServerUserService {
 	 * @param keyword
 	 * @return
 	 */
-	public List<FileVO> search(String keyword) {
+	public List<FileVO> search(String command) {
+		StringTokenizer st = new StringTokenizer(command);
+		st.nextToken();
+		String keyword = st.nextToken();
 	    List<FileVO> resultList = new ArrayList<>();
 
 	    try {
@@ -73,7 +77,10 @@ public class ServerUserService {
 	 * @param keyword
 	 * @return
 	 */
-	public List<FileVO> info(String keyword) {
+	public List<FileVO> info(String command) {
+		StringTokenizer st = new StringTokenizer(command);
+		st.nextToken();
+		String keyword = st.nextToken();
 	    List<FileVO> resultList = new ArrayList<>();
 
 	    try {

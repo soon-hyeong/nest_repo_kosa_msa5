@@ -104,7 +104,7 @@ public class ClientService {
 	    String command = "searchbyfileName:" + keyword;
 
 	    try {
-	        receiveWorker.sendCommand(command1); // 명령어 전송
+	        receiveWorker.sendCommand(command); // 명령어 전송
 
 	        // 명령어가 search 또는 info일 때, 서버로부터 FileVO 목록 수신
 	        resultList = receiveWorker.receiveFileList();
@@ -125,7 +125,7 @@ public class ClientService {
 	    String command = "info:" + keyword;
 
 	    try {
-	        receiveWorker.sendCommand(command1); // 서버에 info 명령어 전송
+	        receiveWorker.sendCommand(command); // 서버에 info 명령어 전송
 	        resultList = receiveWorker.receiveFileList(); // 결과 리스트 수신
 	    } catch (IOException | ClassNotFoundException e) {
 	        e.printStackTrace();
