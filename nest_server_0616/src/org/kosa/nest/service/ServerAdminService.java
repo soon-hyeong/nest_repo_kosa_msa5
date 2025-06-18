@@ -197,10 +197,9 @@ public class ServerAdminService {
 		File inputFile = new File(inputFileInfo.getFileLocation());
 		File outputFile = new File(ServerConfig.REPOPATH + File.separator + inputFile.getName());
 		
-		// 파일 입출
+		// 파일 입출력
 		BufferedInputStream bis = new BufferedInputStream(new FileInputStream(inputFile), 8192);
 		BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(outputFile), 8192);
-		
 		
 		int data = bis.read();
 		while(data != -1) {
@@ -212,6 +211,22 @@ public class ServerAdminService {
 		bos.close();
 		return true;
 	}
+	
+	/**
+	 * 저장소에 저장된 파일을 삭제하는 메서드 <br>
+	 * @param command
+	 * @return
+	 */
+    public boolean deleteFile(String fileName) {
+    	
+        File file = new File(ServerConfig.REPOPATH + fileName);
+        boolean result = false;
+        
+        if(file.exists())
+            result = file.delete();
+        fileDao.deleteFileInfo(fileName);
+        return result;
+    }
 	
 	/**
 	 * 파일 업로드에 필요한 정보들을 입력받아 fileVO를 생성하고 반환하는 클래스.
@@ -240,7 +255,7 @@ public class ServerAdminService {
 	}
 	
 	public void findAllList() throws SQLException {
-		List<FileVO>list = fileDao.getFileinfoList();
+		List<FileVO>list = fileDao.getFileInfoList();
 		for(FileVO vo : list)
 			System.out.println(vo.toString());
 	}
