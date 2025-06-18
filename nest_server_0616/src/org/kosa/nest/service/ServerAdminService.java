@@ -65,7 +65,7 @@ public class ServerAdminService {
 	 * @param command
 	 * @return
 	 */
-    public boolean delete(String fileName) {
+    public boolean deleteFile(String fileName) {
     	
         File file = new File(ServerConfig.REPOPATH + fileName);
         boolean result = false;
