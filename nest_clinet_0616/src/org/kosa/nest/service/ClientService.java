@@ -2,6 +2,7 @@ package org.kosa.nest.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -18,6 +19,10 @@ public class ClientService {
     // 임시 명령어
     private String command = "download";
     
+    public ClientService() throws UnknownHostException, IOException {
+        this.receiveWorker = new ReceiveWorker();
+    }
+    
     /**
      * 클라이언트가 파일 다운로드를 시작할 때 <br>
      * 파일을 다운로드받을 경로 있는지 체크 후 <br>
@@ -30,15 +35,33 @@ public class ClientService {
     }
 
     /**
-     *  파일 다운로드가 성공하면 boolean값 받아 리턴
+     *  파일 다운로드가 성공하면 boolean값 받아 리턴 <br>
      * @param command
      * @return
      * @throws IOException
      */
-    public boolean download() throws IOException {
+    public void download(String command) throws IOException {
         makeDir();
-        receiveWorker.sendCommand(command);
-        return receiveWorker.downloadFile();
+        try {
+            receiveWorker.sendCommand(command);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    /**
+     * 클라이언트의 컴퓨터에 있는 다운로드 받은 파일 삭제 <br>
+     * @return
+     */
+    public boolean delete(String command) {
+        File file = new File(ClientConfig.REPOPATH + command);
+        boolean result = false;
+        if(file.exists())
+            result = file.delete();
+        // 존재 안하면 exception?
+        return result;
     }
 
 	public List<FileVO> list() {

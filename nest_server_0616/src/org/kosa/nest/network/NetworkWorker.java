@@ -21,6 +21,11 @@ public class NetworkWorker {
 
 	private ServerUserService serverUserService;
 	
+	//생성자로 ServerUserService를 받아옴
+	public NetworkWorker(ServerUserService serverUserService) {
+		this.serverUserService = serverUserService;
+	}
+	
 	/**
 	 * 네트워크 접속을 시작하는 메서드 <br>
 	 * ServerSocket을 생성하고 accept() 메서드를 실행하여 접속 가능한 상태로 만든 뒤, <br>
@@ -88,7 +93,6 @@ public class NetworkWorker {
 		 */
 		public void sendResult(String command) throws IOException {
 			
-			BufferedOutputStream bfos = null;
 			ObjectOutputStream oos = null;
 			BufferedInputStream bis = null;
 
@@ -96,15 +100,14 @@ public class NetworkWorker {
 				if(command.equalsIgnoreCase("download")) {
 					FileVO downloadFile = serverUserService.download(command);
 					oos.writeObject(downloadFile);
-					oos.close();
+					oos.flush();
 					bis = new BufferedInputStream(new FileInputStream(downloadFile.getFileLocation()), 8192);
-					bfos = new BufferedOutputStream(socket.getOutputStream());
 					int data = bis.read();
 					while(data != -1) {
-						bfos.write(data);
+						oos.write(data);
 						bis.read();
 					}
-					bfos.close();
+					oos.flush();
 				}
 				else if(command.equalsIgnoreCase("list") || command.equals("search")) {
 					ArrayList<FileVO> searchFileList = serverUserService.search(command);
@@ -117,8 +120,6 @@ public class NetworkWorker {
 					oos.writeObject(infoFileList);
 				}
 			} finally {
-				if(bfos != null)
-					bfos.close();
 				if(oos != null)
 					oos.close();
 				if(bis != null)
