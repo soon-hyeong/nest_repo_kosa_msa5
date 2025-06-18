@@ -6,9 +6,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Scanner;
 
 import org.kosa.nest.common.ServerConfig;
@@ -84,4 +86,14 @@ public class ServerAdminService {
 		scanner.close();
 		return fileVO;
 	}
+	
+	public void findAllList() throws SQLException {
+		List<FileVO>list = fileDao.getFileinfoList();
+		for(FileVO vo : list)
+			System.out.println(vo.toString());
+	}
+	
+	
+	
+	
 }
