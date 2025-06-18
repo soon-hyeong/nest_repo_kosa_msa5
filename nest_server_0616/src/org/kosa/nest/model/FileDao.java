@@ -5,10 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TimeZone;
 
 import org.kosa.nest.common.DatabaseUtil;
 
@@ -40,6 +38,12 @@ public class FileDao {
         return list;
     }
     
+    /**
+     * 데이터베이스에 새로운 파일 정보를 생성합니다(Create). <br>
+     * FileVO 객체를 인자로 받아 파일 정보를 전달받고, insert문을 실행하여 데이터베이스에 새로운 파일 정보를 생성합니다. <br>
+     * @param fileVO
+     * @throws SQLException
+     */
     public void createFileInfo(FileVO fileVO) throws SQLException {
     	Connection con = null;
     	PreparedStatement pstmt = null;
@@ -55,14 +59,23 @@ public class FileDao {
     		pstmt.setString(4, fileVO.getDescription());
     		pstmt.setInt(5, fileVO.getAdminId());
     		pstmt.setTimestamp(6, Timestamp.valueOf(fileVO.getCreatedAt()));
-    		pstmt.setString(7, fileVO.getSubject());    		
+    		pstmt.setString(7, fileVO.getSubject()); 
+    		pstmt.executeUpdate();
     		
     	} finally {
     		DatabaseUtil.closeAll(pstmt, con);
     	}
     }
     
-    public void updateFileInfo(FileVO fileVO) throws SQLException {
+    /**
+     * 데이터베이스에 저장되어 있는 파일 정보를 업데이트 합니다(Update). <br>
+     * 바꿀 파일의 이름과 FileVO 객체를 인자로 받아 파일 이름, 태그, 설명, admin_id, file_location을 변경합니다. <br>
+     * Update문을 실행합니다. <br>
+     * @param currentTitle
+     * @param fileVO
+     * @throws SQLException
+     */
+    public void updateFileInfo(String currentTitle, FileVO fileVO) throws SQLException {
     	Connection con = null;
     	PreparedStatement pstmt = null;
     	
@@ -76,23 +89,29 @@ public class FileDao {
     		pstmt.setString(3, fileVO.getDescription());
     		pstmt.setInt(4, fileVO.getAdminId());
     		pstmt.setString(5, fileVO.getFileLocation());
-    		pstmt.setString(6, fileVO.getSubject());
+    		pstmt.setString(6, currentTitle);
     		pstmt.executeUpdate();
     	} finally {
     		DatabaseUtil.closeAll(pstmt, con);
     	}
     }
     
-    public void deleteFileInfo(FileVO fileVO) throws SQLException {
+    /**
+     * 데이터베이스에 저장되어 있는 파일 정보를 삭제합니다(Delete). <br>
+     * 인자로 삭제하고자 하는 파일 정보의 제목을 전달받아 DELETE 문을 실행합니다.
+     * @param title
+     * @throws SQLException
+     */
+    public void deleteFileInfo(String title) throws SQLException {
     	Connection con = null;
     	PreparedStatement pstmt = null;
     	
     	try {
     		con = DatabaseUtil.getConnection();
-    		String sql = "DELETE FROM file WHERE subject = ?";
+    		String sql = "DELETE FROM file WHERE title = ?";
     		pstmt = con.prepareStatement(sql);
-    		pstmt.setString(1, fileVO.getSubject());
-    		pstmt.executeQuery();
+    		pstmt.setString(1, title);
+    		pstmt.executeUpdate();
     	} finally{
     		DatabaseUtil.closeAll(pstmt, con);
     	}
