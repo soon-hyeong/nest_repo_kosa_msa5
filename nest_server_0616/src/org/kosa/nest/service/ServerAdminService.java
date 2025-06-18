@@ -45,10 +45,9 @@ public class ServerAdminService {
 		File inputFile = new File(inputFileInfo.getFileLocation());
 		File outputFile = new File(ServerConfig.REPOPATH + File.separator + inputFile.getName());
 		
-		// 파일 입출
+		// 파일 입출력
 		BufferedInputStream bis = new BufferedInputStream(new FileInputStream(inputFile), 8192);
 		BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(outputFile), 8192);
-		
 		
 		int data = bis.read();
 		while(data != -1) {
@@ -73,6 +72,7 @@ public class ServerAdminService {
         
         if(file.exists())
             result = file.delete();
+        fileDao.deleteFileInfo(fileName);
         return result;
     }
 	
@@ -103,7 +103,7 @@ public class ServerAdminService {
 	}
 	
 	public void findAllList() throws SQLException {
-		List<FileVO>list = fileDao.getFileinfoList();
+		List<FileVO>list = fileDao.getFileInfoList();
 		for(FileVO vo : list)
 			System.out.println(vo.toString());
 	}
