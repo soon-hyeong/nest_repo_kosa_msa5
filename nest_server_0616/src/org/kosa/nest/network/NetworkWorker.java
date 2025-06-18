@@ -23,8 +23,8 @@ public class NetworkWorker {
 	private ServerUserService serverUserService;
 	
 	//생성자로 ServerUserService를 받아옴
-	public NetworkWorker(ServerUserService serverUserService) {
-		this.serverUserService = serverUserService;
+	public NetworkWorker() {
+		this.serverUserService = new ServerUserService();
 	}
 	
 	/**
@@ -115,12 +115,12 @@ public class NetworkWorker {
 					oos.flush();
 				}
 				else if(command.equalsIgnoreCase("list") || command.equals("search")) {
-					ArrayList<FileVO> searchFileList = serverUserService.search(command);
+					ArrayList<FileVO> searchFileList = (ArrayList<FileVO>)serverUserService.search(command);
 					oos.writeObject(searchFileList);
 					oos.flush();
 				}
 				else if(command.equalsIgnoreCase("info")) {
-					ArrayList<FileVO> infoFileList = serverUserService.info(command);
+					ArrayList<FileVO> infoFileList = (ArrayList<FileVO>)serverUserService.info(command);
 					oos.writeObject(infoFileList);
 					oos.flush();
 				}

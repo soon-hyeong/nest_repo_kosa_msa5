@@ -25,12 +25,15 @@ import org.kosa.nest.network.NetworkWorker;
 
 public class ServerAdminService {
 	
-	private NetworkWorker networkWorker = new NetworkWorker();
+	private NetworkWorker networkWorker;
 	private FileDao fileDao = new FileDao();
 	private AdminDao adminDao = new AdminDao();
 	private AdminVO currentLoginAdmin;
 //	private AdminVO currentLoginAdmin = new AdminVO(1, "aaa@aaa", "pwd"); // 단위 테스트를 위해 작성, 추후 삭제 예정
 	
+	public ServerAdminService(){
+		this.networkWorker = new NetworkWorker();
+	}
 	/**
 
 		 * scanner를 통해 회원 가입하는 메서드 <br>
@@ -138,8 +141,9 @@ public class ServerAdminService {
 		 * 만약 둘 다 입력을 안했다면 원래 가지고 있던 관리자 정보로 두게 함 <br>
 		 * 
 		 * @return currentLoginAdmin
+		 * @throws SQLException 
 		 */
-		public AdminVO updateMyInformation() {
+		public AdminVO updateMyInformation() throws SQLException {
 			if (currentLoginAdmin == null) {
 		        throw new IllegalStateException("로그인된 관리자가 없습니다. 먼저 로그인하세요.");
 		    }
@@ -163,6 +167,7 @@ public class ServerAdminService {
 					);
 			// DAO에 updateAdminInfo 존재
 			adminDao.updateAdminInfo(updatedAdmin);
+			return updatedAdmin;
 		}
 
 	
@@ -202,8 +207,9 @@ public class ServerAdminService {
 	 * 저장소에 저장된 파일을 삭제하는 메서드 <br>
 	 * @param command
 	 * @return
+	 * @throws SQLException 
 	 */
-    public boolean deleteFile(String fileName) {
+    public boolean deleteFile(String fileName) throws SQLException {
     	
         File file = new File(ServerConfig.REPOPATH + fileName);
         boolean result = false;
