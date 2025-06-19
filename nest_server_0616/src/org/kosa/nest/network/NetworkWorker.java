@@ -14,6 +14,7 @@ import java.net.Socket;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.kosa.nest.model.FileVO;
 import org.kosa.nest.service.ServerUserService;
@@ -37,12 +38,14 @@ public class NetworkWorker {
 		ServerSocket serverSocket = null;
 		try {
 			serverSocket = new ServerSocket(9876);
+			System.out.println("ServerSocket generate");
 			while(true){
 				Socket socket = serverSocket.accept();
+				System.out.println("socket accept!");
 				ReceiveWorker receiveWorker = new ReceiveWorker(socket);
 				Thread receiveWorkerThread = new Thread(receiveWorker);
 				receiveWorkerThread.start();
-				socket.close();
+//				socket.close();
 			}
 		} finally {
 			if(serverSocket != null)
@@ -65,11 +68,15 @@ public class NetworkWorker {
 		@Override
 		public void run() {
 			try {
-				sendResult(getCommand());
+				System.out.println("ReceiveWorker thread init!");
+				String commandLine = getCommand();
+				sendResult(commandLine);
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (SQLException e) {
 				e.printStackTrace();
+			} finally {
+
 			}
 		}
 		
@@ -81,9 +88,11 @@ public class NetworkWorker {
 		 */
 		public String getCommand() throws UnsupportedEncodingException, IOException {
 			
+			System.out.println("getCommand init");
 			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
 			String commandLine  = br.readLine();
-			br.close();
+			System.out.println("commandLine: " + commandLine);
+//			br.close();
 			
 			return commandLine;
 		}
@@ -95,15 +104,18 @@ public class NetworkWorker {
 		 * @throws IOException
 		 * @throws SQLException 
 		 */
-		public void sendResult(String command) throws IOException, SQLException {
+		public void sendResult(String commandLine) throws IOException, SQLException {
 			
 			ObjectOutputStream oos = null;
 			BufferedInputStream bis = null;
 
 			try {
+				StringTokenizer st = new StringTokenizer(commandLine);
+				String command = st.nextToken();
+				
 				oos = new ObjectOutputStream(socket.getOutputStream());
 				if(command.equalsIgnoreCase("download")) {
-					FileVO downloadFile = serverUserService.download(command);
+					FileVO downloadFile = serverUserService.download(commandLine);
 					oos.writeObject(downloadFile);
 					oos.flush();
 					bis = new BufferedInputStream(new FileInputStream(downloadFile.getFileLocation()), 8192);
@@ -115,20 +127,22 @@ public class NetworkWorker {
 					oos.flush();
 				}
 				else if(command.equalsIgnoreCase("list") || command.equals("search")) {
-					ArrayList<FileVO> searchFileList = (ArrayList<FileVO>)serverUserService.search(command);
+					ArrayList<FileVO> searchFileList = (ArrayList<FileVO>)serverUserService.search(commandLine);
+					System.out.println("send object");
 					oos.writeObject(searchFileList);
+					System.out.println("send object finish");
 					oos.flush();
 				}
 				else if(command.equalsIgnoreCase("info")) {
-					ArrayList<FileVO> infoFileList = (ArrayList<FileVO>)serverUserService.info(command);
+					ArrayList<FileVO> infoFileList = (ArrayList<FileVO>)serverUserService.info(commandLine);
 					oos.writeObject(infoFileList);
 					oos.flush();
 				}
 			} finally {
-				if(oos != null)
-					oos.close();
-				if(bis != null)
-					bis.close();
+//				if(oos != null)
+//					oos.close();
+//				if(bis != null)
+//					bis.close();
 			}
 
 		}
