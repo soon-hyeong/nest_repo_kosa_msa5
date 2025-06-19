@@ -69,6 +69,10 @@ public class FileVO {
 	    this.createdAt = fileCreateTime.toLocalDate().atStartOfDay(); // LocalDateTime으로 변환
 	}
 
+	public FileVO(String subject) {
+		this.subject = subject;
+	}
+
 	@Override
 	public String toString() {
 		return "FileVO [createdAt=" + createdAt + ", subject=" + subject + ", tag=" + tag + "]";

@@ -18,8 +18,8 @@ public class AdminDao {
 		String sql = "INSERT INTO admin (email, password) VALUES(?,?)"; // Id,Email,Password 순으로 입력
 		try {
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setString(2, admin.getEmail());
-			pstmt.setString(3, admin.getPassword());
+			pstmt.setString(1, admin.getEmail());
+			pstmt.setString(2, admin.getPassword());
 
 			return pstmt.executeUpdate();
 		} finally {
@@ -28,17 +28,17 @@ public class AdminDao {
 	}
 
 	// 2. getAdminInfo : ID로 관리자 정보 조회
-	public AdminVO getAdminInfo(int id) throws SQLException {
+	public AdminVO getAdminInfo(String email) throws SQLException {
 		conn = DatabaseUtil.getConnection();
-		String sql = "SELECT id, email, password FROM admin WHERE id = ?"; // Id를 통해 관리자 정보를 조회
+		String sql = "SELECT id, email, password FROM admin WHERE email = ?"; // Id를 통해 관리자 정보를 조회
 		try {
 			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, id);
+			pstmt.setString(1, email);
 			rs = pstmt.executeQuery();
 			if (rs.next()) {
 				return new AdminVO(rs.getInt("id"), rs.getString("email"), rs.getString("password"));
 			}else {
-				throw new SQLException("해당 ID가 존재하지 않습니다. ID : "+ id);
+				throw new SQLException("email doesn't exist");
 			}
 		} finally {
 			DatabaseUtil.closeAll(rs, pstmt, conn);
@@ -56,10 +56,7 @@ public class AdminDao {
 	        pstmt.setString(2, admin.getPassword());
 	        pstmt.setInt(3, admin.getId());
 
-	        int result = pstmt.executeUpdate();
-	        if (result == 0) {
-	            throw new SQLException("관리자 정보 수정 실패. 존재하지 않는 ID: " + admin.getId());
-	        }
+	        pstmt.executeUpdate();
 	    } finally {
 	        DatabaseUtil.closeAll(null, pstmt, conn);
 	    }
