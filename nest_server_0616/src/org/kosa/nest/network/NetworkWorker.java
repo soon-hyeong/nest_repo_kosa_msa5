@@ -60,6 +60,8 @@ public class NetworkWorker {
 	 */
 	private class ReceiveWorker implements Runnable{
 		private Socket socket; // 서버 직원이 개별 클라이언트와 통신하기 위한 전화기 Socket
+		private ObjectOutputStream oos;
+		private BufferedReader br;
 		
 		private ReceiveWorker(Socket socket) {
 			this.socket = socket;
@@ -89,7 +91,8 @@ public class NetworkWorker {
 		public String getCommand() throws UnsupportedEncodingException, IOException {
 			
 			System.out.println("getCommand init");
-			BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
+			br = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
+			oos = new ObjectOutputStream(socket.getOutputStream());
 			String commandLine  = br.readLine();
 			System.out.println("commandLine: " + commandLine);
 //			br.close();
@@ -106,14 +109,12 @@ public class NetworkWorker {
 		 */
 		public void sendResult(String commandLine) throws IOException, SQLException {
 			
-			ObjectOutputStream oos = null;
 			BufferedInputStream bis = null;
 
 			try {
 				StringTokenizer st = new StringTokenizer(commandLine);
 				String command = st.nextToken();
 				
-				oos = new ObjectOutputStream(socket.getOutputStream());
 				if(command.equalsIgnoreCase("download")) {
 					FileVO downloadFile = serverUserService.download(commandLine);
 					oos.writeObject(downloadFile);
@@ -134,7 +135,10 @@ public class NetworkWorker {
 					oos.flush();
 				}
 				else if(command.equalsIgnoreCase("info")) {
+					System.out.println("info case!");
 					ArrayList<FileVO> infoFileList = (ArrayList<FileVO>)serverUserService.info(commandLine);
+					if(infoFileList.size() > 0)
+						System.out.println(infoFileList.get(0));
 					oos.writeObject(infoFileList);
 					oos.flush();
 				}

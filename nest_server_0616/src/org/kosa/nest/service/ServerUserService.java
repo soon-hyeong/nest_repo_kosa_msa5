@@ -30,7 +30,8 @@ public class ServerUserService {
 	public FileVO download(String commandLine) throws FileNotFoundException, SQLException {
 		
 		//반환할 FileVO
-		FileVO resultFileInfo = null;
+		ArrayList<FileVO> resultFileInfoList = null;
+		FileVO resultInfo = null;
 		
 		//StringTokenizer를 이용하여 명령어에서 키워드를 분리
 		StringTokenizer st = new StringTokenizer(commandLine);
@@ -38,12 +39,15 @@ public class ServerUserService {
 		String keyword = st.nextToken();
 		
 		//fileDao를 이용하여 키워드에 해당하는 파일의 정보를 찾아옴
-		resultFileInfo = fileDao.getFileInfoList(keyword).get(0);
+		resultFileInfoList = fileDao.getFileInfo(keyword);
+		if(resultFileInfoList.size() > 0)
+			resultInfo = resultFileInfoList.get(0);
 		//저장소에 해당 파일이 없다면 fildDao를 이용하여 db에 파일 정보 삭제하고 null값 반환
-		if(resultFileInfo != null && !new File(resultFileInfo.getFileLocation()).isFile()) {
+		System.out.println(resultInfo.getFileLocation());
+		if(resultInfo != null && !new File(resultInfo.getFileLocation()).isFile()) {
 			throw new FileNotFoundException();
 		}
-		return resultFileInfo;
+		return resultInfo;
 	}
 	/**
 	 * search : 파일의 일부 정보만 
@@ -85,7 +89,7 @@ public class ServerUserService {
 
 	    try {
 	        FileDao dao = new FileDao();
-	        resultList = dao.getFileInfoList(keyword); // 제목, 태그, 날짜 중 하나라도 키워드 포함 시 반환
+	        resultList = dao.getFileInfo(keyword); // 제목, 태그, 날짜 중 하나라도 키워드 포함 시 반환
 
 	    } catch (SQLException e) {
 	        System.out.println("파일 상세 정보 조회 중 오류 발생: " + e.getMessage());
