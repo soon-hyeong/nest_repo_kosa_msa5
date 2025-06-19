@@ -54,14 +54,15 @@ public class ClientService {
     /**
      * 클라이언트의 컴퓨터에 있는 다운로드 받은 파일 삭제 <br>
      * @return
+     * @throws Exception 
      */
-    public boolean delete(String command) {
-        File file = new File(ClientConfig.REPOPATH + command);
+    public void delete(String title) {
+        File file = new File(ClientConfig.REPOPATH + File.separator + title);
         boolean result = false;
-        if(file.exists())
-            result = file.delete();
-        // 존재 안하면 exception?
-        return result;
+        if(!file.exists())         // 존재 안하면 exception?
+            System.out.println("temp exception");
+        result = file.delete();
+        System.out.println("file delete success");
     }
 
 	public List<FileVO> list() {

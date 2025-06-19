@@ -18,8 +18,12 @@ public class FileVO implements Serializable {
 //	2차 구현시 변경
 //	private ArrayList<String> tag;
 	private String description;
+	
+	public FileVO() {
+    super();
+}
 
-	/**
+    /**
 	 * DB로부터 데이터를 가져와 file 객체 생성시에 사용하는 생성자
 	 * @param fileId
 	 * @param fileLocation

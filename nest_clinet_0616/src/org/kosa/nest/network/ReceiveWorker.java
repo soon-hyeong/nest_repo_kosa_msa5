@@ -30,7 +30,7 @@ public class ReceiveWorker {
      */
     // getNetwork() 필요없고 이렇게 하면 되지 않나?
     public ReceiveWorker() throws UnknownHostException, IOException {
-        socket = new Socket(ip, 5252);
+//        socket = new Socket(ip, 9876);
     }
 
 
@@ -44,7 +44,6 @@ public class ReceiveWorker {
     public void sendCommand(String command) throws IOException, ClassNotFoundException {
         
         BufferedWriter bw = null;
-
 
             bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             bw.write(command);
@@ -66,7 +65,7 @@ public class ReceiveWorker {
      * @throws ClassNotFoundException 
      */
     // 메서드 이름 receiveResult 에서 receiveFileList로 변경
-    public ArrayList<FileVO> receiveFileList() throws IOException, ClassNotFoundException{
+    public List<FileVO> receiveFileList() throws IOException, ClassNotFoundException{
         List<FileVO> list = new ArrayList<>();
         ObjectInputStream ois = null;
         
@@ -78,7 +77,7 @@ public class ReceiveWorker {
                 ois.close();
         }
         
-        return (ArrayList<FileVO>) list;
+        return list;
     }
 
     /**
