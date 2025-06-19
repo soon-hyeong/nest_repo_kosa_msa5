@@ -21,6 +21,7 @@ import org.kosa.nest.exception.FileNotFoundException;
 import org.kosa.nest.exception.LoginException;
 import org.kosa.nest.exception.PasswordNotCorrectException;
 import org.kosa.nest.exception.RegisterException;
+import org.kosa.nest.exception.SearchDatabaseException;
 import org.kosa.nest.exception.UpdateAdminInfoFailException;
 import org.kosa.nest.model.AdminDao;
 import org.kosa.nest.model.AdminVO;
@@ -286,25 +287,20 @@ public class ServerAdminService {
 	 * @param keyword
 	 * @return
 	 * @throws AdminNotLoginException 
+	 * @throws SearchDatabaseException 
 	 */
-	public List<FileVO> search(String keyword) throws AdminNotLoginException {
+	public List<FileVO> search(String keyword) throws AdminNotLoginException, SearchDatabaseException {
 		if(currentLoginAdmin == null)
 			throw new AdminNotLoginException("Permission denied");
 		else {
 		    List<FileVO> resultList = new ArrayList<>();
 
 		    try {
-		        FileDao dao = new FileDao(); // DAO 객체 생성
-		        List<FileVO> allFiles = dao.getAllFileInfoList(); // 전체 파일 목록 조회
-
-		        for (FileVO file : allFiles) {
-		            if (file.getSubject() != null && file.getSubject().contains(keyword)) {
-		                resultList.add(file); // 제목에 키워드 포함 시 추가
-		            }
-		        }
+		    	resultList = fileDao.getFileInfoList(keyword); // 전체 파일 목록 조회
 
 		    } catch (SQLException e) {
-		        System.out.println("DB 검색 중 오류 발생: " + e.getMessage());
+//		        throw new SearchDatabaseException("File information databaseasf error occured!");
+		    	e.printStackTrace();
 		    }
 		    return resultList;
 		}
@@ -315,21 +311,23 @@ public class ServerAdminService {
 	 * @return
 	 * @throws AdminNotLoginException 
 	 */
-	public List<FileVO> info(String keyword) throws AdminNotLoginException {
+	public FileVO info(String keyword) throws AdminNotLoginException {
 		if(currentLoginAdmin == null)
 			throw new AdminNotLoginException("Permission denied");
 		else {
 		    List<FileVO> resultList = new ArrayList<>();
+		    FileVO resultFileVO = null;
 
 		    try {
 		        FileDao dao = new FileDao();
-		        resultList = dao.getFileInfoList(keyword); // 제목, 태그, 날짜 중 하나라도 키워드 포함 시 반환
+		        resultList = dao.getFileInfo(keyword); // 제목, 태그, 날짜 중 하나라도 키워드 포함 시 반환
 
 		    } catch (SQLException e) {
 		        System.out.println("파일 상세 정보 조회 중 오류 발생: " + e.getMessage());
 		    }
-
-		    return resultList;
+		    if(resultList.size() > 0)
+		    	resultFileVO = resultList.get(0);
+		    return resultFileVO;
 		}
 
 	}

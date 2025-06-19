@@ -12,6 +12,7 @@ import org.kosa.nest.exception.FileNotFoundException;
 import org.kosa.nest.exception.LoginException;
 import org.kosa.nest.exception.PasswordNotCorrectException;
 import org.kosa.nest.exception.RegisterException;
+import org.kosa.nest.exception.SearchDatabaseException;
 import org.kosa.nest.exception.UpdateAdminInfoFailException;
 import org.kosa.nest.model.AdminVO;
 import org.kosa.nest.model.FileVO;
@@ -82,10 +83,12 @@ public class CommandLineInterface {
 				e.printStackTrace();
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
+			} catch (SearchDatabaseException e) {
+				e.printStackTrace();
 			}
 		}
 		
-		public String getCommand() throws LoginException, AdminNotLoginException, SQLException, IOException, RegisterException, PasswordNotCorrectException, UpdateAdminInfoFailException, FileDeleteDatabaseException, FileNotFoundException {
+		public String getCommand() throws LoginException, AdminNotLoginException, SQLException, IOException, RegisterException, PasswordNotCorrectException, UpdateAdminInfoFailException, FileDeleteDatabaseException, FileNotFoundException, SearchDatabaseException {
 			
 			Scanner scanner = new Scanner(System.in);
 			String commandLine = scanner.nextLine();
@@ -124,7 +127,7 @@ public class CommandLineInterface {
 				resultToString((ArrayList<FileVO>)serverAdminService.search(keyword));
 			}
 			else if(command.equalsIgnoreCase("info")) {
-				resultToString(((ArrayList<FileVO>)serverAdminService.info(keyword)));
+				resultToString(serverAdminService.info(keyword));
 			}
 			else if(command.equalsIgnoreCase("help")) {
 				serverAdminService.help();
@@ -154,6 +157,8 @@ public class CommandLineInterface {
 	}
 	
 	public void resultToString(FileVO fileVO) {
+		if(fileVO == null)
+			return ;
 		System.out.println("subject: " + fileVO.getSubject());
 		System.out.println("tag: " + fileVO.getTag());
 		System.out.println("lastModifed time: " + fileVO.getCreatedAt());
