@@ -1,11 +1,10 @@
 package org.kosa.nest.exception;
 
-public class CreateRegisterException extends Exception {
+public class SearchDatabaseException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
-	public CreateRegisterException(String message) {
+	public SearchDatabaseException(String message) {
 		super(message);
 	}
-
 }

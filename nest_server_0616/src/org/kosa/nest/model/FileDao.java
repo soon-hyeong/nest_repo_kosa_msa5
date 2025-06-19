@@ -21,14 +21,14 @@ public class FileDao {
 
         try {
             con = DatabaseUtil.getConnection();
-            String sql = "SELECT title, tag, file_create_time FROM file";
+            String sql = "SELECT title, tag, created_at FROM file";
             pstmt = con.prepareStatement(sql);
             rs = pstmt.executeQuery();
 
             while (rs.next()) {
                 String title = rs.getString("title");
                 String tag = rs.getString("tag");
-                java.sql.Date createDate = rs.getDate("file_create_time");
+                java.sql.Date createDate = rs.getDate("created_at");
 
                 list.add(new FileVO(title, tag, createDate));
             }
@@ -51,16 +51,15 @@ public class FileDao {
     	
     	try {
     		con = DatabaseUtil.getConnection();
-    		String sql = "INSERT INTO file (uploaded_time, title, tag, description, admin_id, created_at, file_location) "
-    				+ " VALUES(?, ?, ?, ?, ?, ?, ?)";
+    		String sql = "INSERT INTO file (title, tag, description, admin_id, created_at, file_location) "
+    				+ " VALUES(?, ?, ?, ?, ?, ?)";
     		pstmt = con.prepareStatement(sql);
-    		pstmt.setTimestamp(1, Timestamp.valueOf(fileVO.getUploadAt()));
-    		pstmt.setString(2, fileVO.getSubject());
-    		pstmt.setString(3, fileVO.getTag());
-    		pstmt.setString(4, fileVO.getDescription());
-    		pstmt.setInt(5, fileVO.getAdminId());
-    		pstmt.setTimestamp(6, Timestamp.valueOf(fileVO.getCreatedAt()));
-    		pstmt.setString(7, fileVO.getSubject()); 
+    		pstmt.setString(1, fileVO.getSubject());
+    		pstmt.setString(2, fileVO.getTag());
+    		pstmt.setString(3, fileVO.getDescription());
+    		pstmt.setInt(4, fileVO.getAdminId());
+    		pstmt.setTimestamp(5, Timestamp.valueOf(fileVO.getCreatedAt()));
+    		pstmt.setString(6, fileVO.getSubject()); 
     		pstmt.executeUpdate();
     		
     	} finally {
@@ -132,8 +131,8 @@ public class FileDao {
 
         try {
             con = DatabaseUtil.getConnection();
-            String sql = "SELECT file_id, upload_time, title, tag, description, admin_id, file_create_time, filelocation " +
-                         "FROM file WHERE title LIKE ? OR tag LIKE ? OR file_create_time LIKE ?";
+            String sql = "SELECT title " +
+                         "FROM file WHERE title LIKE ? OR tag LIKE ? OR created_at LIKE ?";
             pstmt = con.prepareStatement(sql);
 
             pstmt.setString(1, "%" + keyword + "%");
@@ -143,14 +142,40 @@ public class FileDao {
             rs = pstmt.executeQuery();
 
             while (rs.next()) {
-                int fileId = rs.getInt("file_id");
-                LocalDateTime uploadAt = rs.getTimestamp("upload_time").toLocalDateTime();
+                String subject = rs.getString("title");
+                list.add(new FileVO(subject));
+            }
+        } finally {
+            DatabaseUtil.closeAll(rs, pstmt, con);
+        }
+
+        return list;
+    }
+
+    public ArrayList<FileVO> getFileInfo(String keyword) throws SQLException {
+        Connection con = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        ArrayList<FileVO> list = new ArrayList<>();
+
+        try {
+            con = DatabaseUtil.getConnection();
+            String sql = "SELECT id, uploaded_time, title, tag, description, admin_id, created_at, file_location " +
+                         "FROM file WHERE title = ?";
+            pstmt = con.prepareStatement(sql);
+
+            pstmt.setString(1, keyword);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                int fileId = rs.getInt("id");
+                LocalDateTime uploadAt = rs.getTimestamp("uploaded_time").toLocalDateTime();
                 String subject = rs.getString("title");
                 String tag = rs.getString("tag");
                 String description = rs.getString("description");
                 int adminId = rs.getInt("admin_id");
-                LocalDateTime createdAt = rs.getTimestamp("file_create_time").toLocalDateTime();
-                String filelocation = rs.getString("filelocation");
+                LocalDateTime createdAt = rs.getTimestamp("created_at").toLocalDateTime();
+                String filelocation = rs.getString("file_location");
 
                 list.add(new FileVO(fileId, filelocation, createdAt, uploadAt, adminId, subject, tag, description));
             }
@@ -160,6 +185,5 @@ public class FileDao {
 
         return list;
     }
-
     
 }
