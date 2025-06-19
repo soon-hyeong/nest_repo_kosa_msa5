@@ -100,15 +100,13 @@ public class ClientService {
 	 * @param keyword
 	 * @return
 	 */
-	public List<FileVO> search(String keyword) {
+	public List<FileVO> search(String reuniteCommandLine) {
 	    List<FileVO> resultList = new ArrayList<>();
-	    String command = "searchbyfileName:" + keyword;
 
 	    try {
-	        receiveWorker.sendCommand(command); // 명령어 전송
+	        resultList = receiveWorker.sendCommand(reuniteCommandLine); // 명령어 전송
 
 	        // 명령어가 search 또는 info일 때, 서버로부터 FileVO 목록 수신
-	        resultList = receiveWorker.receiveFileList();
 
 	    } catch (IOException | ClassNotFoundException e) {
 	        e.printStackTrace();
@@ -121,13 +119,11 @@ public class ClientService {
 	 * @param keyword
 	 * @return
 	 */
-	public List<FileVO> info(String keyword) {
+	public List<FileVO> info(String reuniteCommandLine) {
 	    List<FileVO> resultList = new ArrayList<>();
-	    String command = "info:" + keyword;
 
 	    try {
-	        receiveWorker.sendCommand(command); // 서버에 info 명령어 전송
-	        resultList = receiveWorker.receiveFileList(); // 결과 리스트 수신
+	        resultList = receiveWorker.sendCommand(reuniteCommandLine); // 서버에 info 명령어 전송
 	    } catch (IOException | ClassNotFoundException e) {
 	        e.printStackTrace();
 	    }

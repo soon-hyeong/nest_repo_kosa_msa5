@@ -64,31 +64,44 @@ public class CommandLineInterface {
             return;
         }
     }
+    
+    public void resultToString(ArrayList<FileVO> fileList) {
+        for(FileVO vo : fileList)
+            System.out.println(vo.getSubject());
+    }
+    
+    public void resultToString(FileVO fileVO) {
+        if(fileVO == null)
+            return ;
+
+    }
 
     // info만 전부, list랑 search는 세개(제목, 태그, 생성시간)
     public void resultToString(String command, String keyword) {
-
+        String reuniteCommandLine = command + " " + keyword;
         switch (command) {
         case "list":
             ArrayList<FileVO> list = (ArrayList<FileVO>) clientService.list();
-            for (FileVO files : list) {
-                FileVO file = new FileVO();
-                file = files;
-                System.out.println(file.getSubject() + " " + file.getTag() + " " + file.getCreatedAt());
+            for (FileVO file : list) {
+                System.out.println(file.getSubject());
             }
             break;
         case "search":
-            ArrayList<FileVO> search = (ArrayList<FileVO>) clientService.search(keyword);
-            for (FileVO files : search) {
-                FileVO file = new FileVO();
-                file = files;
-                System.out.println(file.getSubject() + " " + file.getTag() + " " + file.getCreatedAt());
+            ArrayList<FileVO> searchList = (ArrayList<FileVO>) clientService.search(reuniteCommandLine);
+            for (FileVO file : searchList) {
+                System.out.println(file.getSubject());
             }
             break;
         case "info":
-            FileVO info = (FileVO) clientService.info(keyword);
-            System.out.println(info.getSubject() + " " + info.getTag() + " " + info.getCreatedAt() + " "
-                    + info.getFileLocation() + " " + info.getDescription() + " " + info.getUploadAt());
+            ArrayList<FileVO> infoList = (ArrayList<FileVO>) clientService.info(reuniteCommandLine);
+            for (FileVO file : infoList) {
+                System.out.println("subject: " + file.getSubject());
+                System.out.println("tag: " + file.getTag());
+                System.out.println("lastModifed time: " + file.getCreatedAt());
+                System.out.println("file address: " + file.getFileLocation());
+                System.out.println("description: " + file.getDescription());
+                System.out.println("server upload time: " + file.getUploadAt());
+            }
             break;
         }
 
