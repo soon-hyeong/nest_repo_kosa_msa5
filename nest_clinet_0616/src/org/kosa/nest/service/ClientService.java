@@ -54,14 +54,15 @@ public class ClientService {
     /**
      * 클라이언트의 컴퓨터에 있는 다운로드 받은 파일 삭제 <br>
      * @return
+     * @throws Exception 
      */
-    public boolean delete(String command) {
-        File file = new File(ClientConfig.REPOPATH + command);
+    public void delete(String title) {
+        File file = new File(ClientConfig.REPOPATH + File.separator + title);
         boolean result = false;
-        if(file.exists())
-            result = file.delete();
-        // 존재 안하면 exception?
-        return result;
+        if(!file.exists())         // 존재 안하면 exception?
+            System.out.println("temp exception");
+        result = file.delete();
+        System.out.println("file delete success");
     }
 
 	public List<FileVO> list() {
@@ -99,15 +100,13 @@ public class ClientService {
 	 * @param keyword
 	 * @return
 	 */
-	public List<FileVO> search(String keyword) {
+	public List<FileVO> search(String reuniteCommandLine) {
 	    List<FileVO> resultList = new ArrayList<>();
-	    String command = "searchbyfileName:" + keyword;
 
 	    try {
-	        receiveWorker.sendCommand(command); // 명령어 전송
+	        resultList = receiveWorker.sendCommand(reuniteCommandLine); // 명령어 전송
 
 	        // 명령어가 search 또는 info일 때, 서버로부터 FileVO 목록 수신
-	        resultList = receiveWorker.receiveFileList();
 
 	    } catch (IOException | ClassNotFoundException e) {
 	        e.printStackTrace();
@@ -120,13 +119,11 @@ public class ClientService {
 	 * @param keyword
 	 * @return
 	 */
-	public List<FileVO> info(String keyword) {
+	public List<FileVO> info(String reuniteCommandLine) {
 	    List<FileVO> resultList = new ArrayList<>();
-	    String command = "info:" + keyword;
 
 	    try {
-	        receiveWorker.sendCommand(command); // 서버에 info 명령어 전송
-	        resultList = receiveWorker.receiveFileList(); // 결과 리스트 수신
+	        resultList = receiveWorker.sendCommand(reuniteCommandLine); // 서버에 info 명령어 전송
 	    } catch (IOException | ClassNotFoundException e) {
 	        e.printStackTrace();
 	    }
