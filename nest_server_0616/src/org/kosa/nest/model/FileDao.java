@@ -59,7 +59,7 @@ public class FileDao {
     		pstmt.setString(3, fileVO.getDescription());
     		pstmt.setInt(4, fileVO.getAdminId());
     		pstmt.setTimestamp(5, Timestamp.valueOf(fileVO.getCreatedAt()));
-    		pstmt.setString(6, fileVO.getSubject()); 
+    		pstmt.setString(6, fileVO.getFileLocation()); 
     		pstmt.executeUpdate();
     		
     	} finally {

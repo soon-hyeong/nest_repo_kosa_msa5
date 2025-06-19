@@ -1,10 +1,13 @@
 package org.kosa.nest.model;
 
+import java.io.Serializable;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
-public class FileVO {
+public class FileVO implements Serializable{
+	
+	private static final long serialVersionUID = 1L;
 	private int fileId;
 	private String fileLocation;
 	private LocalDateTime createdAt;
