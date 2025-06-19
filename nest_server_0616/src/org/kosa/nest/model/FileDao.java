@@ -51,16 +51,15 @@ public class FileDao {
     	
     	try {
     		con = DatabaseUtil.getConnection();
-    		String sql = "INSERT INTO file (uploaded_time, title, tag, description, admin_id, created_at, file_location) "
-    				+ " VALUES(?, ?, ?, ?, ?, ?, ?)";
+    		String sql = "INSERT INTO file (title, tag, description, admin_id, created_at, file_location) "
+    				+ " VALUES(?, ?, ?, ?, ?, ?)";
     		pstmt = con.prepareStatement(sql);
-    		pstmt.setTimestamp(1, Timestamp.valueOf(fileVO.getUploadAt()));
-    		pstmt.setString(2, fileVO.getSubject());
-    		pstmt.setString(3, fileVO.getTag());
-    		pstmt.setString(4, fileVO.getDescription());
-    		pstmt.setInt(5, fileVO.getAdminId());
-    		pstmt.setTimestamp(6, Timestamp.valueOf(fileVO.getCreatedAt()));
-    		pstmt.setString(7, fileVO.getSubject()); 
+    		pstmt.setString(1, fileVO.getSubject());
+    		pstmt.setString(2, fileVO.getTag());
+    		pstmt.setString(3, fileVO.getDescription());
+    		pstmt.setInt(4, fileVO.getAdminId());
+    		pstmt.setTimestamp(5, Timestamp.valueOf(fileVO.getCreatedAt()));
+    		pstmt.setString(6, fileVO.getSubject()); 
     		pstmt.executeUpdate();
     		
     	} finally {
