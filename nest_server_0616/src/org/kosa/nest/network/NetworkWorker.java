@@ -1,9 +1,7 @@
 package org.kosa.nest.network;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,9 +9,9 @@ import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.StringTokenizer;
 
 import org.kosa.nest.model.FileVO;
@@ -38,10 +36,8 @@ public class NetworkWorker {
 		ServerSocket serverSocket = null;
 		try {
 			serverSocket = new ServerSocket(9876);
-			System.out.println("ServerSocket generate");
 			while(true){
 				Socket socket = serverSocket.accept();
-				System.out.println("socket accept!");
 				ReceiveWorker receiveWorker = new ReceiveWorker(socket);
 				Thread receiveWorkerThread = new Thread(receiveWorker);
 				receiveWorkerThread.start();
@@ -69,15 +65,14 @@ public class NetworkWorker {
 		@Override
 		public void run() {
 			try {
-				System.out.println("ReceiveWorker thread init!");
 				String commandLine = getCommand();
 				sendResult(commandLine);
+			} catch (SocketException e) {
+				System.err.println("[Warning] Connection reset by client.");
 			} catch (IOException e) {
-				e.printStackTrace();
+			    System.err.println("[Error] IOException occurred: " + e.getMessage());
 			} catch (SQLException e) {
-				e.printStackTrace();
-			} finally {
-
+			    System.err.println("[Error] SQLException occurred: " + e.getMessage());
 			}
 		}
 		
@@ -87,13 +82,13 @@ public class NetworkWorker {
 		 * @throws UnsupportedEncodingException
 		 * @throws IOException
 		 */
-		public String getCommand() throws UnsupportedEncodingException, IOException {
+		public String getCommand() throws UnsupportedEncodingException, IOException, SocketException {
 			
 			System.out.println("getCommand init");
+			
 			br = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
 			oos = new ObjectOutputStream(socket.getOutputStream());
 			String commandLine  = br.readLine();
-			System.out.println("commandLine: " + commandLine);
 			
 			return commandLine;
 		}
@@ -105,7 +100,7 @@ public class NetworkWorker {
 		 * @throws IOException
 		 * @throws SQLException 
 		 */
-		public void sendResult(String commandLine) throws IOException, SQLException {
+		public void sendResult(String commandLine) throws IOException, SQLException, SocketException {
 			
 			BufferedInputStream bis = null;
 

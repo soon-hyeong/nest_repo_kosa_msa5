@@ -7,13 +7,14 @@ import java.util.Scanner;
 import java.util.StringTokenizer;
 
 import org.kosa.nest.exception.AdminNotLoginException;
-import org.kosa.nest.exception.FileDeleteDatabaseException;
+import org.kosa.nest.exception.FileNotDeletedInDatabase;
 import org.kosa.nest.exception.FileNotFoundException;
 import org.kosa.nest.exception.LoginException;
 import org.kosa.nest.exception.PasswordNotCorrectException;
-import org.kosa.nest.exception.RegisterException;
+import org.kosa.nest.exception.RegisterAdminFailException;
 import org.kosa.nest.exception.SearchDatabaseException;
 import org.kosa.nest.exception.UpdateAdminInfoFailException;
+import org.kosa.nest.exception.UploadFileFailException;
 import org.kosa.nest.model.AdminVO;
 import org.kosa.nest.model.FileVO;
 import org.kosa.nest.network.NetworkWorker;
@@ -21,12 +22,14 @@ import org.kosa.nest.service.ServerAdminService;
 
 public class CommandLineInterface {
 
+	Scanner scanner;
 	NetworkWorker networkWorker;
 	ServerAdminService serverAdminService;
 	
 	public CommandLineInterface() {
 		networkWorker = new NetworkWorker();
-		serverAdminService = new ServerAdminService(); 
+		scanner = new Scanner(System.in);
+		serverAdminService = new ServerAdminService(scanner); 
 	}
 	
 	public void executeProgram() {
@@ -57,49 +60,47 @@ public class CommandLineInterface {
 		
 		@Override
 		public void run() {
-			
-			try {
-				while(true) {
+			while(true) {
+				try {
 					String commandLine = getCommand();
 					if(commandLine.equalsIgnoreCase("quit"))
 						break;
+				}catch (RegisterAdminFailException e) {
+					System.err.println(e.getMessage());	
+				} catch (LoginException e) {
+					System.err.println(e.getMessage());	
+				} catch (AdminNotLoginException e) {
+					System.err.println(e.getMessage());	
+				} catch (PasswordNotCorrectException e) {
+					System.err.println(e.getMessage());
+				} catch (UpdateAdminInfoFailException e) {
+					System.err.println(e.getMessage());
+				} catch (FileNotFoundException e) {
+					System.err.println(e.getMessage());
+				} catch (SearchDatabaseException e) {
+					System.err.println(e.getMessage());
+				} catch (SQLException e) {
+					System.err.println(e.getMessage());
+				} catch (IOException e) {
+					System.err.println(e.getMessage());
+				} catch (UploadFileFailException e) {
+					System.err.println(e.getMessage());
+				} catch (FileNotDeletedInDatabase e) {
+					System.err.println(e.getMessage());
 				}
-				
-			} catch (LoginException e) {
-				e.printStackTrace();
-			} catch (AdminNotLoginException e) {
-				e.printStackTrace();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (RegisterException e) {
-				e.printStackTrace();
-			} catch (PasswordNotCorrectException e) {
-				e.printStackTrace();
-			} catch (UpdateAdminInfoFailException e) {
-				e.printStackTrace();
-			} catch (FileDeleteDatabaseException e) {
-				e.printStackTrace();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (SearchDatabaseException e) {
-				e.printStackTrace();
 			}
 		}
 		
-		public String getCommand() throws LoginException, AdminNotLoginException, SQLException, IOException, RegisterException, PasswordNotCorrectException, UpdateAdminInfoFailException, FileDeleteDatabaseException, FileNotFoundException, SearchDatabaseException {
+		public String getCommand() throws LoginException, AdminNotLoginException, SQLException, IOException, PasswordNotCorrectException, UpdateAdminInfoFailException, FileNotFoundException, SearchDatabaseException, RegisterAdminFailException, UploadFileFailException, FileNotDeletedInDatabase {
 			
-			Scanner scanner = new Scanner(System.in);
 			String commandLine = scanner.nextLine();
 			StringTokenizer st = new StringTokenizer(commandLine);
-			st.nextToken();
 			String command = st.nextToken();
 			String keyword = null;
 			if(st.hasMoreTokens())
 				keyword = st.nextToken();
 			
-			if(command.equalsIgnoreCase("quit")){
+			if(command.equalsIgnoreCase("quit") || command.equalsIgnoreCase("exit")){
 				scanner.close();
 			}
 			else if(command.equalsIgnoreCase("register")) {
@@ -134,6 +135,9 @@ public class CommandLineInterface {
 			}
 			else if(command.equalsIgnoreCase("findAllList")) {
 				resultToString((ArrayList<FileVO>)serverAdminService.findAllList());
+			}
+			else {
+				System.out.println("wrong command. If you need help, enter 'nest help'");
 			}
 			return command;
 		}

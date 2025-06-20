@@ -1,10 +1,10 @@
 package org.kosa.nest.exception;
 
-public class FileDeleteDatabaseException extends Exception {
+public class FileNotDeletedInDatabase extends Exception {
 
 	private static final long serialVersionUID = -2939549604801717351L;
 
-	public FileDeleteDatabaseException(String message) {
+	public FileNotDeletedInDatabase(String message) {
 		super(message);
 	}
 }
