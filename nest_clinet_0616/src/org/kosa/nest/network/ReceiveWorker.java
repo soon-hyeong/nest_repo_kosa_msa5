@@ -54,13 +54,22 @@ public class ReceiveWorker {
             keyword = st.nextToken();
         }
 
-        pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
-        pw.println(commandLine);
+        try {
+            pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
+            pw.println(commandLine);
 
-        if (command.equalsIgnoreCase("download")) {
-            this.downloadFile();
-        } else if (command.equalsIgnoreCase("search") || command.equalsIgnoreCase("info")) {
-            resultList = (ArrayList<FileVO>) this.receiveFileList();
+            if (command.equalsIgnoreCase("download")) {
+                this.downloadFile();
+            } else if (command.equalsIgnoreCase("search") || command.equalsIgnoreCase("info")) {
+                resultList = (ArrayList<FileVO>) this.receiveFileList();
+            }
+        }finally {
+            if(ois != null)
+                ois.close();
+            if(pw != null)
+                pw.close();
+            if(socket != null)
+                socket.close();
         }
         return resultList;
     }
@@ -75,12 +84,12 @@ public class ReceiveWorker {
      */
     // 메서드 이름 receiveResult 에서 receiveFileList로 변경
     public List<FileVO> receiveFileList() throws IOException, ClassNotFoundException {
-        List<FileVO> list = new ArrayList<>();
-
+        
+        ArrayList<FileVO> list = new ArrayList<>();
+        
         ois = new ObjectInputStream(socket.getInputStream());
         list = (ArrayList<FileVO>) ois.readObject();
-        System.out.println(list);
-
+        System.out.println(list + " : no search result"); // --> exception처리
         return list;
     }
 
@@ -100,29 +109,33 @@ public class ReceiveWorker {
          */
 
         BufferedOutputStream bos = null;
-
+        ArrayList<FileVO> list = new ArrayList<>();
+        
         try {
             // 파일 이름 : 서버에서 객체로 들어온 FileVO에서 얻음
             ois = new ObjectInputStream(socket.getInputStream());
-            FileVO file = (FileVO) ois.readObject();
-            String filename = file.getSubject();
+            list = (ArrayList<FileVO>) ois.readObject();
+            String filename = null;
+            if(list.size() < 1)
+                System.out.println(list + " : no download result"); // --> exception처리
+            else {
+                filename = list.get(0).getSubject();
+                // 파일을 클라이언트 컴퓨터에 저장
+                bos = new BufferedOutputStream(new FileOutputStream(ClientConfig.REPOPATH + File.separator + filename));
+                int data = ois.read();
+                while (data != -1) {
+                    bos.write(data);
+                    data = ois.read();
+                }
+                bos.flush();
+            }
+                
 
             // 실제 파일을 받음
             // OutputStream을 두번 감싸지 말고 ObjectOutputStream을 그대로 사용하라. 객체 받을 때도 어차피 바이트 스트림
             // 사용하므로.
             // bis = new BufferedInputStream(socket.getInputStream());
 
-            // 파일을 클라이언트 컴퓨터에 저장
-            bos = new BufferedOutputStream(new FileOutputStream(ClientConfig.REPOPATH + File.separator + filename));
-            int data = ois.read();
-            while (data != -1) {
-                System.out.println(data);
-                bos.write(data);
-                data = ois.read();
-            }
-            bos.flush();
-            bos.close();
-            System.out.println("다운로드 완료");
 
         } finally {
 //            if (bos != null)

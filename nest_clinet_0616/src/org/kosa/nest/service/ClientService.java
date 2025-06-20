@@ -61,8 +61,10 @@ public class ClientService {
         boolean result = false;
         if(!file.exists())         // 존재 안하면 exception?
             System.out.println("temp exception");
-        result = file.delete();
-        System.out.println("file delete success");
+        else {
+            result = file.delete();
+            System.out.println("file delete success");
+        }
     }
 
 	public List<FileVO> list() {
