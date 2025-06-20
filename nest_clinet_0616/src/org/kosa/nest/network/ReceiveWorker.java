@@ -137,7 +137,6 @@ public class ReceiveWorker {
             // bis = new BufferedInputStream(socket.getInputStream());
 
 
-
         } finally {
 //            if (bos != null)
 //                bos.close();
