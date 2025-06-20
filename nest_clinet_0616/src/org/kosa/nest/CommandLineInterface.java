@@ -1,10 +1,14 @@
 package org.kosa.nest;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
+import org.kosa.nest.exception.DataProcessException;
+import org.kosa.nest.exception.FileNotFoundException;
+import org.kosa.nest.exception.ServerConnectException;
 import org.kosa.nest.model.FileVO;
 import org.kosa.nest.service.ClientService;
 
@@ -14,24 +18,30 @@ public class CommandLineInterface {
     private Scanner scanner;
 
     public CommandLineInterface() {
-        try {
             this.clientService = new ClientService();
             this.scanner = new Scanner(System.in);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
-    public void executeProgram() throws IOException {
+    /**
+     * @throws IOException
+     * @throws FileNotFoundException
+     * @throws DataProcessException
+     * @throws ServerConnectException 
+     */
+    public void executeProgram() throws IOException, FileNotFoundException, DataProcessException, ServerConnectException {
         String commandLine = scanner.nextLine();
         getCommand(commandLine);
     }
 
-    // nest download 파일이름
-    // nest search 키워드
-    public void getCommand(String commandLine) throws IOException {
+    /**
+     * @param commandLine
+     * @throws IOException
+     * @throws FileNotFoundException
+     * @throws DataProcessException
+     * @throws ServerConnectException 
+     */
+    public void getCommand(String commandLine) throws IOException, FileNotFoundException, DataProcessException, ServerConnectException {
         StringTokenizer st = new StringTokenizer(commandLine);
-        st.nextToken();
         String command = st.nextToken();
         String keyword = null;
         if (st.hasMoreTokens()) {
@@ -39,60 +49,45 @@ public class CommandLineInterface {
         }
         String reuniteCommandLine = command + " " + keyword;
 
-        switch (command) {
-        case "download":
+        if (command.equalsIgnoreCase("download"))
             clientService.download(reuniteCommandLine);
-            break;
-        case "delete":
+        else if (command.equalsIgnoreCase("list"))
+            resultToString(command, keyword);
+        else if (command.equalsIgnoreCase("search"))
+            resultToString(command, keyword);
+        else if (command.equalsIgnoreCase("info"))
+            resultToString(command, keyword);
+        else if (command.equalsIgnoreCase("delete"))
             clientService.delete(keyword);
-            break;
-        case "list":
-            resultToString(command, keyword);
-            break;
-        case "search":
-            resultToString(command, keyword);
-            break;
-        case "info":
-            resultToString(command, keyword);
-            break;
-        case "help":
-            // 만들어야함
-            break;
-        case "exit":
-            if (scanner != null)
-                scanner.close();
-            return;
+        else if (command.equalsIgnoreCase("help"))
+            System.out.println("help 내용 필요");
+        else {
+            System.out.println("Wrong command. If you need help, enter 'nest help'");
+            scanner.close();
         }
     }
-    
-    public void resultToString(ArrayList<FileVO> fileList) {
-        for(FileVO vo : fileList)
-            System.out.println(vo.getSubject());
-    }
-    
-    public void resultToString(FileVO fileVO) {
-        if(fileVO == null)
-            return ;
 
-    }
-
-    // info만 전부, list랑 search는 세개(제목, 태그, 생성시간)
-    public void resultToString(String command, String keyword) {
+    /**
+     * @param command
+     * @param keyword
+     * @throws DataProcessException
+     * @throws FileNotFoundException
+     * @throws UnknownHostException 
+     * @throws ServerConnectException 
+     */
+    public void resultToString(String command, String keyword) throws FileNotFoundException, DataProcessException, UnknownHostException, ServerConnectException {
         String reuniteCommandLine = command + " " + keyword;
-        switch (command) {
-        case "list":
+        if (command.equalsIgnoreCase("list")) {
             ArrayList<FileVO> list = (ArrayList<FileVO>) clientService.list();
             for (FileVO file : list) {
                 System.out.println(file.getSubject());
             }
-            break;
-        case "search":
+        } else if (command.equalsIgnoreCase("search")) {
             ArrayList<FileVO> searchList = (ArrayList<FileVO>) clientService.search(reuniteCommandLine);
             for (FileVO file : searchList) {
                 System.out.println(file.getSubject());
             }
-            break;
-        case "info":
+        } else if (command.equalsIgnoreCase("info")) {
             ArrayList<FileVO> infoList = (ArrayList<FileVO>) clientService.info(reuniteCommandLine);
             for (FileVO file : infoList) {
                 System.out.println("subject: " + file.getSubject());
@@ -102,8 +97,6 @@ public class CommandLineInterface {
                 System.out.println("description: " + file.getDescription());
                 System.out.println("server upload time: " + file.getUploadAt());
             }
-            break;
         }
-
     }
 }
