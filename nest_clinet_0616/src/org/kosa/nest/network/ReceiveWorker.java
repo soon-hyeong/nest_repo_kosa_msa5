@@ -121,6 +121,8 @@ public class ReceiveWorker {
                 data = ois.read();
             }
             bos.flush();
+            bos.close();
+            System.out.println("다운로드 완료");
 
         } finally {
 //            if (bos != null)
