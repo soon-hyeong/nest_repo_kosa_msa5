@@ -60,7 +60,7 @@ public class CommandLineInterface {
         else if (command.equalsIgnoreCase("delete"))
             clientService.delete(keyword);
         else if (command.equalsIgnoreCase("help"))
-            System.out.println("help 내용 필요");
+            clientService.help(command);
         else {
             System.out.println("Wrong command. If you need help, enter 'nest help'");
             scanner.close();
