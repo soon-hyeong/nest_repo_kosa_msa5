@@ -42,7 +42,6 @@ public class CommandLineInterface {
      */
     public void getCommand(String commandLine) throws IOException, FileNotFoundException, DataProcessException, ServerConnectException {
         StringTokenizer st = new StringTokenizer(commandLine);
-        st.nextToken();
         String command = st.nextToken();
         String keyword = null;
         if (st.hasMoreTokens()) {
