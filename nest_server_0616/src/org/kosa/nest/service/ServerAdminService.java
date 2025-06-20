@@ -336,6 +336,32 @@ public class ServerAdminService {
 	 * 도움말을 출력합니다
 	 */
 	public void help() {
-		System.out.println();
+	    System.out.println("---- nest 프로그램 안내 ----");
+	    System.out.println("nest는 로컬과 서버의 파일을 명령어 한 줄로 손쉽게 관리할 수 있는 CLI 기반 파일 관리 프로그램입니다.");
+	    System.out.println("로컬 모드에서는 내 컴퓨터의 파일 목록 확인 및 삭제가 가능하며,");
+	    System.out.println("서버 모드에서는 파일 검색, 상세 정보 확인, 다운로드를 지원합니다.");
+	    System.out.println();
+	    System.out.println("모드를 선택한 후 다음 명령어를 사용할 수 있습니다:");
+	    System.out.println("  list             - 로컬 파일 목록 보기");
+	    System.out.println("  delete <파일명>   - 로컬 파일 삭제");
+	    System.out.println("  search <키워드>   - 서버에서 파일 검색");
+	    System.out.println("  info <파일명>     - 서버 파일 상세 정보 보기");
+	    System.out.println("  download <파일명> - 서버 파일 다운로드");
+	    System.out.println("  exit             - 프로그램 종료");
+	    System.out.println("  back             - 모드 선택 화면으로 돌아가기");
+	    System.out.println();
+	    System.out.println("---- 관리자 명령어 ----");
+	    System.out.println("  Register              - 관리자로 회원가입합니다");
+	    System.out.println("  Login                 - 로그인합니다");
+	    System.out.println("  Logout                - 로그아웃합니다");
+	    System.out.println("  GetMyInformation      - 로그인한 관리자의 정보를 조회합니다");
+	    System.out.println("  UpdateMyInformation   - 로그인한 관리자의 정보를 수정합니다");
+	    System.out.println("  UploadFile            - 파일을 업로드합니다");
+	    System.out.println("  DeleteFile            - 파일을 삭제합니다");
+	    System.out.println("  FindAllList           - 모든 파일 목록을 조회합니다");
+	    System.out.println("  Search                - 파일 이름으로 검색합니다 (파일 이름 필요)");
+	    System.out.println("  Info                  - 파일 상세 정보를 조회합니다 (파일 이름 필요)");
+	    System.out.println("  Delete                - 파일을 삭제합니다 (파일 이름 필요)");
 	}
+
 }

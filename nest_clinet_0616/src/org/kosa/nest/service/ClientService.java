@@ -151,4 +151,17 @@ public class ClientService {
         }
     }
 
+    public void help(String reuniteCommandLine) {
+    	System.out.println("---- nest 프로그램 안내 ----");
+        System.out.println("nest는 로컬과 서버의 파일을 명령어 한 줄로 손쉽게 관리할 수 있는 CLI 기반 파일 관리 프로그램입니다.");
+        System.out.println("로컬 모드에서는 내 컴퓨터의 파일 목록 확인 및 삭제가 가능하며,");
+        System.out.println("서버 모드에서는 파일 검색, 상세 정보 확인, 다운로드를 지원합니다.");
+        System.out.println();
+        System.out.println("모드를 선택한 후 다음 명령어를 사용할 수 있습니다:");
+        System.out.println("  Download   - 서버에서 파일을 다운로드합니다");
+        System.out.println("  List       - 내 컴퓨터에 있는 파일 목록을 확인합니다");
+        System.out.println("  Search     - 서버에서 파일 이름을 검색합니다");
+        System.out.println("  Info       - 서버에 있는 파일의 상세 정보를 확인합니다");
+        System.out.println("  Delete     - 내 컴퓨터에서 파일을 삭제합니다");
+    }
 }
