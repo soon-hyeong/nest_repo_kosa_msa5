@@ -7,21 +7,17 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.kosa.nest.common.ClientConfig;
 import org.kosa.nest.exception.DataProcessException;
 import org.kosa.nest.exception.FileNotFoundException;
+import org.kosa.nest.exception.ServerConnectException;
 import org.kosa.nest.model.FileVO;
 import org.kosa.nest.network.ReceiveWorker;
 
 public class ClientService {
     
     private ReceiveWorker receiveWorker;
-    
-    public ClientService() throws UnknownHostException, IOException {
-        this.receiveWorker = new ReceiveWorker();
-    }
     
     /**
      * 클라이언트가 파일 다운로드를 시작할 때 <br>
@@ -41,31 +37,17 @@ public class ClientService {
      * @throws IOException
      * @throws DataProcessException 
      * @throws FileNotFoundException 
+     * @throws ServerConnectException 
      */
-    public void download(String command) throws IOException, DataProcessException, FileNotFoundException {
+    public void download(String command) throws DataProcessException, FileNotFoundException, ServerConnectException {
         makeDir();
         try {
+            receiveWorker = new ReceiveWorker();
             receiveWorker.sendCommand(command);
         } catch (ClassNotFoundException e) {
             throw new DataProcessException("Failed to process data!");
         } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-    
-    /**
-     * 클라이언트의 컴퓨터에 있는 다운로드 받은 파일 삭제 <br>
-     * @return
-     * @throws FileNotFoundException 
-     * @throws Exception 
-     */
-    public void delete(String title) throws FileNotFoundException {
-        File file = new File(ClientConfig.REPOPATH + File.separator + title);
-        if(!file.exists())
-            throw new FileNotFoundException("File doesn't exist in your directory!");
-        else {
-            file.delete();
-            System.out.println("File delete success!");
+            throw new ServerConnectException("An unexpected error occurred while trying to connect to the server");
         }
     }
 
@@ -108,17 +90,19 @@ public class ClientService {
 	 * @return
 	 * @throws FileNotFoundException 
 	 * @throws DataProcessException 
+	 * @throws UnknownHostException 
+	 * @throws ServerConnectException 
 	 */
-	public ArrayList<FileVO> search(String reuniteCommandLine) throws FileNotFoundException, DataProcessException {
+	public ArrayList<FileVO> search(String reuniteCommandLine) throws FileNotFoundException, DataProcessException, UnknownHostException, ServerConnectException {
 	    ArrayList<FileVO> resultList = new ArrayList<>();
-
 	    try {
+	        receiveWorker = new ReceiveWorker();
 	        resultList = receiveWorker.sendCommand(reuniteCommandLine);
 	        if(resultList.size() < 1) {
 	            throw new FileNotFoundException("File doesn't exist in server!");
 	        }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new ServerConnectException("An unexpected error occurred while trying to connect to the server");
         } catch (ClassNotFoundException e) {
             throw new DataProcessException("Failed to process data!");
         }
@@ -131,21 +115,40 @@ public class ClientService {
 	 * @return
 	 * @throws FileNotFoundException 
 	 * @throws DataProcessException 
+	 * @throws UnknownHostException 
+	 * @throws ServerConnectException 
 	 */
-	public ArrayList<FileVO> info(String reuniteCommandLine) throws FileNotFoundException, DataProcessException {
+	public ArrayList<FileVO> info(String reuniteCommandLine) throws FileNotFoundException, DataProcessException, UnknownHostException, ServerConnectException {
 	    ArrayList<FileVO> resultList = new ArrayList<>();
-
+	    
 	    try {
+	        receiveWorker = new ReceiveWorker();
 	        resultList = receiveWorker.sendCommand(reuniteCommandLine);
 	       if(resultList.size() < 1) {
 	            throw new FileNotFoundException("File doesn't exist in server!");
            }
 	    } catch (IOException e) {
-	        e.printStackTrace();
+            throw new ServerConnectException("An unexpected error occurred while trying to connect to the server");
 	    } catch (ClassNotFoundException e) {
 	        throw new DataProcessException("Failed to process data!");
 	    }
 	    return resultList;
 	}
+	
+    /**
+     * 클라이언트의 컴퓨터에 있는 다운로드 받은 파일 삭제 <br>
+     * @return
+     * @throws FileNotFoundException 
+     * @throws Exception 
+     */
+    public void delete(String title) throws FileNotFoundException {
+        File file = new File(ClientConfig.REPOPATH + File.separator + title);
+        if(!file.exists())
+            throw new FileNotFoundException("File doesn't exist in your directory!");
+        else {
+            file.delete();
+            System.out.println("File delete success!");
+        }
+    }
 
 }

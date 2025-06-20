@@ -1,12 +1,14 @@
 package org.kosa.nest;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
 import org.kosa.nest.exception.DataProcessException;
 import org.kosa.nest.exception.FileNotFoundException;
+import org.kosa.nest.exception.ServerConnectException;
 import org.kosa.nest.model.FileVO;
 import org.kosa.nest.service.ClientService;
 
@@ -16,20 +18,17 @@ public class CommandLineInterface {
     private Scanner scanner;
 
     public CommandLineInterface() {
-        try {
             this.clientService = new ClientService();
             this.scanner = new Scanner(System.in);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
      * @throws IOException
      * @throws FileNotFoundException
      * @throws DataProcessException
+     * @throws ServerConnectException 
      */
-    public void executeProgram() throws IOException, FileNotFoundException, DataProcessException {
+    public void executeProgram() throws IOException, FileNotFoundException, DataProcessException, ServerConnectException {
         String commandLine = scanner.nextLine();
         getCommand(commandLine);
     }
@@ -39,8 +38,9 @@ public class CommandLineInterface {
      * @throws IOException
      * @throws FileNotFoundException
      * @throws DataProcessException
+     * @throws ServerConnectException 
      */
-    public void getCommand(String commandLine) throws IOException, FileNotFoundException, DataProcessException {
+    public void getCommand(String commandLine) throws IOException, FileNotFoundException, DataProcessException, ServerConnectException {
         StringTokenizer st = new StringTokenizer(commandLine);
         st.nextToken();
         String command = st.nextToken();
@@ -52,19 +52,20 @@ public class CommandLineInterface {
 
         if (command.equalsIgnoreCase("download"))
             clientService.download(reuniteCommandLine);
-        else if (command.equalsIgnoreCase("delete"))
-            clientService.delete(keyword);
         else if (command.equalsIgnoreCase("list"))
-            clientService.delete(keyword);
+            resultToString(command, keyword);
         else if (command.equalsIgnoreCase("search"))
             resultToString(command, keyword);
         else if (command.equalsIgnoreCase("info"))
             resultToString(command, keyword);
+        else if (command.equalsIgnoreCase("delete"))
+            clientService.delete(keyword);
         else if (command.equalsIgnoreCase("help"))
             System.out.println("help 내용 필요");
-        else
+        else {
             System.out.println("Wrong command. If you need help, enter 'nest help'");
-
+            scanner.close();
+        }
     }
 
     /**
@@ -72,8 +73,10 @@ public class CommandLineInterface {
      * @param keyword
      * @throws DataProcessException
      * @throws FileNotFoundException
+     * @throws UnknownHostException 
+     * @throws ServerConnectException 
      */
-    public void resultToString(String command, String keyword) throws FileNotFoundException, DataProcessException {
+    public void resultToString(String command, String keyword) throws FileNotFoundException, DataProcessException, UnknownHostException, ServerConnectException {
         String reuniteCommandLine = command + " " + keyword;
         if (command.equalsIgnoreCase("list")) {
             ArrayList<FileVO> list = (ArrayList<FileVO>) clientService.list();
