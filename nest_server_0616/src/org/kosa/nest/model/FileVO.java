@@ -3,7 +3,6 @@ package org.kosa.nest.model;
 import java.io.Serializable;
 import java.sql.Date;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 
 public class FileVO implements Serializable{
 	

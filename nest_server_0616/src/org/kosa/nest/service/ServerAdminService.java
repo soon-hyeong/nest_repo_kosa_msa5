@@ -16,29 +16,28 @@ import java.util.Scanner;
 
 import org.kosa.nest.common.ServerConfig;
 import org.kosa.nest.exception.AdminNotLoginException;
-import org.kosa.nest.exception.FileDeleteDatabaseException;
+import org.kosa.nest.exception.FileNotDeletedInDatabase;
 import org.kosa.nest.exception.FileNotFoundException;
 import org.kosa.nest.exception.LoginException;
 import org.kosa.nest.exception.PasswordNotCorrectException;
-import org.kosa.nest.exception.RegisterException;
+import org.kosa.nest.exception.RegisterAdminFailException;
 import org.kosa.nest.exception.SearchDatabaseException;
 import org.kosa.nest.exception.UpdateAdminInfoFailException;
+import org.kosa.nest.exception.UploadFileFailException;
 import org.kosa.nest.model.AdminDao;
 import org.kosa.nest.model.AdminVO;
 import org.kosa.nest.model.FileDao;
 import org.kosa.nest.model.FileVO;
-import org.kosa.nest.network.NetworkWorker;
 
 public class ServerAdminService {
 	
-	private NetworkWorker networkWorker;
+	private Scanner scanner;
 	private FileDao fileDao = new FileDao();
 	private AdminDao adminDao = new AdminDao();
 	private AdminVO currentLoginAdmin;
-//	private AdminVO currentLoginAdmin = new AdminVO(1, "aaa@aaa", "pwd"); // 단위 테스트를 위해 작성, 추후 삭제 예정
 	
-	public ServerAdminService(){
-		this.networkWorker = new NetworkWorker();
+	public ServerAdminService(Scanner scanner) {
+		this.scanner = scanner;
 	}
 	/**
 
@@ -50,8 +49,7 @@ public class ServerAdminService {
 		 * 
 		 * @throws CreateRegisterException 
 		 */
-		public void register() throws RegisterException {
-			Scanner scanner = new Scanner(System.in);
+		public void register() throws RegisterAdminFailException {
 			try {
 				System.out.print("email:");
 				String email = scanner.nextLine();
@@ -60,8 +58,8 @@ public class ServerAdminService {
 				
 				AdminVO vo = new AdminVO(email, password);
 				adminDao.register(vo); //Id는 시스템이 제공
-			} catch (SQLException sqle) {
-				throw new RegisterException("register failed"); // 사용자 정의 예외 전달
+			} catch (SQLException e) {
+				throw new RegisterAdminFailException("Register failed, Email already in use:" + e.getMessage()); // 사용자 정의 예외 전달
 			}
 		}
 		
@@ -75,7 +73,6 @@ public class ServerAdminService {
 		 * @throws loginException 
 		 */
 		public void login() throws LoginException {
-			Scanner scanner = new Scanner(System.in);
 			
 			AdminVO admin = null;
 			try {
@@ -85,19 +82,15 @@ public class ServerAdminService {
 				System.out.print("password:");
 				String password = scanner.nextLine();
 				
-				admin = adminDao.getAdminInfo(email); // Id로 정보 추출
+				admin = adminDao.getAdminInfo(email);
 				
-				if(admin == null || !admin.getPassword().equals(password)) {
-					throw new LoginException("비밀번호가 일치하지 않거나 존재하지 않는 관계자 입니다.");
-				}
+				if(!admin.getPassword().equals(password))
+					throw new LoginException("Invalid email or password");
 				// 로그인 성공 시 나오는 메세지
 				currentLoginAdmin = admin;
 				System.out.println("login success:" + currentLoginAdmin.getEmail());
-				
-			}catch (LoginException e) {
-				throw e; // 사용자 정의 예외 전달
-			}catch (Exception e) {
-				throw new LoginException("로그인 중 오류 발생: "+ e.getMessage());
+			} catch (Exception e) {
+				throw new LoginException("login failed: "+ e.getMessage());
 			}
 		}
 		
@@ -111,7 +104,7 @@ public class ServerAdminService {
 		
 		public void logout() throws AdminNotLoginException {
 			if(currentLoginAdmin == null)
-				throw new AdminNotLoginException("Permission denied");
+				throw new AdminNotLoginException("Administrator not logined");
 			else {
 				String email = currentLoginAdmin.getEmail();
 				currentLoginAdmin = null;
@@ -140,20 +133,19 @@ public class ServerAdminService {
 		 * 만약 둘 다 입력을 안했다면 원래 가지고 있던 관리자 정보로 두게 함 <br>
 		 * 
 		 * @return currentLoginAdmin
-		 * @throws SQLException 
 		 * @throws AdminNotLoginException 
 		 * @throws PasswordNotCorrectException 
 		 * @throws UpdateAdminInfoFailException 
 		 */
-		public AdminVO updateMyInformation() throws SQLException, AdminNotLoginException, PasswordNotCorrectException, UpdateAdminInfoFailException {
+		public AdminVO updateMyInformation() throws AdminNotLoginException, PasswordNotCorrectException, UpdateAdminInfoFailException {
 			if(currentLoginAdmin == null)
 				throw new AdminNotLoginException("Permission denied");
 			else {
-				Scanner scanner = new Scanner(System.in);
 				
 				System.out.print("enter password:");
 				String password = scanner.nextLine();
-				if(!adminDao.getAdminInfo(currentLoginAdmin.getEmail()).getPassword().equals(password)) {
+				
+				if(!currentLoginAdmin.getPassword().equals(password)) {
 					throw new PasswordNotCorrectException("password not correct");
 				}
 				System.out.print("new email:");
@@ -170,8 +162,8 @@ public class ServerAdminService {
 				// DAO에 updateAdminInfo 존재
 				try {
 					adminDao.updateAdminInfo(updatedAdmin);
-				} catch(SQLException sqle){
-					throw new UpdateAdminInfoFailException("Update Admin Information failed");
+				} catch(SQLException e){
+					throw new UpdateAdminInfoFailException("Update Admin Information failed:" + e.getMessage());
 				}
 				return updatedAdmin;
 			}
@@ -184,35 +176,46 @@ public class ServerAdminService {
 	 * @return
 	 * @throws IOException
 	 * @throws AdminNotLoginException 
-	 * @throws SQLException 
+	 * @throws UploadFileFailException 
 	 */
-	public void uploadFile() throws IOException, AdminNotLoginException, SQLException {
+	public void uploadFile() throws AdminNotLoginException, UploadFileFailException, IOException {
 		if(currentLoginAdmin == null)
 			throw new AdminNotLoginException("Permission denied");
 		else {
 			FileVO inputFileInfo = getFileInformation();
+			
+			BufferedInputStream bis = null;
+			BufferedOutputStream bos = null;
+			try {
+				fileDao.createFileInfo(inputFileInfo);
+				
+				File nestServerDir = new File(ServerConfig.REPOPATH);
+				if(!nestServerDir.isDirectory())
+					nestServerDir.mkdirs();
 
-			File nestServerDir = new File(ServerConfig.REPOPATH);
-			if(!nestServerDir.isDirectory())
-				nestServerDir.mkdirs();
+				File inputFile = new File(inputFileInfo.getFileLocation());
+				File outputFile = new File(ServerConfig.REPOPATH + File.separator + inputFile.getName());
 			
-			File inputFile = new File(inputFileInfo.getFileLocation());
-			File outputFile = new File(ServerConfig.REPOPATH + File.separator + inputFile.getName());
+				// 파일 입출력
+				bis = new BufferedInputStream(new FileInputStream(inputFile), 8192);
+				bos = new BufferedOutputStream(new FileOutputStream(outputFile), 8192);
 			
-			// 파일 입출력
-			BufferedInputStream bis = new BufferedInputStream(new FileInputStream(inputFile), 8192);
-			BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(outputFile), 8192);
+				int data = bis.read();
+				while(data != -1) {
+					bos.write(data);
+					data = bis.read();
+				}
+				System.out.println("File upload success!");
+			} catch(Exception e) {
+				throw new UploadFileFailException("File upload failed:" + e.getMessage());
 			
-			int data = bis.read();
-			while(data != -1) {
-				bos.write(data);
-				data = bis.read();
+			} finally {
+				if(bis != null)
+					bis.close();
+				if(bos != null)
+					bos.close();
 			}
-			
-			fileDao.createFileInfo(inputFileInfo);
-			System.out.println("File upload sucess!");
-			bis.close();
-			bos.close();
+
 		}
 	}
 	
@@ -225,7 +228,7 @@ public class ServerAdminService {
 	 * @throws FileDeleteDatabaseException 
 	 * @throws FileNotFoundException 
 	 */
-    public void deleteFile(String fileName) throws SQLException, AdminNotLoginException, FileDeleteDatabaseException, FileNotFoundException {
+    public void deleteFile(String fileName) throws AdminNotLoginException, FileNotDeletedInDatabase, FileNotFoundException {
 		if(currentLoginAdmin == null)
 			throw new AdminNotLoginException("Permission denied");
 		else {
@@ -238,7 +241,7 @@ public class ServerAdminService {
 	        try {
 		        fileDao.deleteFileInfo(fileName);
 	        } catch(SQLException e) {
-	        	throw new FileDeleteDatabaseException("File information database error occured!");
+	        	throw new FileNotDeletedInDatabase("File information database error occured:" + e.getMessage());
 	        }
 	        System.out.println("File delete success!");
 		}
@@ -251,33 +254,32 @@ public class ServerAdminService {
 	 * @throws AdminNotLoginException 
 	 */
 	public FileVO getFileInformation() throws AdminNotLoginException {
-		if(currentLoginAdmin == null)
-			throw new AdminNotLoginException("Permission denied");
-		else {
-			Scanner scanner = new Scanner(System.in);
-			
-			System.out.print("file address:");
-			String fileAddress = scanner.nextLine();
-					
-			System.out.print("tag:");
-			String fileTag = scanner.nextLine();
-			System.out.println("dscription:");
-			String fileDescription = scanner.nextLine();
-			
-			File inputFile = new File(fileAddress);
-			LocalDateTime lastModifed =  LocalDateTime.ofInstant(Instant.ofEpochMilli(inputFile.lastModified()), ZoneId.systemDefault());
+		
+		System.out.print("file address:");
+		String fileAddress = scanner.nextLine();
+				
+		System.out.print("tag:");
+		String fileTag = scanner.nextLine();
+		System.out.println("dscription:");
+		String fileDescription = scanner.nextLine();			
+		File inputFile = new File(fileAddress);
+		LocalDateTime lastModifed =  LocalDateTime.ofInstant(Instant.ofEpochMilli(inputFile.lastModified()), ZoneId.systemDefault());
 
-			FileVO fileVO = new FileVO(fileAddress, lastModifed, currentLoginAdmin.getId(), inputFile.getName(), fileTag, fileDescription);
-			
-			return fileVO;
-		}
+		FileVO fileVO = new FileVO(fileAddress, lastModifed, currentLoginAdmin.getId(), inputFile.getName(), fileTag, fileDescription);
+		
+		return fileVO;
 	}
 	
-	public ArrayList<FileVO> findAllList() throws SQLException, AdminNotLoginException {
+	public ArrayList<FileVO> findAllList() throws AdminNotLoginException, SearchDatabaseException {
 		if(currentLoginAdmin == null)
 			throw new AdminNotLoginException("Permission denied");
 		else {
-			ArrayList<FileVO>list = (ArrayList<FileVO>)fileDao.getAllFileInfoList();
+			ArrayList<FileVO> list = null;
+			try {
+				list = (ArrayList<FileVO>)fileDao.getAllFileInfoList();
+			} catch(SQLException e){
+				throw new SearchDatabaseException("File not found in database:" + e.getMessage());
+			}
 			return list;
 		}
 
@@ -297,10 +299,8 @@ public class ServerAdminService {
 
 		    try {
 		    	resultList = fileDao.getFileInfoList(keyword); // 전체 파일 목록 조회
-
 		    } catch (SQLException e) {
-//		        throw new SearchDatabaseException("File information databaseasf error occured!");
-		    	e.printStackTrace();
+		        throw new SearchDatabaseException("File not found in database:" + e.getMessage());
 		    }
 		    return resultList;
 		}
@@ -310,8 +310,9 @@ public class ServerAdminService {
 	 * @param keyword
 	 * @return
 	 * @throws AdminNotLoginException 
+	 * @throws SearchDatabaseException 
 	 */
-	public FileVO info(String keyword) throws AdminNotLoginException {
+	public FileVO info(String keyword) throws AdminNotLoginException, SearchDatabaseException {
 		if(currentLoginAdmin == null)
 			throw new AdminNotLoginException("Permission denied");
 		else {
@@ -323,7 +324,7 @@ public class ServerAdminService {
 		        resultList = dao.getFileInfo(keyword); // 제목, 태그, 날짜 중 하나라도 키워드 포함 시 반환
 
 		    } catch (SQLException e) {
-		        System.out.println("파일 상세 정보 조회 중 오류 발생: " + e.getMessage());
+		    	throw new SearchDatabaseException("File not found in database:" + e.getMessage());
 		    }
 		    if(resultList.size() > 0)
 		    	resultFileVO = resultList.get(0);
@@ -337,8 +338,4 @@ public class ServerAdminService {
 	public void help() {
 		System.out.println();
 	}
-	
-	
-	
-	
 }
