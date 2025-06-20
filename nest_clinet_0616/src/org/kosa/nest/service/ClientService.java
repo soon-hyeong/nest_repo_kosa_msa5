@@ -132,8 +132,8 @@ public class ClientService {
 	 * @throws FileNotFoundException 
 	 * @throws DataProcessException 
 	 */
-	public List<FileVO> info(String reuniteCommandLine) throws FileNotFoundException, DataProcessException {
-	    List<FileVO> resultList = new ArrayList<>();
+	public ArrayList<FileVO> info(String reuniteCommandLine) throws FileNotFoundException, DataProcessException {
+	    ArrayList<FileVO> resultList = new ArrayList<>();
 
 	    try {
 	        resultList = receiveWorker.sendCommand(reuniteCommandLine);

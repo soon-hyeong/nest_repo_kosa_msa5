@@ -27,7 +27,7 @@ public class CommandLineInterface {
     /**
      * @throws IOException
      * @throws FileNotFoundException
-     * @throws DataProcessException 
+     * @throws DataProcessException
      */
     public void executeProgram() throws IOException, FileNotFoundException, DataProcessException {
         String commandLine = scanner.nextLine();
@@ -38,7 +38,7 @@ public class CommandLineInterface {
      * @param commandLine
      * @throws IOException
      * @throws FileNotFoundException
-     * @throws DataProcessException 
+     * @throws DataProcessException
      */
     public void getCommand(String commandLine) throws IOException, FileNotFoundException, DataProcessException {
         StringTokenizer st = new StringTokenizer(commandLine);
@@ -50,56 +50,42 @@ public class CommandLineInterface {
         }
         String reuniteCommandLine = command + " " + keyword;
 
-        switch (command) {
-        case "download":
+        if (command.equalsIgnoreCase("download"))
             clientService.download(reuniteCommandLine);
-            break;
-        case "delete":
+        else if (command.equalsIgnoreCase("delete"))
             clientService.delete(keyword);
-            break;
-        case "list":
+        else if (command.equalsIgnoreCase("list"))
+            clientService.delete(keyword);
+        else if (command.equalsIgnoreCase("search"))
             resultToString(command, keyword);
-            break;
-        case "search":
+        else if (command.equalsIgnoreCase("info"))
             resultToString(command, keyword);
-            break;
-        case "info":
-            resultToString(command, keyword);
-            break;
-        case "help":
-            // 만들어야함
-            break;
-        case "exit":
-            if (scanner != null)
-                scanner.close();
-            return;
-            default : 
-                System.out.println("Wrong command. If you need help, enter 'nest help'");
-        }
+        else if (command.equalsIgnoreCase("help"))
+            System.out.println("help 내용 필요");
+        else
+            System.out.println("Wrong command. If you need help, enter 'nest help'");
+
     }
 
     /**
      * @param command
      * @param keyword
-     * @throws DataProcessException 
-     * @throws FileNotFoundException 
+     * @throws DataProcessException
+     * @throws FileNotFoundException
      */
     public void resultToString(String command, String keyword) throws FileNotFoundException, DataProcessException {
         String reuniteCommandLine = command + " " + keyword;
-        switch (command) {
-        case "list":
+        if (command.equalsIgnoreCase("list")) {
             ArrayList<FileVO> list = (ArrayList<FileVO>) clientService.list();
             for (FileVO file : list) {
                 System.out.println(file.getSubject());
             }
-            break;
-        case "search":
+        } else if (command.equalsIgnoreCase("search")) {
             ArrayList<FileVO> searchList = (ArrayList<FileVO>) clientService.search(reuniteCommandLine);
             for (FileVO file : searchList) {
                 System.out.println(file.getSubject());
             }
-            break;
-        case "info":
+        } else if (command.equalsIgnoreCase("info")) {
             ArrayList<FileVO> infoList = (ArrayList<FileVO>) clientService.info(reuniteCommandLine);
             for (FileVO file : infoList) {
                 System.out.println("subject: " + file.getSubject());
@@ -109,7 +95,6 @@ public class CommandLineInterface {
                 System.out.println("description: " + file.getDescription());
                 System.out.println("server upload time: " + file.getUploadAt());
             }
-            break;
         }
     }
 }
