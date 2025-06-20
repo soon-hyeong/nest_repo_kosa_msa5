@@ -12,13 +12,13 @@ public class NestMain {
         try {
             CLI.executeProgram();
         } catch (IOException e) {
-            System.out.print(e.getMessage());
+            System.err.print(e.getMessage());
         } catch (FileNotFoundException e) {
-            System.out.print(e.getMessage());
+            System.err.print(e.getMessage());
         } catch (DataProcessException e) {
-            System.out.print(e.getMessage());
+            System.err.print(e.getMessage());
         } catch (ServerConnectException e) {
-            System.out.print(e.getMessage());
+            System.err.print(e.getMessage());
         }
     }
 }
