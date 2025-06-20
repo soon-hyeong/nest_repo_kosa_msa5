@@ -27,11 +27,10 @@ public class ServerUserService {
 	 * @throws FileNotFoundException 
 	 * @throws SQLException 
 	 */
-	public FileVO download(String commandLine) throws FileNotFoundException, SQLException {
+	public ArrayList<FileVO> download(String commandLine) throws FileNotFoundException, SQLException {
 		
 		//반환할 FileVO
 		ArrayList<FileVO> resultFileInfoList = null;
-		FileVO resultInfo = null;
 		
 		//StringTokenizer를 이용하여 명령어에서 키워드를 분리
 		StringTokenizer st = new StringTokenizer(commandLine);
@@ -40,14 +39,12 @@ public class ServerUserService {
 		
 		//fileDao를 이용하여 키워드에 해당하는 파일의 정보를 찾아옴
 		resultFileInfoList = fileDao.getFileInfo(keyword);
-		if(resultFileInfoList.size() > 0)
-			resultInfo = resultFileInfoList.get(0);
+
 		//저장소에 해당 파일이 없다면 fildDao를 이용하여 db에 파일 정보 삭제하고 null값 반환
-		System.out.println(resultInfo.getFileLocation());
-		if(resultInfo != null && !new File(resultInfo.getFileLocation()).isFile()) {
+		if(resultFileInfoList.size() > 0 && !new File(resultFileInfoList.get(0).getFileLocation()).isFile()) {
 			throw new FileNotFoundException();
 		}
-		return resultInfo;
+		return resultFileInfoList;
 	}
 	/**
 	 * search : 파일의 일부 정보만 

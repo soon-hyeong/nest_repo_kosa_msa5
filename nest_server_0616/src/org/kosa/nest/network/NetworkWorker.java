@@ -45,7 +45,6 @@ public class NetworkWorker {
 				ReceiveWorker receiveWorker = new ReceiveWorker(socket);
 				Thread receiveWorkerThread = new Thread(receiveWorker);
 				receiveWorkerThread.start();
-//				socket.close();
 			}
 		} finally {
 			if(serverSocket != null)
@@ -95,7 +94,6 @@ public class NetworkWorker {
 			oos = new ObjectOutputStream(socket.getOutputStream());
 			String commandLine  = br.readLine();
 			System.out.println("commandLine: " + commandLine);
-//			br.close();
 			
 			return commandLine;
 		}
@@ -116,16 +114,20 @@ public class NetworkWorker {
 				String command = st.nextToken();
 				
 				if(command.equalsIgnoreCase("download")) {
-					FileVO downloadFile = serverUserService.download(commandLine);
-					oos.writeObject(downloadFile);
+					ArrayList<FileVO> downloadFileList = serverUserService.download(commandLine);
+					oos.writeObject(downloadFileList);
 					oos.flush();
-					bis = new BufferedInputStream(new FileInputStream(downloadFile.getFileLocation()), 8192);
-					int data = bis.read();
-					while(data != -1) {
-						oos.write(data);
-						bis.read();
+					if(downloadFileList.size() > 0) {
+						bis = new BufferedInputStream(new FileInputStream(downloadFileList.get(0).getFileLocation()), 8192);
+						int data = bis.read();
+						while(data != -1) {
+							oos.write(data);
+						data = bis.read();
+						oos.flush();
+						}
+					} else {
+						oos.write(-1);
 					}
-					oos.flush();
 				}
 				else if(command.equalsIgnoreCase("list") || command.equals("search")) {
 					ArrayList<FileVO> searchFileList = (ArrayList<FileVO>)serverUserService.search(commandLine);
@@ -143,10 +145,8 @@ public class NetworkWorker {
 					oos.flush();
 				}
 			} finally {
-//				if(oos != null)
-//					oos.close();
-//				if(bis != null)
-//					bis.close();
+				if(socket!= null)
+					socket.close();
 			}
 
 		}
