@@ -10,10 +10,10 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.StringTokenizer;
 
 import org.kosa.nest.common.ClientConfig;
+import org.kosa.nest.exception.FileNotFoundException;
 import org.kosa.nest.model.FileVO;
 
 public class ReceiveWorker {
@@ -21,9 +21,9 @@ public class ReceiveWorker {
     private Socket socket;
     private PrintWriter pw;
     private ObjectInputStream ois;
+    private BufferedOutputStream bos;
 
-    // 임시 IP
-    private String ip = "192.168.210.27";
+    private String ip = "192.168.210.27"; // 서버 ip
 
     /**
      * ReceiveWorker 생성자로 socket 생성해 서버와 연결 <br>
@@ -31,7 +31,6 @@ public class ReceiveWorker {
      * @throws UnknownHostException
      * @throws IOException
      */
-    // getNetwork() 필요없고 이렇게 하면 되지 않나?
     public ReceiveWorker() throws UnknownHostException, IOException {
         socket = new Socket(ip, 9876);
     }
@@ -43,17 +42,14 @@ public class ReceiveWorker {
      * @return
      * @throws IOException
      * @throws ClassNotFoundException
+     * @throws FileNotFoundException 
      */
-    public ArrayList<FileVO> sendCommand(String commandLine) throws IOException, ClassNotFoundException {
+    public ArrayList<FileVO> sendCommand(String commandLine) throws IOException, ClassNotFoundException, FileNotFoundException {
 
         StringTokenizer st = new StringTokenizer(commandLine);
         String command = st.nextToken();
-        String keyword = null;
-        ArrayList<FileVO> resultList = null;
-        if (st.hasMoreTokens()) {
-            keyword = st.nextToken();
-        }
 
+        ArrayList<FileVO> resultList = null;
         try {
             pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
             pw.println(commandLine);
@@ -63,12 +59,14 @@ public class ReceiveWorker {
             } else if (command.equalsIgnoreCase("search") || command.equalsIgnoreCase("info")) {
                 resultList = (ArrayList<FileVO>) this.receiveFileList();
             }
-        }finally {
-            if(ois != null)
+        } finally {
+            if (ois != null)
                 ois.close();
-            if(pw != null)
+            if (pw != null)
                 pw.close();
-            if(socket != null)
+            if (bos != null)
+                bos.close();
+            if (socket != null)
                 socket.close();
         }
         return resultList;
@@ -82,66 +80,45 @@ public class ReceiveWorker {
      * @throws IOException
      * @throws ClassNotFoundException
      */
-    // 메서드 이름 receiveResult 에서 receiveFileList로 변경
-    public List<FileVO> receiveFileList() throws IOException, ClassNotFoundException {
-        
-        ArrayList<FileVO> list = new ArrayList<>();
-        
+    @SuppressWarnings("unchecked")
+    public ArrayList<FileVO> receiveFileList() throws IOException, ClassNotFoundException {
         ois = new ObjectInputStream(socket.getInputStream());
+        ArrayList<FileVO> list = new ArrayList<>();
         list = (ArrayList<FileVO>) ois.readObject();
-        System.out.println(list + " : no search result"); // --> exception처리
         return list;
     }
 
     /**
      * 명령어 : download 클라이언트가 download 명령어로 다운로드 받을 파일 제목을 명령하면 <br>
      * 파일을 서버로부터 받아 클라이언트의 컴퓨터에 다운로드 하는 기능 <br>
+     * 파일 이름 : 서버에서 객체로 들어온 FileVO에서 얻음<br>
      * 
      * @return
      * @throws IOException
      * @throws ClassNotFoundException
+     * @throws FileNotFoundException 
      */
-    public void downloadFile() throws IOException, ClassNotFoundException {
+    @SuppressWarnings("unchecked")
+    public void downloadFile() throws IOException, ClassNotFoundException, FileNotFoundException {
 
-        /*
-         * 1. 파일들이 저장될 폴더가 디렉토리에 있는지 확인 후, 없으면 만들어야 -> Service로 옮김 2. 파일을 서버로부터 받아와서 3.
-         * 내 컴퓨터 경로에 다운로드, 이 때 byteStream 사용
-         */
-
-        BufferedOutputStream bos = null;
         ArrayList<FileVO> list = new ArrayList<>();
+        ois = new ObjectInputStream(socket.getInputStream());
+        list = (ArrayList<FileVO>) ois.readObject();
         
-        try {
-            // 파일 이름 : 서버에서 객체로 들어온 FileVO에서 얻음
-            ois = new ObjectInputStream(socket.getInputStream());
-            list = (ArrayList<FileVO>) ois.readObject();
-            String filename = null;
-            if(list.size() < 1)
-                System.out.println(list + " : no download result"); // --> exception처리
-            else {
-                filename = list.get(0).getSubject();
-                // 파일을 클라이언트 컴퓨터에 저장
-                bos = new BufferedOutputStream(new FileOutputStream(ClientConfig.REPOPATH + File.separator + filename));
-                int data = ois.read();
-                while (data != -1) {
-                    bos.write(data);
-                    data = ois.read();
-                }
-                bos.flush();
+        String filename = null;
+        if (list.size() < 1)
+            throw new FileNotFoundException("File doesn't exist in your directory!");  // 다운로드 메서드에서만 예외적으로 exception throw
+        else {
+            filename = list.get(0).getSubject();
+            bos = new BufferedOutputStream(new FileOutputStream(ClientConfig.REPOPATH + File.separator + filename));
+            
+            int data = ois.read();
+            while (data != -1) {
+                bos.write(data);
+                data = ois.read();
             }
-                
-
-            // 실제 파일을 받음
-            // OutputStream을 두번 감싸지 말고 ObjectOutputStream을 그대로 사용하라. 객체 받을 때도 어차피 바이트 스트림
-            // 사용하므로.
-            // bis = new BufferedInputStream(socket.getInputStream());
-
-
-        } finally {
-//            if (bos != null)
-//                bos.close();
-//            if (ois != null)
-//                ois.close();
+            bos.flush();
         }
+
     }
 }

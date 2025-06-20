@@ -2,12 +2,19 @@ package org.kosa.nest;
 
 import java.io.IOException;
 
+import org.kosa.nest.exception.DataProcessException;
+import org.kosa.nest.exception.FileNotFoundException;
+
 public class NestMain {
     public static void main(String[] args) {
         CommandLineInterface CLI = new CommandLineInterface();
         try {
             CLI.executeProgram();
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (DataProcessException e) {
             e.printStackTrace();
         }
     }

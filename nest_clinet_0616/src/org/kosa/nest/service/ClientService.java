@@ -10,14 +10,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kosa.nest.common.ClientConfig;
+import org.kosa.nest.exception.DataProcessException;
+import org.kosa.nest.exception.FileNotFoundException;
 import org.kosa.nest.model.FileVO;
 import org.kosa.nest.network.ReceiveWorker;
 
 public class ClientService {
     
     private ReceiveWorker receiveWorker;
-    // 임시 명령어
-    private String command = "download";
     
     public ClientService() throws UnknownHostException, IOException {
         this.receiveWorker = new ReceiveWorker();
@@ -39,13 +39,15 @@ public class ClientService {
      * @param command
      * @return
      * @throws IOException
+     * @throws DataProcessException 
+     * @throws FileNotFoundException 
      */
-    public void download(String command) throws IOException {
+    public void download(String command) throws IOException, DataProcessException, FileNotFoundException {
         makeDir();
         try {
             receiveWorker.sendCommand(command);
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            throw new DataProcessException("Failed to process data!");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -54,86 +56,96 @@ public class ClientService {
     /**
      * 클라이언트의 컴퓨터에 있는 다운로드 받은 파일 삭제 <br>
      * @return
+     * @throws FileNotFoundException 
      * @throws Exception 
      */
-    public void delete(String title) {
+    public void delete(String title) throws FileNotFoundException {
         File file = new File(ClientConfig.REPOPATH + File.separator + title);
-        boolean result = false;
-        if(!file.exists())         // 존재 안하면 exception?
-            System.out.println("temp exception");
+        if(!file.exists())
+            throw new FileNotFoundException("File doesn't exist in your directory!");
         else {
-            result = file.delete();
-            System.out.println("file delete success");
+            file.delete();
+            System.out.println("File delete success!");
         }
     }
 
-	public List<FileVO> list() {
-        List<FileVO> fileList = new ArrayList<>();
-
-        // 사용자 홈 디렉토리 하위의 nest 폴더를 기준 경로로 설정
+	/**
+	 * list
+	 * @return
+	 * @throws FileNotFoundException 
+	 */
+	public ArrayList<FileVO> list() throws FileNotFoundException {
+	    ArrayList<FileVO> fileList = new ArrayList<>();
         File folder = new File(ClientConfig.REPOPATH);
 
-        // 해당 경로가 존재하고, 디렉토리일 경우에만 처리
         if (folder.exists() && folder.isDirectory()) {
-            File[] files = folder.listFiles(); // 디렉토리 내의 파일 리스트
+            File[] files = folder.listFiles();
 
             if (files != null) {
                 for (File file : files) {
-                    // 일반 파일인 경우에만 처리
                     if (file.isFile()) {
-                        // 마지막 수정 시간을 기반으로 생성일시 추정
+                        // 마지막 수정 시간을 기반, 생성일시 추정
                         LocalDateTime createdAt = LocalDateTime.ofInstant(																					
                             Instant.ofEpochMilli(file.lastModified()),
                             ZoneId.systemDefault()
                         );
 
-                        // 파일 정보를 담은 FileVO 객체 생성
                         FileVO vo = new FileVO(file.getAbsolutePath(), createdAt, file.getName());
-                        fileList.add(vo); // 리스트에 추가
+                        fileList.add(vo);
                     }
                 }
+            } else {
+                throw new FileNotFoundException("File doesn't exist in directory!");
             }
         }
-
         return fileList;
     }
+	
 	/**
 	 * search : 파일의 일부 정보만 
+	 * 명령어가 search 또는 info일 때
 	 * @param keyword
 	 * @return
+	 * @throws FileNotFoundException 
+	 * @throws DataProcessException 
 	 */
-	public List<FileVO> search(String reuniteCommandLine) {
-	    List<FileVO> resultList = new ArrayList<>();
+	public ArrayList<FileVO> search(String reuniteCommandLine) throws FileNotFoundException, DataProcessException {
+	    ArrayList<FileVO> resultList = new ArrayList<>();
 
 	    try {
-	        resultList = receiveWorker.sendCommand(reuniteCommandLine); // 명령어 전송
-
-	        // 명령어가 search 또는 info일 때, 서버로부터 FileVO 목록 수신
-
-	    } catch (IOException | ClassNotFoundException e) {
-	        e.printStackTrace();
-	    }
-
+	        resultList = receiveWorker.sendCommand(reuniteCommandLine);
+	        if(resultList.size() < 1) {
+	            throw new FileNotFoundException("File doesn't exist in server!");
+	        }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            throw new DataProcessException("Failed to process data!");
+        }
 	    return resultList;
 	}
+	
 	/**
 	 * info : 파일의 상세정보 가져오기
 	 * @param keyword
 	 * @return
+	 * @throws FileNotFoundException 
+	 * @throws DataProcessException 
 	 */
-	public List<FileVO> info(String reuniteCommandLine) {
+	public List<FileVO> info(String reuniteCommandLine) throws FileNotFoundException, DataProcessException {
 	    List<FileVO> resultList = new ArrayList<>();
 
 	    try {
-	        resultList = receiveWorker.sendCommand(reuniteCommandLine); // 서버에 info 명령어 전송
-	    } catch (IOException | ClassNotFoundException e) {
+	        resultList = receiveWorker.sendCommand(reuniteCommandLine);
+	       if(resultList.size() < 1) {
+	            throw new FileNotFoundException("File doesn't exist in server!");
+           }
+	    } catch (IOException e) {
 	        e.printStackTrace();
+	    } catch (ClassNotFoundException e) {
+	        throw new DataProcessException("Failed to process data!");
 	    }
-
 	    return resultList;
 	}
-
-
-
 
 }

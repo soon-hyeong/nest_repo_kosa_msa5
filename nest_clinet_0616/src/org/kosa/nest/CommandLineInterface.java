@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
+import org.kosa.nest.exception.DataProcessException;
+import org.kosa.nest.exception.FileNotFoundException;
 import org.kosa.nest.model.FileVO;
 import org.kosa.nest.service.ClientService;
 
@@ -22,14 +24,23 @@ public class CommandLineInterface {
         }
     }
 
-    public void executeProgram() throws IOException {
+    /**
+     * @throws IOException
+     * @throws FileNotFoundException
+     * @throws DataProcessException 
+     */
+    public void executeProgram() throws IOException, FileNotFoundException, DataProcessException {
         String commandLine = scanner.nextLine();
         getCommand(commandLine);
     }
 
-    // nest download 파일이름
-    // nest search 키워드
-    public void getCommand(String commandLine) throws IOException {
+    /**
+     * @param commandLine
+     * @throws IOException
+     * @throws FileNotFoundException
+     * @throws DataProcessException 
+     */
+    public void getCommand(String commandLine) throws IOException, FileNotFoundException, DataProcessException {
         StringTokenizer st = new StringTokenizer(commandLine);
         st.nextToken();
         String command = st.nextToken();
@@ -62,22 +73,18 @@ public class CommandLineInterface {
             if (scanner != null)
                 scanner.close();
             return;
+            default : 
+                System.out.println("Wrong command. If you need help, enter 'nest help'");
         }
     }
-    
-    public void resultToString(ArrayList<FileVO> fileList) {
-        for(FileVO vo : fileList)
-            System.out.println(vo.getSubject());
-    }
-    
-    public void resultToString(FileVO fileVO) {
-        if(fileVO == null)
-            return ;
 
-    }
-
-    // info만 전부, list랑 search는 세개(제목, 태그, 생성시간)
-    public void resultToString(String command, String keyword) {
+    /**
+     * @param command
+     * @param keyword
+     * @throws DataProcessException 
+     * @throws FileNotFoundException 
+     */
+    public void resultToString(String command, String keyword) throws FileNotFoundException, DataProcessException {
         String reuniteCommandLine = command + " " + keyword;
         switch (command) {
         case "list":
@@ -104,6 +111,5 @@ public class CommandLineInterface {
             }
             break;
         }
-
     }
 }
