@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 import org.kosa.nest.common.ClientConfig;
+import org.kosa.nest.common.NestConfig;
 import org.kosa.nest.exception.FileNotFoundException;
 import org.kosa.nest.model.FileVO;
 
@@ -23,8 +24,6 @@ public class ReceiveWorker {
     private ObjectInputStream ois;
     private BufferedOutputStream bos;
 
-    private String ip = "192.168.210.27"; // 서버 ip
-
     /**
      * ReceiveWorker 생성자로 socket 생성해 서버와 연결 <br>
      * 
@@ -32,7 +31,7 @@ public class ReceiveWorker {
      * @throws IOException
      */
     public ReceiveWorker() throws UnknownHostException, IOException {
-        socket = new Socket(ip, 9876);
+        socket = new Socket(NestConfig.ip, NestConfig.port);
     }
 
     /**
