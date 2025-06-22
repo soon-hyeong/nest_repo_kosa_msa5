@@ -186,15 +186,17 @@ public class ServerAdminService {
 			
 			BufferedInputStream bis = null;
 			BufferedOutputStream bos = null;
+			
+			File outputFile = null;
 			try {
-				fileDao.createFileInfo(inputFileInfo);
 				
 				File nestServerDir = new File(ServerConfig.REPOPATH);
 				if(!nestServerDir.isDirectory())
 					nestServerDir.mkdirs();
 
 				File inputFile = new File(inputFileInfo.getFileLocation());
-				File outputFile = new File(ServerConfig.REPOPATH + File.separator + inputFile.getName());
+				String outputFileAddress = ServerConfig.REPOPATH + File.separator + inputFile.getName();
+				outputFile = new File(outputFileAddress);
 			
 				// 파일 입출력
 				bis = new BufferedInputStream(new FileInputStream(inputFile), 8192);
@@ -205,10 +207,14 @@ public class ServerAdminService {
 					bos.write(data);
 					data = bis.read();
 				}
+				inputFileInfo.setFileLocation(outputFileAddress);
+				fileDao.createFileInfo(inputFileInfo);
 				System.out.println("File upload success!");
-			} catch(Exception e) {
-				throw new UploadFileFailException("File upload failed:" + e.getMessage());
-			
+			} catch(IOException e) {
+				throw new UploadFileFailException("File upload failed:" + e.getMessage());			
+			} catch(SQLException e) {
+				outputFile.delete();
+				throw new UploadFileFailException("File upload failed:" + e.getMessage());			
 			} finally {
 				if(bis != null)
 					bis.close();
