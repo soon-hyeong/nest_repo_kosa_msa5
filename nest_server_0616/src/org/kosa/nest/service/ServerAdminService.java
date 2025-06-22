@@ -58,6 +58,7 @@ public class ServerAdminService {
 				
 				AdminVO vo = new AdminVO(email, password);
 				adminDao.register(vo); //Id는 시스템이 제공
+				System.out.println("register success:" + email);
 			} catch (SQLException e) {
 				throw new RegisterAdminFailException("Register failed, Email already in use:" + e.getMessage()); // 사용자 정의 예외 전달
 			}
@@ -85,7 +86,7 @@ public class ServerAdminService {
 				admin = adminDao.getAdminInfo(email);
 				
 				if(!admin.getPassword().equals(password))
-					throw new LoginException("Invalid email or password");
+					throw new LoginException("Invalid email or password!");
 				// 로그인 성공 시 나오는 메세지
 				currentLoginAdmin = admin;
 				System.out.println("login success:" + currentLoginAdmin.getEmail());
@@ -104,11 +105,11 @@ public class ServerAdminService {
 		
 		public void logout() throws AdminNotLoginException {
 			if(currentLoginAdmin == null)
-				throw new AdminNotLoginException("Administrator not logined");
+				throw new AdminNotLoginException("Administrator not logined!");
 			else {
 				String email = currentLoginAdmin.getEmail();
 				currentLoginAdmin = null;
-				System.out.println("log out success" + email);
+				System.out.println("logout success:" + email);
 			}
 		}
 		/**
@@ -120,7 +121,7 @@ public class ServerAdminService {
 		 */
 		public AdminVO getMyInformation() throws AdminNotLoginException {
 			if(currentLoginAdmin == null)
-				throw new AdminNotLoginException("Permission denied");
+				throw new AdminNotLoginException("Permission denied!");
 			else {
 				return currentLoginAdmin;
 			}
@@ -139,7 +140,7 @@ public class ServerAdminService {
 		 */
 		public AdminVO updateMyInformation() throws AdminNotLoginException, PasswordNotCorrectException, UpdateAdminInfoFailException {
 			if(currentLoginAdmin == null)
-				throw new AdminNotLoginException("Permission denied");
+				throw new AdminNotLoginException("Permission denied!");
 			else {
 				
 				System.out.print("enter password:");
@@ -165,6 +166,7 @@ public class ServerAdminService {
 				} catch(SQLException e){
 					throw new UpdateAdminInfoFailException("Update Admin Information failed:" + e.getMessage());
 				}
+				System.out.println("Update Admin Information success");
 				return updatedAdmin;
 			}
 		}
@@ -180,7 +182,7 @@ public class ServerAdminService {
 	 */
 	public void uploadFile() throws AdminNotLoginException, UploadFileFailException, IOException {
 		if(currentLoginAdmin == null)
-			throw new AdminNotLoginException("Permission denied");
+			throw new AdminNotLoginException("Permission denied!");
 		else {
 			FileVO inputFileInfo = getFileInformation();
 			
@@ -209,7 +211,7 @@ public class ServerAdminService {
 				}
 				inputFileInfo.setFileLocation(outputFileAddress);
 				fileDao.createFileInfo(inputFileInfo);
-				System.out.println("File upload success!");
+				System.out.println("File upload success");
 			} catch(IOException e) {
 				throw new UploadFileFailException("File upload failed:" + e.getMessage());			
 			} catch(SQLException e) {
@@ -236,7 +238,7 @@ public class ServerAdminService {
 	 */
     public void deleteFile(String fileName) throws AdminNotLoginException, FileNotDeletedInDatabase, FileNotFoundException {
 		if(currentLoginAdmin == null)
-			throw new AdminNotLoginException("Permission denied");
+			throw new AdminNotLoginException("Permission denied!");
 		else {
 	        File file = new File(ServerConfig.REPOPATH + File.separator + fileName);
 	        
@@ -249,7 +251,7 @@ public class ServerAdminService {
 	        } catch(SQLException e) {
 	        	throw new FileNotDeletedInDatabase("File information database error occured:" + e.getMessage());
 	        }
-	        System.out.println("File delete success!");
+	        System.out.println("File delete success");
 		}
     }
 	
