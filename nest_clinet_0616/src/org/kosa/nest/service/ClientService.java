@@ -7,6 +7,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.kosa.nest.common.ClientConfig;
 import org.kosa.nest.exception.DataProcessException;
@@ -57,7 +58,7 @@ public class ClientService {
 	 * @return
 	 * @throws FileNotFoundException 
 	 */
-	public ArrayList<FileVO> list() throws FileNotFoundException {
+	public List<FileVO> list() throws FileNotFoundException {
 	    ArrayList<FileVO> fileList = new ArrayList<>();
         File folder = new File(ClientConfig.REPOPATH);
 
@@ -94,8 +95,8 @@ public class ClientService {
 	 * @throws UnknownHostException 
 	 * @throws ServerConnectException 
 	 */
-	public ArrayList<FileVO> search(String reuniteCommandLine) throws FileNotFoundException, DataProcessException, UnknownHostException, ServerConnectException {
-	    ArrayList<FileVO> resultList = new ArrayList<>();
+	public List<FileVO> search(String reuniteCommandLine) throws FileNotFoundException, DataProcessException, UnknownHostException, ServerConnectException {
+	    List<FileVO> resultList = new ArrayList<>();
 	    try {
 	        receiveWorker = new ReceiveWorker();
 	        resultList = receiveWorker.sendCommand(reuniteCommandLine);
@@ -119,8 +120,8 @@ public class ClientService {
 	 * @throws UnknownHostException 
 	 * @throws ServerConnectException 
 	 */
-	public ArrayList<FileVO> info(String reuniteCommandLine) throws FileNotFoundException, DataProcessException, UnknownHostException, ServerConnectException {
-	    ArrayList<FileVO> resultList = new ArrayList<>();
+	public List<FileVO> info(String reuniteCommandLine) throws FileNotFoundException, DataProcessException, UnknownHostException, ServerConnectException {
+	    List<FileVO> resultList = new ArrayList<>();
 	    
 	    try {
 	        receiveWorker = new ReceiveWorker();

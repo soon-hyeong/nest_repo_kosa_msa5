@@ -278,13 +278,13 @@ public class ServerAdminService {
 		return fileVO;
 	}
 	
-	public ArrayList<FileVO> findAllList() throws AdminNotLoginException, SearchDatabaseException {
+	public List<FileVO> findAllList() throws AdminNotLoginException, SearchDatabaseException {
 		if(currentLoginAdmin == null)
 			throw new AdminNotLoginException("Permission denied");
 		else {
-			ArrayList<FileVO> list = null;
+			List<FileVO> list = null;
 			try {
-				list = (ArrayList<FileVO>)fileDao.getAllFileInfoList();
+				list = fileDao.getAllFileInfoList();
 			} catch(SQLException e){
 				throw new SearchDatabaseException("File not found in database:" + e.getMessage());
 			}

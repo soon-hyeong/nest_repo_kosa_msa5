@@ -11,7 +11,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import org.kosa.nest.common.NestConfig;
@@ -111,7 +111,7 @@ public class NetworkWorker {
 				String command = st.nextToken();
 				
 				if(command.equalsIgnoreCase("download")) {
-					ArrayList<FileVO> downloadFileList = serverUserService.download(commandLine);
+					List<FileVO> downloadFileList = serverUserService.download(commandLine);
                     System.out.println("[info] Initiating object transfer.");
 					oos.writeObject(downloadFileList);
 					oos.flush();
@@ -134,14 +134,14 @@ public class NetworkWorker {
 					
 				}
 				else if(command.equalsIgnoreCase("list") || command.equals("search")) {
-					ArrayList<FileVO> searchFileList = (ArrayList<FileVO>)serverUserService.search(commandLine);
+					List<FileVO> searchFileList = serverUserService.search(commandLine);
                     System.out.println("[info] Initiating object transfer.");
                     oos.writeObject(searchFileList);
 					oos.flush();
                     System.out.println("[info] Object transfer completed successfully.");
 				}
 				else if(command.equalsIgnoreCase("info")) {
-					ArrayList<FileVO> infoFileList = (ArrayList<FileVO>)serverUserService.info(commandLine);
+					List<FileVO> infoFileList = serverUserService.info(commandLine);
                     System.out.println("[info] Initiating object transfer.");
 					oos.writeObject(infoFileList);
 					oos.flush();

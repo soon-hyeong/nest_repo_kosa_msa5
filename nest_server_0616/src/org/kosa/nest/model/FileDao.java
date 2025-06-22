@@ -123,7 +123,7 @@ public class FileDao {
      * @return
      * @throws SQLException
      */
-    public ArrayList<FileVO> getFileInfoList(String keyword) throws SQLException {
+    public List<FileVO> getFileInfoList(String keyword) throws SQLException {
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -152,7 +152,7 @@ public class FileDao {
         return list;
     }
 
-    public ArrayList<FileVO> getFileInfo(String keyword) throws SQLException {
+    public List<FileVO> getFileInfo(String keyword) throws SQLException {
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
