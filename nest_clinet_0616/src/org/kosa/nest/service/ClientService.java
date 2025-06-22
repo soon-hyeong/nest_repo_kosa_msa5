@@ -24,7 +24,7 @@ public class ClientService {
      * 파일을 다운로드받을 경로 있는지 체크 후 <br>
      * 없으면 경로 생성 <br>
      */
-    public void makeDir() {
+    private void makeDir() {
         File file = new File(ClientConfig.REPOPATH);
         if (!file.isDirectory())
             file.mkdirs();

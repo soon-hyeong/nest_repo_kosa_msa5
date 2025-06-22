@@ -261,7 +261,7 @@ public class ServerAdminService {
 	 * @return
 	 * @throws AdminNotLoginException 
 	 */
-	public FileVO getFileInformation() throws AdminNotLoginException {
+	private FileVO getFileInformation() throws AdminNotLoginException {
 		
 		System.out.print("file address:");
 		String fileAddress = scanner.nextLine();
