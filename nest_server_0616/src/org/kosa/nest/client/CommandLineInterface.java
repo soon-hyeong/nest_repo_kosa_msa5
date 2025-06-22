@@ -2,7 +2,7 @@ package org.kosa.nest.client;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
@@ -125,7 +125,7 @@ public class CommandLineInterface {
 				serverAdminService.deleteFile(keyword);
 			}
 			else if(command.equalsIgnoreCase("search")) {
-				resultToString((ArrayList<FileVO>)serverAdminService.search(keyword));
+				resultToString(serverAdminService.search(keyword));
 			}
 			else if(command.equalsIgnoreCase("info")) {
 				resultToString(serverAdminService.info(keyword));
@@ -134,7 +134,7 @@ public class CommandLineInterface {
 				serverAdminService.help();
 			}
 			else if(command.equalsIgnoreCase("findAllList")) {
-				resultToString((ArrayList<FileVO>)serverAdminService.findAllList());
+				resultToString(serverAdminService.findAllList());
 			}
 			else {
 				System.out.println("wrong command. If you need help, enter 'nest help'");
@@ -155,7 +155,7 @@ public class CommandLineInterface {
 	    System.out.println("password: " + adminVO.getPassword());
 	}
 	
-	public void resultToString(ArrayList<FileVO> fileList) {
+	public void resultToString(List<FileVO> fileList) {
 		for(FileVO vo : fileList)
 			System.out.println(vo.getSubject());
 	}

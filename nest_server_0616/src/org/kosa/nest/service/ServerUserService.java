@@ -26,10 +26,10 @@ public class ServerUserService {
 	 * @throws FileNotFoundException 
 	 * @throws SQLException 
 	 */
-	public ArrayList<FileVO> download(String commandLine) throws FileNotFoundException, SQLException {
+	public List<FileVO> download(String commandLine) throws FileNotFoundException, SQLException {
 		
 		//반환할 FileVO
-		ArrayList<FileVO> resultFileInfoList = null;
+		List<FileVO> resultFileInfoList = null;
 		
 		//StringTokenizer를 이용하여 명령어에서 키워드를 분리
 		StringTokenizer st = new StringTokenizer(commandLine);
@@ -54,7 +54,7 @@ public class ServerUserService {
 		StringTokenizer st = new StringTokenizer(command);
 		st.nextToken();
 		String keyword = st.nextToken();
-	    List<FileVO> resultList = new ArrayList<>();
+	    ArrayList<FileVO> resultList = new ArrayList<>();
 
 	    try {
 	        FileDao dao = new FileDao(); // DAO 객체 생성

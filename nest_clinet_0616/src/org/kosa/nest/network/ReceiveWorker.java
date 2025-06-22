@@ -10,6 +10,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import org.kosa.nest.common.ClientConfig;
@@ -43,7 +44,7 @@ public class ReceiveWorker {
      * @throws ClassNotFoundException
      * @throws FileNotFoundException 
      */
-    public ArrayList<FileVO> sendCommand(String commandLine) throws IOException, ClassNotFoundException, FileNotFoundException {
+    public List<FileVO> sendCommand(String commandLine) throws IOException, ClassNotFoundException, FileNotFoundException {
 
         StringTokenizer st = new StringTokenizer(commandLine);
         String command = st.nextToken();
@@ -80,7 +81,7 @@ public class ReceiveWorker {
      * @throws ClassNotFoundException
      */
     @SuppressWarnings("unchecked")
-    public ArrayList<FileVO> receiveFileList() throws IOException, ClassNotFoundException {
+    public List<FileVO> receiveFileList() throws IOException, ClassNotFoundException {
         ois = new ObjectInputStream(socket.getInputStream());
         ArrayList<FileVO> list = new ArrayList<>();
         list = (ArrayList<FileVO>) ois.readObject();

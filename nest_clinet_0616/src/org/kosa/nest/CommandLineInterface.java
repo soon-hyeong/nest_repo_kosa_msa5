@@ -2,7 +2,7 @@ package org.kosa.nest;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
@@ -78,17 +78,17 @@ public class CommandLineInterface {
     public void resultToString(String command, String keyword) throws FileNotFoundException, DataProcessException, UnknownHostException, ServerConnectException {
         String reuniteCommandLine = command + " " + keyword;
         if (command.equalsIgnoreCase("list")) {
-            ArrayList<FileVO> list = (ArrayList<FileVO>) clientService.list();
+        	List<FileVO> list = clientService.list();
             for (FileVO file : list) {
                 System.out.println(file.getSubject());
             }
         } else if (command.equalsIgnoreCase("search")) {
-            ArrayList<FileVO> searchList = (ArrayList<FileVO>) clientService.search(reuniteCommandLine);
+            List<FileVO> searchList = clientService.search(reuniteCommandLine);
             for (FileVO file : searchList) {
                 System.out.println(file.getSubject());
             }
         } else if (command.equalsIgnoreCase("info")) {
-            ArrayList<FileVO> infoList = (ArrayList<FileVO>) clientService.info(reuniteCommandLine);
+            List<FileVO> infoList = clientService.info(reuniteCommandLine);
             for (FileVO file : infoList) {
                 System.out.println("subject: " + file.getSubject());
                 System.out.println("tag: " + file.getTag());
