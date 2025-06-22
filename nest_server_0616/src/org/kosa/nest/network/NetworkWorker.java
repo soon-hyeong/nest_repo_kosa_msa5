@@ -37,8 +37,10 @@ public class NetworkWorker {
 		ServerSocket serverSocket = null;
 		try {
 			serverSocket = new ServerSocket(NestConfig.port);
+            System.out.println("[info] Server start");
 			while(true){
 				Socket socket = serverSocket.accept();
+                System.out.println("[info] " + socket.getInetAddress() + " connected");
 				ReceiveWorker receiveWorker = new ReceiveWorker(socket);
 				Thread receiveWorkerThread = new Thread(receiveWorker);
 				receiveWorkerThread.start();
@@ -84,13 +86,12 @@ public class NetworkWorker {
 		 * @throws IOException
 		 */
 		public String getCommand() throws UnsupportedEncodingException, IOException, SocketException {
-			
-			System.out.println("getCommand init");
-			
+						
 			br = new BufferedReader(new InputStreamReader(socket.getInputStream(), "utf-8"));
 			oos = new ObjectOutputStream(socket.getOutputStream());
 			String commandLine  = br.readLine();
 			
+            System.out.println("[info] " + socket.getInetAddress() + " request command: " + commandLine);
 			return commandLine;
 		}
 		
@@ -111,34 +112,40 @@ public class NetworkWorker {
 				
 				if(command.equalsIgnoreCase("download")) {
 					ArrayList<FileVO> downloadFileList = serverUserService.download(commandLine);
+                    System.out.println("[info] Initiating object transfer.");
 					oos.writeObject(downloadFileList);
 					oos.flush();
+                    System.out.println("[info] Object transfer completed successfully.");
 					if(downloadFileList.size() > 0) {
 						bis = new BufferedInputStream(new FileInputStream(downloadFileList.get(0).getFileLocation()), 8192);
+                        System.out.println("[info] Initiating file transfer.");
 						int data = bis.read();
 						while(data != -1) {
 							oos.write(data);
-						data = bis.read();
-						oos.flush();
+							data = bis.read();
 						}
+						oos.flush();
+                        System.out.println("[info] File transfer completed successfully.");
 					} else {
 						oos.write(-1);
+						oos.flush();
+                        System.out.println("[info] No files found.");
 					}
+					
 				}
 				else if(command.equalsIgnoreCase("list") || command.equals("search")) {
 					ArrayList<FileVO> searchFileList = (ArrayList<FileVO>)serverUserService.search(commandLine);
-					System.out.println("send object");
-					oos.writeObject(searchFileList);
-					System.out.println("send object finish");
+                    System.out.println("[info] Initiating object transfer.");
+                    oos.writeObject(searchFileList);
 					oos.flush();
+                    System.out.println("[info] Object transfer completed successfully.");
 				}
 				else if(command.equalsIgnoreCase("info")) {
-					System.out.println("info case!");
 					ArrayList<FileVO> infoFileList = (ArrayList<FileVO>)serverUserService.info(commandLine);
-					if(infoFileList.size() > 0)
-						System.out.println(infoFileList.get(0));
+                    System.out.println("[info] Initiating object transfer.");
 					oos.writeObject(infoFileList);
 					oos.flush();
+                    System.out.println("[info] Object transfer completed successfully.");
 				}
 			} finally {
 				if(socket!= null)

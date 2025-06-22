@@ -44,6 +44,7 @@ public class ClientService {
         try {
             receiveWorker = new ReceiveWorker();
             receiveWorker.sendCommand(command);
+            System.out.println("File download success");
         } catch (ClassNotFoundException e) {
             throw new DataProcessException("Failed to process data!");
         } catch (IOException e) {
@@ -128,7 +129,7 @@ public class ClientService {
 	            throw new FileNotFoundException("File doesn't exist in server!");
            }
 	    } catch (IOException e) {
-            throw new ServerConnectException("An unexpected error occurred while trying to connect to the server");
+            throw new ServerConnectException("An unexpected error occurred while trying to connect to the server!");
 	    } catch (ClassNotFoundException e) {
 	        throw new DataProcessException("Failed to process data!");
 	    }
@@ -147,7 +148,7 @@ public class ClientService {
             throw new FileNotFoundException("File doesn't exist in your directory!");
         else {
             file.delete();
-            System.out.println("File delete success!");
+            System.out.println("File delete success");
         }
     }
 
