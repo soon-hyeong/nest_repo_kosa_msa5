@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
+import org.kosa.nest.common.NestConfig;
 import org.kosa.nest.model.FileVO;
 import org.kosa.nest.service.ServerUserService;
 
@@ -35,7 +36,7 @@ public class NetworkWorker {
 	public void go() throws IOException {
 		ServerSocket serverSocket = null;
 		try {
-			serverSocket = new ServerSocket(9876);
+			serverSocket = new ServerSocket(NestConfig.port);
 			while(true){
 				Socket socket = serverSocket.accept();
 				ReceiveWorker receiveWorker = new ReceiveWorker(socket);
