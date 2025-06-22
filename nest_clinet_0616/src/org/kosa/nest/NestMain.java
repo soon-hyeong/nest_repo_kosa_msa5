@@ -2,6 +2,7 @@ package org.kosa.nest;
 
 import java.io.IOException;
 
+import org.kosa.nest.client.CommandLineInterface;
 import org.kosa.nest.exception.DataProcessException;
 import org.kosa.nest.exception.FileNotFoundException;
 import org.kosa.nest.exception.ServerConnectException;

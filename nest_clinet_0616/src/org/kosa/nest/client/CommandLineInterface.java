@@ -1,4 +1,4 @@
-package org.kosa.nest;
+package org.kosa.nest.client;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
