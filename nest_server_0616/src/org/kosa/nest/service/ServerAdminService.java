@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import org.kosa.nest.common.ServerConfig;
+import org.kosa.nest.common.NestConfig;
 import org.kosa.nest.exception.AdminNotLoginException;
 import org.kosa.nest.exception.FileNotDeletedInDatabase;
 import org.kosa.nest.exception.FileNotFoundException;
@@ -192,12 +192,12 @@ public class ServerAdminService {
 			File outputFile = null;
 			try {
 				
-				File nestServerDir = new File(ServerConfig.REPOPATH);
+				File nestServerDir = new File(NestConfig.REPOPATH);
 				if(!nestServerDir.isDirectory())
 					nestServerDir.mkdirs();
 
 				File inputFile = new File(inputFileInfo.getFileLocation());
-				String outputFileAddress = ServerConfig.REPOPATH + File.separator + inputFile.getName();
+				String outputFileAddress = NestConfig.REPOPATH + File.separator + inputFile.getName();
 				outputFile = new File(outputFileAddress);
 			
 				// 파일 입출력
@@ -240,7 +240,7 @@ public class ServerAdminService {
 		if(currentLoginAdmin == null)
 			throw new AdminNotLoginException("Permission denied!");
 		else {
-	        File file = new File(ServerConfig.REPOPATH + File.separator + fileName);
+	        File file = new File(NestConfig.REPOPATH + File.separator + fileName);
 	        
 	        if(!file.exists())
 	        	throw new FileNotFoundException("File doesn't exist in repository!");
