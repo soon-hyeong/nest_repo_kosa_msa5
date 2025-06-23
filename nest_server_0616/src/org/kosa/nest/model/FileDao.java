@@ -11,8 +11,14 @@ import java.util.List;
 
 import org.kosa.nest.common.DatabaseUtil;
 
+
 public class FileDao {
-	
+	/**
+	 * 데이터베이스의 fil에 관한 일부 정보들을 가져옵니다<br>
+	 * select 문을 통해 title, tag, created_at 정보를 가져옵니다<br>
+	 * @return
+	 * @throws SQLException
+	 */
     public List<FileVO> getAllFileInfoList() throws SQLException {
         Connection con = null;
         PreparedStatement pstmt = null;
@@ -118,7 +124,8 @@ public class FileDao {
     }
 
     /**
-     * tag를 통해 사용자가 원하는 파일의 모든 정보를 가져옴<br>
+     * tag를 통해 사용자가 원하는 파일의 일부 정보를 가져옴<br>
+     * select문을 통해 db의 title 컬럼에서 제목을 가져오고 like와 or 연산자를 이용하여 title, tag, created_at 정보 중 하나만 입력해도 가져오도록 함<br>
      * @param keyword
      * @return
      * @throws SQLException
@@ -152,7 +159,17 @@ public class FileDao {
         return list;
     }
 
-    public List<FileVO> getFileInfo(String keyword) throws SQLException {
+
+
+    /**
+     * 찾고자 하는 파일의 모든 정보를 파일의 제목을 통해 가져옵니다 <br>
+     * select 문을 통해 where문을 이용하여 사용자가 입력한 title과 동일한 행의 모든 컬럼 정보를 다 가져옵니다 <br>
+     * @param keyword
+     * @return
+     * @throws SQLException
+     */
+    public ArrayList<FileVO> getFileInfo(String keyword) throws SQLException {
+
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;

@@ -62,7 +62,7 @@ public class ClientService {
     }
 
 	/**
-	 * list
+	 * 클라이언트의 로컬컴퓨터에서 다운로드한 파일 목록을 가져옵니다
 	 * @return
 	 * @throws FileNotFoundException 
 	 */
@@ -94,7 +94,7 @@ public class ClientService {
     }
 	
 	/**
-	 * search : 파일의 일부 정보만 
+	 * 서버에 있는 파일의 일부 정보(파일제목)를 가져옵니다
 	 * 명령어가 search 또는 info일 때
 	 * @param keyword
 	 * @return
@@ -120,7 +120,7 @@ public class ClientService {
 	}
 	
 	/**
-	 * info : 파일의 상세정보 가져오기
+	 * 서버에 있는 파일의 모든 정보를 가져옵니다.
 	 * @param keyword
 	 * @return
 	 * @throws FileNotFoundException 

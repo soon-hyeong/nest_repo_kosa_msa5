@@ -280,9 +280,17 @@ public class ServerAdminService {
 
 		return fileVO;
 	}
+
+
+	/**
+	 * 모든 파일들을 리스트 형식으로 불러옵니다 <br>
+	 * 불러온 각각의 파일은 일부 정보(tag, title, created_at)들만 표시됩니다<br>
+	 * @return
+	 * @throws AdminNotLoginException
+	 * @throws SearchDatabaseException
+	 */
 	public List<FileVO> findAllList() throws AdminNotLoginException, SearchDatabaseException {
 		if(currentLoginAdmin == null)
-
 			throw new AdminNotLoginException("Permission denied");
 		else {
 			List<FileVO> list = null;
@@ -291,14 +299,15 @@ public class ServerAdminService {
 			} catch(SQLException e){
 				throw new SearchDatabaseException("File not found in database:" + e.getMessage());
 			}
-			return list;
+			return (ArrayList<FileVO>) list;
 		}
 
 	}
 
 	/**
-	 * search : 파일의 일부 정보만
-	 * 
+	 * 개별 파일을 리스트 형식으로 불러옵니다 <br>
+	 * 불러온 파일은 title 만 표시됩니다<br>
+	 * 태그, 제목, 생성시간 중 하나만 입력해도 원하는 파일을 찾을 수 있습니다<br>
 	 * @param keyword
 	 * @return
 	 * @throws AdminNotLoginException
@@ -320,8 +329,10 @@ public class ServerAdminService {
 	}
 
 	/**
+	 * 개별 파일의 상세정보를 확인합니다<br>
+	 * 파일의 제목 뿐만 아니라 db 에 있는 모든 정보를 볼 수 있습니다 <br>
+	 * 제목, 태그, 날짜 중 하나라도 키워드로 이용하여 파일의 정보를 조회할 수 있습니다 <br>
 	 * info: 파일 상세 정보 확인
-	 * 
 	 * @param keyword
 	 * @return
 	 * @throws AdminNotLoginException
