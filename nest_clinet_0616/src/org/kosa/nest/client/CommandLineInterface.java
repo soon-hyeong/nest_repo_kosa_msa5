@@ -22,6 +22,7 @@ public class CommandLineInterface {
     }
 
     /**
+     * 프로그램 실행 메서드 <br>
      * @throws IOException
      * @throws FileNotFoundException
      * @throws DataProcessException
@@ -35,6 +36,8 @@ public class CommandLineInterface {
     }
 
     /**
+     * 프로그램에 명령어를 전달하는 메서드 <br>
+     * 유저로부터 받은 명령어를 각 해당 기능(메서드)에 전달 <br>
      * @param commandLine
      * @throws IOException
      * @throws FileNotFoundException
@@ -67,6 +70,8 @@ public class CommandLineInterface {
     }
 
     /**
+     * 결과값을 String으로 변경하는 메서드 <br>
+     * List로 전달되는 값을 String으로 변경하고 출력 양식에 맞춤 <br>
      * @param command
      * @param keyword
      * @throws DataProcessException
