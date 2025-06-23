@@ -3,11 +3,10 @@ package org.kosa.nest.client;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.List;
-import java.util.Scanner;
-import java.util.StringTokenizer;
 
 import org.kosa.nest.exception.DataProcessException;
 import org.kosa.nest.exception.FileNotFoundException;
+import org.kosa.nest.exception.NoCommandLineException;
 import org.kosa.nest.exception.ServerConnectException;
 import org.kosa.nest.model.FileVO;
 import org.kosa.nest.service.ClientService;
@@ -15,11 +14,11 @@ import org.kosa.nest.service.ClientService;
 public class CommandLineInterface {
 
     private ClientService clientService;
-    private Scanner scanner;
+    private String[] args;
 
-    public CommandLineInterface() {
+    public CommandLineInterface(String[] args) {
+    		this.args = args;
             this.clientService = new ClientService();
-            this.scanner = new Scanner(System.in);
     }
 
     /**
@@ -27,10 +26,12 @@ public class CommandLineInterface {
      * @throws FileNotFoundException
      * @throws DataProcessException
      * @throws ServerConnectException 
+     * @throws NoCommandLineException 
      */
-    public void executeProgram() throws IOException, FileNotFoundException, DataProcessException, ServerConnectException {
-        String commandLine = scanner.nextLine();
-        getCommand(commandLine);
+    public void executeProgram() throws IOException, FileNotFoundException, DataProcessException, ServerConnectException, NoCommandLineException {
+    	if(args.length == 0)
+    		throw new NoCommandLineException("Please enter commandline!");
+        getCommand();
     }
 
     /**
@@ -40,12 +41,11 @@ public class CommandLineInterface {
      * @throws DataProcessException
      * @throws ServerConnectException 
      */
-    public void getCommand(String commandLine) throws IOException, FileNotFoundException, DataProcessException, ServerConnectException {
-        StringTokenizer st = new StringTokenizer(commandLine);
-        String command = st.nextToken();
+    public void getCommand() throws IOException, FileNotFoundException, DataProcessException, ServerConnectException {
+        String command = args[0];
         String keyword = null;
-        if (st.hasMoreTokens()) {
-            keyword = st.nextToken();
+        if (args.length > 1) {
+            keyword = args[1];
         }
         String reuniteCommandLine = command + " " + keyword;
 
@@ -63,7 +63,6 @@ public class CommandLineInterface {
             clientService.help(command);
         else {
             System.out.println("Wrong command. If you need help, enter 'nest help'");
-            scanner.close();
         }
     }
 
