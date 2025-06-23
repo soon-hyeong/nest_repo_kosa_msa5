@@ -51,7 +51,7 @@ public class ReceiveWorker {
         StringTokenizer st = new StringTokenizer(commandLine);
         String command = st.nextToken();
 
-        ArrayList<FileVO> resultList = null;
+        List<FileVO> resultList = null;
         try {
             pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
             pw.println(commandLine);
@@ -59,7 +59,7 @@ public class ReceiveWorker {
             if (command.equalsIgnoreCase("download")) {
                 this.downloadFile();
             } else if (command.equalsIgnoreCase("search") || command.equalsIgnoreCase("info")) {
-                resultList = (ArrayList<FileVO>) this.receiveFileList();
+                resultList = (List<FileVO>) this.receiveFileList();
             }
         } finally {
             if (ois != null)
@@ -89,9 +89,9 @@ public class ReceiveWorker {
     @SuppressWarnings("unchecked")
     public void downloadFile() throws IOException, ClassNotFoundException, FileNotFoundException {
 
-        ArrayList<FileVO> list = new ArrayList<>();
+        List<FileVO> list = new ArrayList<>();
         ois = new ObjectInputStream(socket.getInputStream());
-        list = (ArrayList<FileVO>) ois.readObject();
+        list = (List<FileVO>) ois.readObject();
         
         String filename = null;
         if (list.size() < 1)
@@ -119,10 +119,10 @@ public class ReceiveWorker {
      * @throws ClassNotFoundException
      */
     @SuppressWarnings("unchecked")
-    public ArrayList<FileVO> receiveFileList() throws IOException, ClassNotFoundException {
+    public List<FileVO> receiveFileList() throws IOException, ClassNotFoundException {
         ois = new ObjectInputStream(socket.getInputStream());
-        ArrayList<FileVO> list = new ArrayList<>();
-        list = (ArrayList<FileVO>) ois.readObject();
+        List<FileVO> list = new ArrayList<>();
+        list = (List<FileVO>) ois.readObject();
         return list;
     }
 }
