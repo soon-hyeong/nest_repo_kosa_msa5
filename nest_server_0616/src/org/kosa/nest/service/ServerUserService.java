@@ -20,7 +20,7 @@ public class ServerUserService {
 	
 	/**
 	 * 유저 클라이언트가 전달한 명령어를 분석하고, <br>
-	 * 다운로드 요청한 파일의 정보를 전달하는 메서드
+	 * 다운로드 요청한 파일의 정보를 전달하는 메서드<br>
 	 * @param commandLine
 	 * @return
 	 * @throws FileNotFoundException 
@@ -46,7 +46,8 @@ public class ServerUserService {
 		return resultFileInfoList;
 	}
 	/**
-	 * search : 파일의 일부 정보만 
+	 * 모든 파일을 리스트 형식으로 불러옵니다 <br>
+	 * 불러온 각각의 파일은 일부 정보(tag, title, created_at)들만 표시됩니다<br>
 	 * @param keyword
 	 * @return
 	 */
@@ -73,7 +74,9 @@ public class ServerUserService {
 	    return resultList;
 	}
 	/**
-	 * info: 파일 상세 정보 확인 
+	 * 개별 파일의 상세정보를 확인합니다<br>
+	 * 파일의 제목 뿐만 아니라 db에 있는 모든 정보를 볼 수 있습니다 <br>
+	 * 제목, 태그, 날짜 중 하나라도 키워드로 이용하여 파일의 정보를 조회할 수 있습니다 <br>
 	 * @param keyword
 	 * @return
 	 */
