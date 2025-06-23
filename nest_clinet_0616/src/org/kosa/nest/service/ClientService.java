@@ -168,7 +168,7 @@ public class ClientService {
      * 
      * @param command
      */
-    public void help(String command) {
+    public void help() {
     	System.out.println("---- nest 프로그램 안내 ----");
         System.out.println("nest는 로컬과 서버의 파일을 명령어 한 줄로 손쉽게 관리할 수 있는 CLI 기반 파일 관리 프로그램입니다.");
         System.out.println("로컬 모드에서는 내 컴퓨터의 파일 목록 확인 및 삭제가 가능하며,");
