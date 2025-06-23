@@ -16,6 +16,9 @@ import org.kosa.nest.exception.ServerConnectException;
 import org.kosa.nest.model.FileVO;
 import org.kosa.nest.network.ReceiveWorker;
 
+/**
+ * 
+ */
 public class ClientService {
     
     private ReceiveWorker receiveWorker;
@@ -159,6 +162,12 @@ public class ClientService {
         }
     }
 
+    /**
+     * nest 프로그램에 관한 설명 및 명령어 도움말<br>
+     * 간략하게 nest 프로그램에 관한 설명을 하고 사용되는 명령어들을 출력하게 했다<br>
+     * 
+     * @param command
+     */
     public void help(String command) {
     	System.out.println("---- nest 프로그램 안내 ----");
         System.out.println("nest는 로컬과 서버의 파일을 명령어 한 줄로 손쉽게 관리할 수 있는 CLI 기반 파일 관리 프로그램입니다.");
