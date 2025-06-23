@@ -34,7 +34,19 @@ public class CommandLineInterface {
 	}
 	
 	public void executeProgram() {
-		
+        String logo = """
+                ███╗   ██╗███████╗███████╗████████╗
+                ████╗  ██║██╔════╝██╔════╝╚══██╔══╝
+                ██╔██╗ ██║█████╗  ███████╗   ██║   
+                ██║╚██╗██║██╔══╝  ╚════██║   ██║   
+                ██║ ╚████║███████╗███████║   ██║   
+                ╚═╝  ╚═══╝╚══════╝╚══════╝   ╚═╝   
+                                                
+                              	NEST 
+                          
+                    A neat place for your files.
+                """;
+        System.out.println(logo);
 		Thread serverThread = new Thread(new ServerThread());
 		Thread clientThread = new Thread(new clientThread());
 		

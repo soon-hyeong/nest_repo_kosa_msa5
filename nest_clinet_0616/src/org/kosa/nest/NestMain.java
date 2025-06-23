@@ -17,6 +17,20 @@ public class NestMain {
     public static void main(String[] args) {
         CommandLineInterface CLI = new CommandLineInterface(args);
         try {
+            String logo = """
+                    ███╗   ██╗███████╗███████╗████████╗
+                    ████╗  ██║██╔════╝██╔════╝╚══██╔══╝
+                    ██╔██╗ ██║█████╗  ███████╗   ██║   
+                    ██║╚██╗██║██╔══╝  ╚════██║   ██║   
+                    ██║ ╚████║███████╗███████║   ██║   
+                    ╚═╝  ╚═══╝╚══════╝╚══════╝   ╚═╝   
+                                                                    
+                              	NEST 
+                          
+                        A neat place for your files.
+                    """;
+
+            System.out.println(logo);
             CLI.executeProgram();
         } catch (IOException e) {
             System.err.print(e.getMessage());
