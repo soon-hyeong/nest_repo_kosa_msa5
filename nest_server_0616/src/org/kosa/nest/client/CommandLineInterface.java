@@ -10,6 +10,7 @@ import org.kosa.nest.exception.AdminNotLoginException;
 import org.kosa.nest.exception.FileNotDeletedInDatabase;
 import org.kosa.nest.exception.FileNotFoundException;
 import org.kosa.nest.exception.LoginException;
+import org.kosa.nest.exception.NoCommandLineException;
 import org.kosa.nest.exception.PasswordNotCorrectException;
 import org.kosa.nest.exception.RegisterAdminFailException;
 import org.kosa.nest.exception.SearchDatabaseException;
@@ -87,14 +88,19 @@ public class CommandLineInterface {
 					System.err.println(e.getMessage());
 				} catch (FileNotDeletedInDatabase e) {
 					System.err.println(e.getMessage());
+				} catch (NoCommandLineException e) {
+					System.err.println(e.getMessage());
 				}
 			}
 		}
 		
-		public String getCommand() throws LoginException, AdminNotLoginException, SQLException, IOException, PasswordNotCorrectException, UpdateAdminInfoFailException, FileNotFoundException, SearchDatabaseException, RegisterAdminFailException, UploadFileFailException, FileNotDeletedInDatabase {
+		public String getCommand() throws LoginException, AdminNotLoginException, SQLException, IOException, PasswordNotCorrectException, UpdateAdminInfoFailException, FileNotFoundException, SearchDatabaseException, RegisterAdminFailException, UploadFileFailException, FileNotDeletedInDatabase, NoCommandLineException {
 			
 			String commandLine = scanner.nextLine();
 			StringTokenizer st = new StringTokenizer(commandLine);
+			if(!st.hasMoreTokens()) {
+				throw new NoCommandLineException("Please enter commandline!");
+			}
 			String command = st.nextToken();
 			String keyword = null;
 			if(st.hasMoreTokens())
