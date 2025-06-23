@@ -5,11 +5,12 @@ import java.io.IOException;
 import org.kosa.nest.client.CommandLineInterface;
 import org.kosa.nest.exception.DataProcessException;
 import org.kosa.nest.exception.FileNotFoundException;
+import org.kosa.nest.exception.NoCommandLineException;
 import org.kosa.nest.exception.ServerConnectException;
 
 public class NestMain {
     public static void main(String[] args) {
-        CommandLineInterface CLI = new CommandLineInterface();
+        CommandLineInterface CLI = new CommandLineInterface(args);
         try {
             CLI.executeProgram();
         } catch (IOException e) {
@@ -20,6 +21,8 @@ public class NestMain {
             System.err.print(e.getMessage());
         } catch (ServerConnectException e) {
             System.err.print(e.getMessage());
-        }
+        } catch (NoCommandLineException e) {
+        	System.err.println(e.getMessage());
+		}
     }
 }
