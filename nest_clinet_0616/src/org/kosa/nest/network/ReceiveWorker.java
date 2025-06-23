@@ -25,8 +25,6 @@ public class ReceiveWorker {
     private ObjectInputStream ois;
     private BufferedOutputStream bos;
 
-    private String ip = "192.168.210.6"; // 서버 ip
-
     /**
      * ReceiveWorker 생성자 <br>
      * socket 생성해 서버와 연결 <br>
