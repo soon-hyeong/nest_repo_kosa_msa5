@@ -9,7 +9,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kosa.nest.common.ClientConfig;
+import org.kosa.nest.common.NestConfig;
 import org.kosa.nest.exception.DataProcessException;
 import org.kosa.nest.exception.FileNotFoundException;
 import org.kosa.nest.exception.ServerConnectException;
@@ -28,7 +28,7 @@ public class ClientService {
      * 없으면 경로 및 폴더 생성 <br>
      */
     private void makeDir() {
-        File file = new File(ClientConfig.REPOPATH);
+        File file = new File(NestConfig.REPOPATH);
         if (!file.isDirectory())
             file.mkdirs();
     }
@@ -65,7 +65,7 @@ public class ClientService {
 	 */
 	public List<FileVO> list() throws FileNotFoundException {
 	    ArrayList<FileVO> fileList = new ArrayList<>();
-        File folder = new File(ClientConfig.REPOPATH);
+        File folder = new File(NestConfig.REPOPATH);
 
         if (folder.exists() && folder.isDirectory()) {
             File[] files = folder.listFiles();
@@ -150,7 +150,7 @@ public class ClientService {
      * @throws FileNotFoundException
      */
     public void delete(String title) throws FileNotFoundException {
-        File file = new File(ClientConfig.REPOPATH + File.separator + title);
+        File file = new File(NestConfig.REPOPATH + File.separator + title);
         if(!file.exists())
             throw new FileNotFoundException("File doesn't exist in your directory!");
         else {
