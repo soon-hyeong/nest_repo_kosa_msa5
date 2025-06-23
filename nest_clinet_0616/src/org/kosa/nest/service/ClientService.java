@@ -21,9 +21,11 @@ public class ClientService {
     private ReceiveWorker receiveWorker;
     
     /**
-     * 클라이언트가 파일 다운로드를 시작할 때 <br>
-     * 파일을 다운로드받을 경로 있는지 체크 후 <br>
-     * 없으면 경로 생성 <br>
+     * 경로 생성 메서드 <br>
+     * 클라이언트가 파일 다운로드를 시작할 때, <br>
+     * 폴더를 만들어주는 메서드 <br>
+     * 파일을 다운로드 받을 경로 체크 후 <br>
+     * 없으면 경로 및 폴더 생성 <br>
      */
     private void makeDir() {
         File file = new File(ClientConfig.REPOPATH);
@@ -32,7 +34,9 @@ public class ClientService {
     }
 
     /**
-     *  파일 다운로드가 성공하면 boolean값 받아 리턴 <br>
+     *  파일 다운로드 메서드 <br>
+     *  ReceiveWorker에 서버에 있는 파일을 받아달라고 요청 <br>
+     *  파일 다운로드에 문제가 생기면 Exception을 발생시킴 <br>
      * @param command
      * @return
      * @throws IOException
@@ -40,7 +44,7 @@ public class ClientService {
      * @throws FileNotFoundException 
      * @throws ServerConnectException 
      */
-    public void download(String command) throws DataProcessException, FileNotFoundException, ServerConnectException {
+    public void download(String command) throws DataProcessException, FileNotFoundException, ServerConnectException, IOException {
         makeDir();
         try {
             receiveWorker = new ReceiveWorker();
@@ -48,9 +52,10 @@ public class ClientService {
             System.out.println("File download success");
         } catch (ClassNotFoundException e) {
             throw new DataProcessException("Failed to process data!");
-        } catch (IOException e) {
-            throw new ServerConnectException("An unexpected error occurred while trying to connect to the server");
+//        } catch (IOException e) {
+//            throw new ServerConnectException("An unexpected error occurred while trying to connect to the server");
         }
+        System.out.println("download completed!");
     }
 
 	/**
@@ -137,11 +142,12 @@ public class ClientService {
 	    return resultList;
 	}
 	
+
     /**
-     * 클라이언트의 컴퓨터에 있는 다운로드 받은 파일 삭제 <br>
-     * @return
-     * @throws FileNotFoundException 
-     * @throws Exception 
+     *  파일 삭제 메서드 <br>
+     *  서버에서 다운로드 받은 파일 삭제 <br>
+     * @param title
+     * @throws FileNotFoundException
      */
     public void delete(String title) throws FileNotFoundException {
         File file = new File(ClientConfig.REPOPATH + File.separator + title);

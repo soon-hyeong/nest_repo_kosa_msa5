@@ -9,6 +9,11 @@ import org.kosa.nest.exception.NoCommandLineException;
 import org.kosa.nest.exception.ServerConnectException;
 
 public class NestMain {
+    /**
+     * nest program main class <br>
+     * nest 프로그램을 실행하는 실행점<br>
+     * @param args
+     */
     public static void main(String[] args) {
         CommandLineInterface CLI = new CommandLineInterface(args);
         try {
