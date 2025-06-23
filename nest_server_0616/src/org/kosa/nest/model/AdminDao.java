@@ -12,10 +12,18 @@ public class AdminDao {
 	private PreparedStatement pstmt;
 	private ResultSet rs;
 
-	// 1. register : 회원 가입
+	
+	/**
+	 * 1. register 회원가입
+	 * SQL에 쓸 때 email과 password를 입력하여 회원가입을 진행
+	 * 
+	 * @param admin
+	 * @return
+	 * @throws SQLException
+	 */
 	public int register(AdminVO admin) throws SQLException {
 		conn = DatabaseUtil.getConnection();
-		String sql = "INSERT INTO admin (email, password) VALUES(?,?)"; // Id,Email,Password 순으로 입력
+		String sql = "INSERT INTO admin (email, password) VALUES(?,?)"; // Email,Password 순으로 입력
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, admin.getEmail());
@@ -27,10 +35,18 @@ public class AdminDao {
 		}
 	}
 
-	// 2. getAdminInfo : ID로 관리자 정보 조회
+	
+	/**
+	 * 2. getAdminInfo
+	 * email로 AdminVO에 들어있는 관리자의 정보를 추출하도록 진행
+	 * 
+	 * @param email
+	 * @return
+	 * @throws SQLException
+	 */
 	public AdminVO getAdminInfo(String email) throws SQLException {
 		conn = DatabaseUtil.getConnection();
-		String sql = "SELECT id, email, password FROM admin WHERE email = ?"; // Id를 통해 관리자 정보를 조회
+		String sql = "SELECT id, email, password FROM admin WHERE email = ?"; // email를 통해 관리자 정보를 조회
 		try {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, email);
@@ -46,7 +62,14 @@ public class AdminDao {
 
 	}
 
-	// 3. updateAdminInfo : 관리자 정보 수정
+	
+	/**
+	 * 3. updateAdminInfo
+	 * AdminVO에 있는 관리자 정보를 불러와 email과 password를 수정하도록 진행
+	 * 
+	 * @param admin
+	 * @throws SQLException
+	 */
 	public void updateAdminInfo(AdminVO admin) throws SQLException {
 		conn = DatabaseUtil.getConnection();
 		String sql = "UPDATE admin SET email = ?, password = ? WHERE id = ?"; // Id를 찾아 email과 password를 수정하도록 구현

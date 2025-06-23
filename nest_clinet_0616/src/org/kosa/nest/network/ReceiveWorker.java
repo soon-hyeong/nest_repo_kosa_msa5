@@ -26,8 +26,8 @@ public class ReceiveWorker {
     private BufferedOutputStream bos;
 
     /**
-     * ReceiveWorker 생성자로 socket 생성해 서버와 연결 <br>
-     * 
+     * ReceiveWorker 생성자 <br>
+     * socket 생성해 서버와 연결 <br>
      * @throws UnknownHostException
      * @throws IOException
      */
@@ -36,8 +36,11 @@ public class ReceiveWorker {
     }
 
     /**
-     * 클라이언트가 입력한 명령어를 서버로 전달 <br>
-     * 
+     * 명령어 전달 메서드 <br>
+     * 클라이언트가 입력한 명령어를 스트림을 열고 <br>
+     * 서버로 전달하고<br>
+     * 명령어에 따라 해당하는 각 메서드 호출, <br>
+     * 각 Input, Output 스트림들을 닫아줌 <br>
      * @param command
      * @return
      * @throws IOException
@@ -73,26 +76,12 @@ public class ReceiveWorker {
     }
 
     /**
-     * 명령어 : search, info 클라이언트가 search, info 명령을 내리면 <br>
-     * 파일 list를 server로부터 받아 FileVO로 만들고 list에 넣어서 반환 <br>
-     * 
-     * @return
-     * @throws IOException
-     * @throws ClassNotFoundException
-     */
-    @SuppressWarnings("unchecked")
-    public List<FileVO> receiveFileList() throws IOException, ClassNotFoundException {
-        ois = new ObjectInputStream(socket.getInputStream());
-        ArrayList<FileVO> list = new ArrayList<>();
-        list = (ArrayList<FileVO>) ois.readObject();
-        return list;
-    }
-
-    /**
-     * 명령어 : download 클라이언트가 download 명령어로 다운로드 받을 파일 제목을 명령하면 <br>
-     * 파일을 서버로부터 받아 클라이언트의 컴퓨터에 다운로드 하는 기능 <br>
-     * 파일 이름 : 서버에서 객체로 들어온 FileVO에서 얻음<br>
-     * 
+     * 서버에서 실제 파일을 다운로드 받는 메서드 <br>
+     * 유저가 download 명령을 내렸을 때 <br>
+     * 실제 파일을 서버로부터 받아 유저의 컴퓨터에 다운로드 하는 기능 <br>
+     * 서버에서 FileVO와 실제 파일을 각각 받는데 <br>
+     * 이는 실제 파일을 저장할 때 파일 이름을 얻을 수 없기 때문에 <br>
+     * 저장할 파일 이름을 FileVO에서 얻음 <br>
      * @return
      * @throws IOException
      * @throws ClassNotFoundException
@@ -107,7 +96,7 @@ public class ReceiveWorker {
         
         String filename = null;
         if (list.size() < 1)
-            throw new FileNotFoundException("File doesn't exist in your directory!");  // 다운로드 메서드에서만 예외적으로 exception throw
+            throw new FileNotFoundException("File doesn't exist in server repository!");  // 다운로드 메서드에서만 예외적으로 exception throw
         else {
             filename = list.get(0).getSubject();
             bos = new BufferedOutputStream(new FileOutputStream(ClientConfig.REPOPATH + File.separator + filename));
@@ -119,6 +108,22 @@ public class ReceiveWorker {
             }
             bos.flush();
         }
+    }
 
+    /**
+     * 서버에서 파일(FileVO) 리스트를 받는 메서드 <br>
+     * 유저가 search, info 명령을 내렸을 때 <br>
+     * 서버로부터 파일리스트를 받아 FileVO로 만들고 <br>
+     * ArrayList에 넣어 서비스로 반환 <br>
+     * @return
+     * @throws IOException
+     * @throws ClassNotFoundException
+     */
+    @SuppressWarnings("unchecked")
+    public ArrayList<FileVO> receiveFileList() throws IOException, ClassNotFoundException {
+        ois = new ObjectInputStream(socket.getInputStream());
+        ArrayList<FileVO> list = new ArrayList<>();
+        list = (ArrayList<FileVO>) ois.readObject();
+        return list;
     }
 }
