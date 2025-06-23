@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.kosa.nest.common.ClientConfig;
 import org.kosa.nest.common.NestConfig;
 import org.kosa.nest.exception.FileNotFoundException;
 import org.kosa.nest.model.FileVO;
@@ -99,7 +98,7 @@ public class ReceiveWorker {
             throw new FileNotFoundException("File doesn't exist in server repository!");  // 다운로드 메서드에서만 예외적으로 exception throw
         else {
             filename = list.get(0).getSubject();
-            bos = new BufferedOutputStream(new FileOutputStream(ClientConfig.REPOPATH + File.separator + filename));
+            bos = new BufferedOutputStream(new FileOutputStream(NestConfig.REPOPATH + File.separator + filename));
             
             int data = ois.read();
             while (data != -1) {
