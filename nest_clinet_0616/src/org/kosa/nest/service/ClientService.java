@@ -16,9 +16,6 @@ import org.kosa.nest.exception.ServerConnectException;
 import org.kosa.nest.model.FileVO;
 import org.kosa.nest.network.ReceiveWorker;
 
-/**
- * 
- */
 public class ClientService {
     
     private ReceiveWorker receiveWorker;
