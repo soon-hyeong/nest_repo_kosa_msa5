@@ -20,11 +20,16 @@ import org.kosa.nest.service.ServerUserService;
 
 public class NetworkWorker {
 
+	private static NetworkWorker instance;
 	private ServerUserService serverUserService;
 	
 	//생성자로 ServerUserService를 받아옴
-	public NetworkWorker() {
-		this.serverUserService = new ServerUserService();
+	private NetworkWorker() {
+		this.serverUserService = ServerUserService.getInstance();
+	}
+	
+	public static NetworkWorker getInstance() {
+		return instance = new NetworkWorker();
 	}
 	
 	/**

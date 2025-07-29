@@ -13,6 +13,17 @@ import org.kosa.nest.common.DatabaseUtil;
 
 
 public class FileDao {
+	
+	private static FileDao instance;
+	
+	private FileDao() {
+		
+	}
+	
+	public static FileDao getInstance() {
+		return instance = new FileDao();
+	}
+	
 	/**
 	 * 데이터베이스의 fil에 관한 일부 정보들을 가져옵니다<br>
 	 * select 문을 통해 title, tag, created_at 정보를 가져옵니다<br>
