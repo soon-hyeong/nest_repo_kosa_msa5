@@ -13,12 +13,18 @@ import org.kosa.nest.service.ClientService;
 
 public class CommandLineInterface {
 
+    @SuppressWarnings("unused")
+    private static CommandLineInterface instance;
     private ClientService clientService;
     private String[] args;
 
-    public CommandLineInterface(String[] args) {
+    private CommandLineInterface(String[] args) throws UnknownHostException, IOException {
     		this.args = args;
-            this.clientService = new ClientService();
+            this.clientService = ClientService.getInstance();
+    }
+    
+    public static CommandLineInterface getInstatnce(String[] args) throws UnknownHostException, IOException {
+        return instance = new CommandLineInterface(args);
     }
 
     /**

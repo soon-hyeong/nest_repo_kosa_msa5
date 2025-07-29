@@ -15,8 +15,9 @@ public class NestMain {
      * @param args
      */
     public static void main(String[] args) {
-        CommandLineInterface CLI = new CommandLineInterface(args);
         try {
+            CommandLineInterface CLI = CommandLineInterface.getInstatnce(args);
+            
             String logo = """
                     ███╗   ██╗███████╗███████╗████████╗
                     ████╗  ██║██╔════╝██╔════╝╚══██╔══╝

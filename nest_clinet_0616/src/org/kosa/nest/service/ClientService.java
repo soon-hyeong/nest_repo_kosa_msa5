@@ -18,7 +18,17 @@ import org.kosa.nest.network.ReceiveWorker;
 
 public class ClientService {
     
+    @SuppressWarnings("unused")
+    private static ClientService instance;
     private ReceiveWorker receiveWorker;
+    
+    private ClientService() throws UnknownHostException, IOException {
+        receiveWorker = ReceiveWorker.getInstance();
+    }
+    
+    public static ClientService getInstance() throws UnknownHostException, IOException {
+        return instance = new ClientService();
+    }
     
     /**
      * 경로 생성 메서드 <br>
@@ -47,7 +57,6 @@ public class ClientService {
     public void download(String command) throws DataProcessException, FileNotFoundException, ServerConnectException, IOException {
         makeDir();
         try {
-            receiveWorker = new ReceiveWorker();
             receiveWorker.sendCommand(command);
             System.out.println("File download success");
         } catch (ClassNotFoundException e) {
@@ -103,7 +112,6 @@ public class ClientService {
 	public List<FileVO> search(String reuniteCommandLine) throws FileNotFoundException, DataProcessException, UnknownHostException, ServerConnectException {
 	    List<FileVO> resultList = new ArrayList<>();
 	    try {
-	        receiveWorker = new ReceiveWorker();
 	        resultList = receiveWorker.sendCommand(reuniteCommandLine);
 	        if(resultList.size() < 1) {
 	            throw new FileNotFoundException("File doesn't exist in server!");
@@ -129,7 +137,6 @@ public class ClientService {
 	    List<FileVO> resultList = new ArrayList<>();
 	    
 	    try {
-	        receiveWorker = new ReceiveWorker();
 	        resultList = receiveWorker.sendCommand(reuniteCommandLine);
 	       if(resultList.size() < 1) {
 	            throw new FileNotFoundException("File doesn't exist in server!");
