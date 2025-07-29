@@ -1,10 +1,10 @@
 package org.kosa.nest;
 
-import org.kosa.nest.client.CommandLineInterface;
+import org.kosa.nest.commandHandler.ThreadHandler;
 
 public class NestServerMain {
 	public static void main(String[] args) {
-		CommandLineInterface cli = new CommandLineInterface();
-		cli.executeProgram();
+		ThreadHandler threadHandler = new ThreadHandler();
+		threadHandler.executeProgram();
 	}
 }
