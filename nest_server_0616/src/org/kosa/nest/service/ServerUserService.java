@@ -12,10 +12,15 @@ import org.kosa.nest.model.FileVO;
 
 public class ServerUserService {
 	
-	FileDao fileDao;
+	private static ServerUserService instance;
+	private FileDao fileDao;
 	
-	public ServerUserService() {
-		this.fileDao = new FileDao();
+	private ServerUserService() {
+		this.fileDao = FileDao.getInstance();
+	}
+	
+	public static ServerUserService getInstance() {
+		return instance = new ServerUserService();
 	}
 	
 	/**
@@ -58,8 +63,7 @@ public class ServerUserService {
 	    ArrayList<FileVO> resultList = new ArrayList<>();
 
 	    try {
-	        FileDao dao = new FileDao(); // DAO 객체 생성
-	        List<FileVO> allFiles = dao.getAllFileInfoList(); // 전체 파일 목록 조회
+	        List<FileVO> allFiles = fileDao.getAllFileInfoList(); // 전체 파일 목록 조회
 
 	        for (FileVO file : allFiles) {
 	            if (file.getSubject() != null && file.getSubject().contains(keyword)) {
@@ -87,8 +91,7 @@ public class ServerUserService {
 	    List<FileVO> resultList = new ArrayList<>();
 
 	    try {
-	        FileDao dao = new FileDao();
-	        resultList = dao.getFileInfo(keyword); // 제목, 태그, 날짜 중 하나라도 키워드 포함 시 반환
+	        resultList = fileDao.getFileInfo(keyword); // 제목, 태그, 날짜 중 하나라도 키워드 포함 시 반환
 
 	    } catch (SQLException e) {
 	        System.out.println("파일 상세 정보 조회 중 오류 발생: " + e.getMessage());

@@ -1,4 +1,4 @@
-package org.kosa.nest.commandHandler;
+package org.kosa.nest.TheadHandler;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -18,12 +18,18 @@ import org.kosa.nest.network.NetworkWorker;
 
 public class ThreadHandler {
 	
+	@SuppressWarnings("unused")
+	private static ThreadHandler instance;
 	private NetworkWorker networkWorker;
 	private CommandLineInterface commandLineInterface;
 	
-	public ThreadHandler() {
-		networkWorker = new NetworkWorker();
-		commandLineInterface = new CommandLineInterface();
+	private ThreadHandler() {
+		networkWorker = NetworkWorker.getInstance();
+		commandLineInterface = CommandLineInterface.getInstance();
+	}
+	
+	public static ThreadHandler getInstance() {
+		return instance = new ThreadHandler();
 	}
 
 	public void executeProgram() {
@@ -69,7 +75,7 @@ public class ThreadHandler {
 			while(true) {
 				try {
 					String commandLine = commandLineInterface.getCommand();
-					if(commandLine.equalsIgnoreCase("quit"))
+					if(commandLine.equalsIgnoreCase("quit") || commandLine.equalsIgnoreCase("exit"))
 						break;
 				}catch (RegisterAdminFailException e) {
 					System.err.println(e.getMessage());	

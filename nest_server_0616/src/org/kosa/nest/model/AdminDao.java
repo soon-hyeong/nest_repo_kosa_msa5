@@ -8,11 +8,20 @@ import java.sql.SQLException;
 import org.kosa.nest.common.DatabaseUtil;
 
 public class AdminDao {
+	
+	@SuppressWarnings("unused")
+	private static AdminDao instance;
 	private Connection conn;
 	private PreparedStatement pstmt;
 	private ResultSet rs;
 
+	private AdminDao() {
+		
+	}
 	
+	public static AdminDao getInstance() {
+		return instance = new AdminDao();
+	}
 	/**
 	 * 1. register 회원가입
 	 * SQL에 쓸 때 email과 password를 입력하여 회원가입을 진행

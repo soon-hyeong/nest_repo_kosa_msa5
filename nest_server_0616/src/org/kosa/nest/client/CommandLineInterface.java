@@ -23,14 +23,19 @@ import org.kosa.nest.service.ServerAdminService;
 
 public class CommandLineInterface {
 
+	private static CommandLineInterface instance;
 	Scanner scanner;
 	NetworkWorker networkWorker;
 	ServerAdminService serverAdminService;
-
-	public CommandLineInterface() {
-		networkWorker = new NetworkWorker();
+	
+	private CommandLineInterface() {
+		networkWorker = NetworkWorker.getInstance();
 		scanner = new Scanner(System.in);
-		serverAdminService = new ServerAdminService(scanner);
+		serverAdminService = ServerAdminService.getInstance(scanner);
+	}
+	
+	public static CommandLineInterface getInstance() {
+		return instance = new CommandLineInterface();
 	}
 
 	public String getCommand() throws LoginException, AdminNotLoginException, SQLException, IOException,

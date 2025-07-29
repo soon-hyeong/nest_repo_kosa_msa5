@@ -31,13 +31,18 @@ import org.kosa.nest.model.FileVO;
 
 public class ServerAdminService {
 
+	private static ServerAdminService instance;
 	private Scanner scanner;
-	private FileDao fileDao = new FileDao();
-	private AdminDao adminDao = new AdminDao();
+	private FileDao fileDao = FileDao.getInstance();
+	private AdminDao adminDao = AdminDao.getInstance();
 	private AdminVO currentLoginAdmin;
 
-	public ServerAdminService(Scanner scanner) {
+	private ServerAdminService(Scanner scanner) {
 		this.scanner = scanner;
+	}
+	
+	public static ServerAdminService getInstance(Scanner scanner) {
+		return instance = new ServerAdminService(scanner);
 	}
 
 	/**
@@ -346,8 +351,7 @@ public class ServerAdminService {
 			FileVO resultFileVO = null;
 
 			try {
-				FileDao dao = new FileDao();
-				resultList = dao.getFileInfo(keyword); // 제목, 태그, 날짜 중 하나라도 키워드 포함 시 반환
+				resultList = fileDao.getFileInfo(keyword); // 제목, 태그, 날짜 중 하나라도 키워드 포함 시 반환
 
 			} catch (SQLException e) {
 				throw new SearchDatabaseException("File not found in database:" + e.getMessage());
