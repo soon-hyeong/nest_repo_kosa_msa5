@@ -8,6 +8,6 @@ import java.io.File;
  */
 public interface NestConfig {
     String REPOPATH = System.getProperty("user.home") +  File.separator + "nest";
-    String ip = "192.168.210.27";
+    String ip = "192.168.210.32";
     int port = 9876;
 }

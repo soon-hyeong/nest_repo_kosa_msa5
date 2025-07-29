@@ -19,19 +19,25 @@ import org.kosa.nest.model.FileVO;
 
 public class ReceiveWorker {
 
+    @SuppressWarnings("unused")
+    private static ReceiveWorker instance;
     private Socket socket;
     private PrintWriter pw;
     private ObjectInputStream ois;
     private BufferedOutputStream bos;
-
+    
     /**
      * ReceiveWorker 생성자 <br>
      * socket 생성해 서버와 연결 <br>
      * @throws UnknownHostException
      * @throws IOException
      */
-    public ReceiveWorker() throws UnknownHostException, IOException {
+    private ReceiveWorker() throws UnknownHostException, IOException {
         socket = new Socket(NestConfig.ip, NestConfig.port);
+    }
+   
+    public static ReceiveWorker getInstance() throws UnknownHostException, IOException {
+        return instance = new ReceiveWorker();
     }
 
     /**
