@@ -14,6 +14,7 @@ import org.kosa.nest.common.DatabaseUtil;
 
 public class FileDao {
 	
+	@SuppressWarnings("unused")
 	private static FileDao instance;
 	
 	private FileDao() {
@@ -21,20 +22,21 @@ public class FileDao {
 	}
 	
 	public static FileDao getInstance() {
-		return instance = new FileDao();
-	}
+		if(instance == null)
+			instance = new FileDao();
+		return instance;	}
 	
 	/**
-	 * 데이터베이스의 fil에 관한 일부 정보들을 가져옵니다<br>
+	 * 데이터베이스의 file에 관한 일부 정보들을 가져옵니다<br>
 	 * select 문을 통해 title, tag, created_at 정보를 가져옵니다<br>
 	 * @return
 	 * @throws SQLException
 	 */
-    public List<FileVO> getAllFileInfoList() throws SQLException {
+    public List<Object> getAllFileInfoList() throws SQLException {
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        ArrayList<FileVO> list = new ArrayList<>();
+        List<Object> list = new ArrayList<>();
 
         try {
             con = DatabaseUtil.getConnection();
@@ -141,11 +143,11 @@ public class FileDao {
      * @return
      * @throws SQLException
      */
-    public List<FileVO> getFileInfoList(String keyword) throws SQLException {
+    public List<Object> getFileInfoList(String keyword) throws SQLException {
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        ArrayList<FileVO> list = new ArrayList<>();
+        List<Object> list = new ArrayList<>();
 
         try {
             con = DatabaseUtil.getConnection();
@@ -179,12 +181,12 @@ public class FileDao {
      * @return
      * @throws SQLException
      */
-    public ArrayList<FileVO> getFileInfo(String keyword) throws SQLException {
+    public List<Object> getFileInfo(String keyword) throws SQLException {
 
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        ArrayList<FileVO> list = new ArrayList<>();
+        List<Object> list = new ArrayList<>();
 
         try {
             con = DatabaseUtil.getConnection();
