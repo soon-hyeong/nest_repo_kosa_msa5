@@ -27,7 +27,9 @@ public class ClientService {
     }
     
     public static ClientService getInstance() throws UnknownHostException, IOException {
-        return instance = new ClientService();
+        if(instance == null)
+            return instance = new ClientService();
+        return instance;
     }
     
     /**

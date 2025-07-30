@@ -24,7 +24,9 @@ public class CommandLineInterface {
     }
     
     public static CommandLineInterface getInstatnce(String[] args) throws UnknownHostException, IOException {
-        return instance = new CommandLineInterface(args);
+        if(instance == null)
+            instance = new CommandLineInterface(args);
+        return instance;
     }
 
     /**

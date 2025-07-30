@@ -37,7 +37,9 @@ public class ReceiveWorker {
     }
    
     public static ReceiveWorker getInstance() throws UnknownHostException, IOException {
-        return instance = new ReceiveWorker();
+        if(instance == null)
+            instance = new ReceiveWorker(); 
+        return instance;
     }
 
     /**
