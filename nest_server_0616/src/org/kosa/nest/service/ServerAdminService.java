@@ -32,106 +32,26 @@ import org.kosa.nest.model.FileVO;
 public class ServerAdminService {
 
 	private static ServerAdminService instance;
-	private Scanner scanner;
 	private FileDao fileDao = FileDao.getInstance();
 	private AdminDao adminDao = AdminDao.getInstance();
 	private AdminVO currentLoginAdmin;
 
-	private ServerAdminService(Scanner scanner) {
-		this.scanner = scanner;
+	private ServerAdminService() {
 	}
 	
-	public static ServerAdminService getInstance(Scanner scanner) {
-		return instance = new ServerAdminService(scanner);
+	public static ServerAdminService getInstance() {
+	    if(instance == null)
+	        instance = new ServerAdminService();
+		return instance;
 	}
 
-	/**
-	 * scanner를 통해 회원 가입하는 메서드 <br>
-	 * 회원 가입시 이메일, 비밀번호를 입력해 회원가입 진행 <br>
-	 * 예외로 등록이 불가능 하다면 예외 발생한 메세지를 띄움 <br>
-	 * 
-	 * @throws RegisterAdminFailException
-	 */
-	public void register() throws RegisterAdminFailException {
-		try {
-			System.out.print("email:");
-			String email = scanner.nextLine();
-			System.out.print("password:");
-			String password = scanner.nextLine();
+    public AdminVO getCurrentLoginAdmin() {
+        return currentLoginAdmin;
+    }
 
-			AdminVO vo = new AdminVO(email, password);
-			adminDao.register(vo); // Id는 시스템이 제공
-		} catch (SQLException e) {
-			throw new RegisterAdminFailException("Register failed, Email already in use:" + e.getMessage()); // 사용자 정의
-																												// 예외 전달
-		}
-	}
-
-	/**
-	 * scanner를 통한 로그인 메서드 <br>
-	 * 로그인 시에 아이디와 비밀번호를 입력하면 로그인, 하지만 비밀번호가 일치하지 않거나 이메일이 틀릴경우 <br>
-	 * 로그인 실패 메세지를 띄움<br>
-	 * 로그인 성공시에 ID가 아닌 email을 넣은 이유는 여러 사용자가 테스트 하기에 편리하고, 이메일처럼 <br>
-	 * 유니크한 정보를 기록에 남겨 Id로 구분이 불가한걸 이메일로 확인이 가능하게 함.<br>
-	 * 
-	 * @throws LoginException
-	 */
-	public void login() throws LoginException {
-
-		AdminVO admin = null;
-		try {
-			System.out.print("email:");
-			String email = scanner.nextLine();
-
-			System.out.print("password:");
-			String password = scanner.nextLine();
-
-			admin = adminDao.getAdminInfo(email);
-
-			if (!admin.getPassword().equals(password))
-				throw new LoginException("Invalid email or password");
-			// 로그인 성공 시 나오는 메세지
-			currentLoginAdmin = admin;
-			System.out.println("login success:" + currentLoginAdmin.getEmail());
-		} catch (Exception e) {
-			throw new LoginException("login failed: " + e.getMessage());
-		}
-	}
-
-	/**
-	 * 로그아웃 하는 메서드 <br>
-	 * 로그아웃을 하게 된다면 어떤 관리자가 로그아웃을 했는지 이메일로 나오게 함 <br>
-	 * 관리자가 존재하지 않을 때 로그아웃을 한다고 하면 관리자가 없다는 메세지를 띄움 <br>
-	 * 
-	 * @return
-	 * @throws AdminNotLoginException
-	 */
-
-	public void logout() throws AdminNotLoginException {
-		if(currentLoginAdmin == null)
-			throw new AdminNotLoginException("Administrator not logined!");
-		else {
-			String email = currentLoginAdmin.getEmail();
-			currentLoginAdmin = null;
-			System.out.println("logout success:" + email);
-		}
-	}
-
-	/**
-	 * AdminVO에 있는 관리자의 정보 확인 메서드 <br>
-	 * AdminVO에 있는 관리자에 대한 정보를 가져올때 <br>
-	 * 관리자 정보를 가져옴 <br>
-	 * 
-	 * @return 관리자 정보
-	 * @throws AdminNotLoginException
-	 */
-	public AdminVO getMyInformation() throws AdminNotLoginException {
-		if(currentLoginAdmin == null)
-			throw new AdminNotLoginException("Permission denied!");
-		else {
-			return currentLoginAdmin;
-		}
-	}
+    public void setCurrentLoginAdmin(AdminVO currentLoginAdmin) {
+        this.currentLoginAdmin = currentLoginAdmin;
+    }
 
 	/**
 	 * 현재 로그인 된 관리자의 정보 수정 메서드 <br>
