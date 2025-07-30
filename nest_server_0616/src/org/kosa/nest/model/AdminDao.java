@@ -20,7 +20,9 @@ public class AdminDao {
 	}
 	
 	public static AdminDao getInstance() {
-		return instance = new AdminDao();
+		if(instance == null)
+			instance = new AdminDao();
+		return instance;
 	}
 	/**
 	 * 1. register 회원가입

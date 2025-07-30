@@ -14,6 +14,7 @@ import org.kosa.nest.exception.RegisterAdminFailException;
 import org.kosa.nest.exception.SearchDatabaseException;
 import org.kosa.nest.exception.UpdateAdminInfoFailException;
 import org.kosa.nest.exception.UploadFileFailException;
+import org.kosa.nest.model.AdminDao;
 import org.kosa.nest.network.NetworkWorker;
 
 public class ThreadHandler {
@@ -29,8 +30,9 @@ public class ThreadHandler {
 	}
 	
 	public static ThreadHandler getInstance() {
-		return instance = new ThreadHandler();
-	}
+		if(instance == null)
+			instance = new ThreadHandler();
+		return instance;	}
 
 	public void executeProgram() {
         String logo = """

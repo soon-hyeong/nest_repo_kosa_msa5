@@ -14,6 +14,9 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.kosa.nest.command.user.DownloadCommand;
+import org.kosa.nest.command.user.InfoCommand;
+import org.kosa.nest.command.user.SearchCommand;
 import org.kosa.nest.common.NestConfig;
 import org.kosa.nest.model.FileVO;
 import org.kosa.nest.service.ServerUserService;
@@ -29,8 +32,9 @@ public class NetworkWorker {
 	}
 	
 	public static NetworkWorker getInstance() {
-		return instance = new NetworkWorker();
-	}
+		if(instance == null)
+			instance = new NetworkWorker();
+		return instance;	}
 	
 	/**
 	 * 네트워크 접속을 시작하는 메서드 <br>
@@ -116,7 +120,7 @@ public class NetworkWorker {
 				String command = st.nextToken();
 				
 				if(command.equalsIgnoreCase("download")) {
-					List<FileVO> downloadFileList = serverUserService.download(commandLine);
+					List<Object> downloadFileList = DownloadCommand.getInstance().handleRequest(commandLine);
                     System.out.println("[info] Initiating object transfer.");
 					oos.writeObject(downloadFileList);
 					oos.flush();
@@ -139,14 +143,14 @@ public class NetworkWorker {
 					
 				}
 				else if(command.equalsIgnoreCase("list") || command.equals("search")) {
-					List<FileVO> searchFileList = serverUserService.search(commandLine);
+					List<Object> searchFileList = SearchCommand.getInstance().handleRequest(commandLine);
                     System.out.println("[info] Initiating object transfer.");
                     oos.writeObject(searchFileList);
 					oos.flush();
                     System.out.println("[info] Object transfer completed successfully.");
 				}
 				else if(command.equalsIgnoreCase("info")) {
-					List<FileVO> infoFileList = serverUserService.info(commandLine);
+					List<Object> infoFileList = InfoCommand.getInstance().handleRequest(commandLine);
                     System.out.println("[info] Initiating object transfer.");
 					oos.writeObject(infoFileList);
 					oos.flush();
