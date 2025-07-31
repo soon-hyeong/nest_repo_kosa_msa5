@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -19,17 +20,24 @@ import org.kosa.nest.command.user.DownloadCommand;
 import org.kosa.nest.command.user.InfoCommand;
 import org.kosa.nest.command.user.SearchCommand;
 import org.kosa.nest.common.NestConfig;
+import org.kosa.nest.exception.AdminNotLoginException;
+import org.kosa.nest.exception.FileNotDeletedInDatabase;
+import org.kosa.nest.exception.FileNotFoundException;
+import org.kosa.nest.exception.LoginException;
+import org.kosa.nest.exception.PasswordNotCorrectException;
+import org.kosa.nest.exception.RegisterAdminFailException;
+import org.kosa.nest.exception.SearchDatabaseException;
+import org.kosa.nest.exception.UpdateAdminInfoFailException;
+import org.kosa.nest.exception.UploadFileFailException;
 import org.kosa.nest.handlerMapping.CommandHandlerMapping;
-import org.kosa.nest.service.ServerUserService;
+import org.kosa.nest.model.FileVO;
 
 public class NetworkWorker {
 
 	private static NetworkWorker instance;
-	private ServerUserService serverUserService;
 	
 	//생성자로 ServerUserService를 받아옴
 	private NetworkWorker() {
-		this.serverUserService = ServerUserService.getInstance();
 	}
 	
 	public static NetworkWorker getInstance() {
@@ -86,6 +94,51 @@ public class NetworkWorker {
 			    System.err.println("[Error] IOException occurred: " + e.getMessage());
 			} catch (SQLException e) {
 			    System.err.println("[Error] SQLException occurred: " + e.getMessage());
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (RegisterAdminFailException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (LoginException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (AdminNotLoginException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (UpdateAdminInfoFailException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (PasswordNotCorrectException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (UploadFileFailException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (FileNotDeletedInDatabase e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SearchDatabaseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 		
@@ -111,8 +164,23 @@ public class NetworkWorker {
 		 * @param command
 		 * @throws IOException
 		 * @throws SQLException 
+		 * @throws SearchDatabaseException 
+		 * @throws FileNotFoundException 
+		 * @throws FileNotDeletedInDatabase 
+		 * @throws UploadFileFailException 
+		 * @throws PasswordNotCorrectException 
+		 * @throws UpdateAdminInfoFailException 
+		 * @throws AdminNotLoginException 
+		 * @throws LoginException 
+		 * @throws RegisterAdminFailException 
+		 * @throws SecurityException 
+		 * @throws NoSuchMethodException 
+		 * @throws InvocationTargetException 
+		 * @throws IllegalArgumentException 
+		 * @throws IllegalAccessException 
+		 * @throws InstantiationException 
 		 */
-		public void sendResult(String commandLine) throws IOException, SQLException, SocketException {
+		public void sendResult(String commandLine) throws IOException, SQLException, SocketException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, RegisterAdminFailException, LoginException, AdminNotLoginException, UpdateAdminInfoFailException, PasswordNotCorrectException, UploadFileFailException, FileNotDeletedInDatabase, FileNotFoundException, SearchDatabaseException {
 			
 			BufferedInputStream bis = null;
 
@@ -121,43 +189,44 @@ public class NetworkWorker {
 				String command = st.nextToken();
 				String keyword = st.nextToken();
 				
-				if(command.equalsIgnoreCase("download")) {
-					List<Object> downloadFileList = DownloadCommand.getInstance(bis, oos).handleRequest(commandLine);
-                    System.out.println("[info] Initiating object transfer.");
-					oos.writeObject(downloadFileList);
-					oos.flush();
-                    System.out.println("[info] Object transfer completed successfully.");
-					if(downloadFileList.size() > 0) {
-						bis = new BufferedInputStream(new FileInputStream(downloadFileList.get(0).getFileLocation()), 8192);
-                        System.out.println("[info] Initiating file transfer.");
-						int data = bis.read();
-						while(data != -1) {
-							oos.write(data);
-							data = bis.read();
-						}
-						oos.flush();
-                        System.out.println("[info] File transfer completed successfully.");
-					} else {
-						oos.write(-1);
-						oos.flush();
-                        System.out.println("[info] No files found.");
-					}
-					
-				}
-				else if(command.equalsIgnoreCase("list") || command.equals("search")) {
-					List<Object> searchFileList = SearchCommand.getInstance().handleRequest(commandLine);
-                    System.out.println("[info] Initiating object transfer.");
-                    oos.writeObject(searchFileList);
-					oos.flush();
-                    System.out.println("[info] Object transfer completed successfully.");
-				}
-				else if(command.equalsIgnoreCase("info")) {
-					List<Object> infoFileList = InfoCommand.getInstance().handleRequest(commandLine);
-                    System.out.println("[info] Initiating object transfer.");
-					oos.writeObject(infoFileList);
-					oos.flush();
-                    System.out.println("[info] Object transfer completed successfully.");
-				}
+				CommandHandlerMapping.getInstance().create(command).handleRequest(keyword);
+//				if(command.equalsIgnoreCase("download")) {
+//					List<Object> downloadFileList = DownloadCommand.getInstance(bis, oos).handleRequest(commandLine);
+//                    System.out.println("[info] Initiating object transfer.");
+//					oos.writeObject(downloadFileList);
+//					oos.flush();
+//                    System.out.println("[info] Object transfer completed successfully.");
+//					if(downloadFileList.size() > 0) {
+//						bis = new BufferedInputStream(new FileInputStream(((FileVO)downloadFileList.get(0)).getFileLocation()), 8192);
+//                        System.out.println("[info] Initiating file transfer.");
+//						int data = bis.read();
+//						while(data != -1) {
+//							oos.write(data);
+//							data = bis.read();
+//						}
+//						oos.flush();
+//                        System.out.println("[info] File transfer completed successfully.");
+//					} else {
+//						oos.write(-1);
+//						oos.flush();
+//                        System.out.println("[info] No files found.");
+//					}
+//					
+//				}
+//				else if(command.equalsIgnoreCase("list") || command.equals("search")) {
+//					List<Object> searchFileList = SearchCommand.getInstance().handleRequest(commandLine);
+//                    System.out.println("[info] Initiating object transfer.");
+//                    oos.writeObject(searchFileList);
+//					oos.flush();
+//                    System.out.println("[info] Object transfer completed successfully.");
+//				}
+//				else if(command.equalsIgnoreCase("info")) {
+//					List<Object> infoFileList = InfoCommand.getInstance().handleRequest(commandLine);
+//                    System.out.println("[info] Initiating object transfer.");
+//					oos.writeObject(infoFileList);
+//					oos.flush();
+//                    System.out.println("[info] Object transfer completed successfully.");
+//				}
 			} finally {
 				if(socket!= null)
 					socket.close();
