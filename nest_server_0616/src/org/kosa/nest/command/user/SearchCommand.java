@@ -1,6 +1,12 @@
 package org.kosa.nest.command.user;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,40 +16,39 @@ import org.kosa.nest.command.Command;
 import org.kosa.nest.model.FileDao;
 import org.kosa.nest.model.FileVO;
 
-public class SearchCommand implements Command {
-	
+public class SearchCommand extends UserCommand {
+
 	private static SearchCommand instance;
-	
-	private SearchCommand() {
-		
+
+	private SearchCommand(BufferedInputStream bis, ObjectOutputStream oos) {
+		super(bis, oos);
 	}
-	
-	public static SearchCommand getInstance() {
-		if(instance == null)
-			instance = new SearchCommand();
+
+	public static SearchCommand getInstance(BufferedInputStream bis, ObjectOutputStream oos) {
+		if (instance == null)
+			instance = new SearchCommand(bis, oos);
 		return instance;
 	}
 
 	@Override
-	public List<Object> handleRequest(String command) throws SQLException, FileNotFoundException {
+	public List<Object> handleRequest(String command) throws SQLException, IOException {
 
+		//반환할 FileVO
+		List<Object> resultFileInfoList = null;
+		
+		//StringTokenizer를 이용하여 명령어에서 키워드를 분리
 		StringTokenizer st = new StringTokenizer(command);
 		st.nextToken();
 		String keyword = st.nextToken();
-	    ArrayList<Object> resultList = new ArrayList<>();
+		
+		//fileDao를 이용하여 키워드에 해당하는 파일의 정보를 찾아옴
+		resultFileInfoList = FileDao.getInstance().getFileInfo(keyword);
 
-	    try {
-	        List<Object> allFiles = FileDao.getInstance().getAllFileInfoList(); // 전체 파일 목록 조회
+        System.out.println("[info] Initiating object transfer.");
+		oos.writeObject(resultFileInfoList);
+		oos.flush();
+        System.out.println("[info] Object transfer completed successfully.");
 
-	        for (Object file : allFiles) {
-	            if (((FileVO) file).getSubject() != null && ((FileVO) file).getSubject().contains(keyword)) {
-	                resultList.add(file); // 제목에 키워드 포함 시 추가
-	            }
-	        }
-	    } catch (SQLException e) {
-	        System.out.println("DB 검색 중 오류 발생: " + e.getMessage());
-	    }
-
-	    return resultList;
+	return resultFileInfoList;
 	}
 }
