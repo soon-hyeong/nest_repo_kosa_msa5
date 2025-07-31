@@ -1,6 +1,8 @@
 package org.kosa.nest.command.user;
 
-import java.io.FileNotFoundException;
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,31 +11,38 @@ import java.util.StringTokenizer;
 import org.kosa.nest.command.Command;
 import org.kosa.nest.model.FileDao;
 
-public class InfoCommand implements Command {
+public class InfoCommand extends UserCommand {
 
 	private static InfoCommand instance;
 	
-	public static InfoCommand getInstance() {
-		if(instance == null)
-			instance = new InfoCommand();
-		return instance;
+	private InfoCommand(BufferedInputStream bis, ObjectOutputStream oos) {
+		super(bis, oos);
 	}
 	
+	public static InfoCommand getInstance(BufferedInputStream bis, ObjectOutputStream oos) {
+		if(instance == null)
+			instance = new InfoCommand(bis, oos);
+		return instance;
+	}
 	@Override
-	public List<Object> handleRequest(String command) throws SQLException, FileNotFoundException {
+	public List<Object> handleRequest(String command) throws SQLException, IOException {
+		// 반환할 FileVO
+		//반환할 FileVO
+		List<Object> resultFileInfoList = null;
+		
+		//StringTokenizer를 이용하여 명령어에서 키워드를 분리
 		StringTokenizer st = new StringTokenizer(command);
 		st.nextToken();
 		String keyword = st.nextToken();
-	    List<Object> resultList = new ArrayList<>();
+		
+		//fileDao를 이용하여 키워드에 해당하는 파일의 정보를 찾아옴
+		resultFileInfoList = FileDao.getInstance().getFileInfo(keyword);
 
-	    try {
-	        resultList = FileDao.getInstance().getFileInfo(keyword); // 제목, 태그, 날짜 중 하나라도 키워드 포함 시 반환
-
-	    } catch (SQLException e) {
-	        System.out.println("파일 상세 정보 조회 중 오류 발생: " + e.getMessage());
-	    }
-
-	    return resultList;
+        System.out.println("[info] Initiating object transfer.");
+		oos.writeObject(resultFileInfoList);
+		oos.flush();
+        System.out.println("[info] Object transfer completed successfully.");
+		return resultFileInfoList;
 	}
 
 }

@@ -1,26 +1,33 @@
 package org.kosa.nest.command.user;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.kosa.nest.command.Command;
 import org.kosa.nest.model.FileDao;
 import org.kosa.nest.model.FileVO;
 
-public class DownloadCommand implements Command {
+public class DownloadCommand extends UserCommand {
 
 	private static DownloadCommand instance;
 	
-	public static DownloadCommand getInstance() {
+	private DownloadCommand(BufferedInputStream bis, ObjectOutputStream oos) {
+		super(bis, oos);
+	}
+	
+	public static DownloadCommand getInstance(BufferedInputStream bis, ObjectOutputStream oos) {
 		if(instance == null)
-			instance = new DownloadCommand();
+			instance = new DownloadCommand(bis, oos);
 		return instance;
 	}
 	@Override
-	public List<Object> handleRequest(String command) throws SQLException, FileNotFoundException {
+	public List<Object> handleRequest(String command) throws SQLException, IOException {
 	
 		//반환할 FileVO
 		List<Object> resultFileInfoList = null;
@@ -37,7 +44,27 @@ public class DownloadCommand implements Command {
 		if(resultFileInfoList.size() > 0 && !new File(((FileVO)resultFileInfoList.get(0)).getFileLocation()).isFile()) {
 			throw new FileNotFoundException();
 		}
-		return resultFileInfoList;
+		
+        System.out.println("[info] Initiating object transfer.");
+		oos.writeObject(resultFileInfoList);
+		oos.flush();
+        System.out.println("[info] Object transfer completed successfully.");
+		if(resultFileInfoList.size() > 0) {
+			bis = new BufferedInputStream(new FileInputStream(((FileVO)resultFileInfoList.get(0)).getFileLocation()), 8192);
+            System.out.println("[info] Initiating file transfer.");
+			int data = bis.read();
+			while(data != -1) {
+				oos.write(data);
+				data = bis.read();
+			}
+			oos.flush();
+            System.out.println("[info] File transfer completed successfully.");
+		} else {
+			oos.write(-1);
+			oos.flush();
+            System.out.println("[info] No files found.");
+		}
+	return resultFileInfoList;
 	}
 
 }

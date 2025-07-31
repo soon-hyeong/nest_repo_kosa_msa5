@@ -14,11 +14,12 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.kosa.nest.command.Command;
 import org.kosa.nest.command.user.DownloadCommand;
 import org.kosa.nest.command.user.InfoCommand;
 import org.kosa.nest.command.user.SearchCommand;
 import org.kosa.nest.common.NestConfig;
-import org.kosa.nest.model.FileVO;
+import org.kosa.nest.handlerMapping.CommandHandlerMapping;
 import org.kosa.nest.service.ServerUserService;
 
 public class NetworkWorker {
@@ -118,9 +119,10 @@ public class NetworkWorker {
 			try {
 				StringTokenizer st = new StringTokenizer(commandLine);
 				String command = st.nextToken();
+				String keyword = st.nextToken();
 				
 				if(command.equalsIgnoreCase("download")) {
-					List<Object> downloadFileList = DownloadCommand.getInstance().handleRequest(commandLine);
+					List<Object> downloadFileList = DownloadCommand.getInstance(bis, oos).handleRequest(commandLine);
                     System.out.println("[info] Initiating object transfer.");
 					oos.writeObject(downloadFileList);
 					oos.flush();
