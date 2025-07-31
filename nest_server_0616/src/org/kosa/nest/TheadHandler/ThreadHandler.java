@@ -1,6 +1,7 @@
 package org.kosa.nest.TheadHandler;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 
 import org.kosa.nest.client.CommandLineInterface;
@@ -103,7 +104,19 @@ public class ThreadHandler {
 					System.err.println(e.getMessage());
 				} catch (NoCommandLineException e) {
 					System.err.println(e.getMessage());
-				}
+				} catch (InstantiationException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                } catch (NoSuchMethodException e) {
+                    e.printStackTrace();
+                } catch (SecurityException e) {
+                    e.printStackTrace();
+                }
 			}
 		}
 		

@@ -10,10 +10,11 @@ import org.kosa.nest.exception.FileNotDeletedInDatabase;
 import org.kosa.nest.exception.LoginException;
 import org.kosa.nest.exception.PasswordNotCorrectException;
 import org.kosa.nest.exception.RegisterAdminFailException;
+import org.kosa.nest.exception.SearchDatabaseException;
 import org.kosa.nest.exception.UpdateAdminInfoFailException;
 import org.kosa.nest.exception.UploadFileFailException;
 
 public interface Command {
 	
-	List<Object> handleRequest(String command) throws SQLException, FileNotFoundException, RegisterAdminFailException, LoginException, AdminNotLoginException, UpdateAdminInfoFailException, PasswordNotCorrectException, UploadFileFailException, IOException, FileNotDeletedInDatabase, org.kosa.nest.exception.FileNotFoundException;
+	List<Object> handleRequest(String command) throws SQLException, FileNotFoundException, RegisterAdminFailException, LoginException, AdminNotLoginException, UpdateAdminInfoFailException, PasswordNotCorrectException, UploadFileFailException, IOException, FileNotDeletedInDatabase, org.kosa.nest.exception.FileNotFoundException, SearchDatabaseException;
 }

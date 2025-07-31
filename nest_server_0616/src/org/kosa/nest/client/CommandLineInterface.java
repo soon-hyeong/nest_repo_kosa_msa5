@@ -1,11 +1,14 @@
 package org.kosa.nest.client;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
+import org.kosa.nest.common.ScannerWrapper;
 import org.kosa.nest.exception.AdminNotLoginException;
 import org.kosa.nest.exception.FileNotDeletedInDatabase;
 import org.kosa.nest.exception.FileNotFoundException;
@@ -24,14 +27,10 @@ import org.kosa.nest.service.ServerAdminService;
 public class CommandLineInterface {
 
 	private static CommandLineInterface instance;
-	Scanner scanner;
 	NetworkWorker networkWorker;
-	ServerAdminService serverAdminService;
 	
 	private CommandLineInterface() {
 		networkWorker = NetworkWorker.getInstance();
-		scanner = new Scanner(System.in);
-		serverAdminService = ServerAdminService.getInstance(scanner);
 	}
 	
 	public static CommandLineInterface getInstance() {
@@ -40,9 +39,9 @@ public class CommandLineInterface {
 
 	public String getCommand() throws LoginException, AdminNotLoginException, SQLException, IOException,
 			PasswordNotCorrectException, UpdateAdminInfoFailException, FileNotFoundException, SearchDatabaseException,
-			RegisterAdminFailException, UploadFileFailException, FileNotDeletedInDatabase, NoCommandLineException {
+			RegisterAdminFailException, UploadFileFailException, FileNotDeletedInDatabase, NoCommandLineException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 
-		String commandLine = scanner.nextLine();
+		String commandLine = ScannerWrapper.getInstance().nextLine();
 		StringTokenizer st = new StringTokenizer(commandLine);
 		if (!st.hasMoreTokens()) {
 			throw new NoCommandLineException("Please enter commandline!");
@@ -51,37 +50,27 @@ public class CommandLineInterface {
 		String keyword = null;
 		if (st.hasMoreTokens())
 			keyword = st.nextToken();
+		
+		List<Object> list = ServerAdminService.getInstance().executeCommand(command);
 
-		if (command.equalsIgnoreCase("quit") || command.equalsIgnoreCase("exit")) {
-			scanner.close();
-		} else if (command.equalsIgnoreCase("register")) {
-			serverAdminService.register();
-		} else if (command.equalsIgnoreCase("login")) {
-			serverAdminService.login();
-		} else if (command.equalsIgnoreCase("logout")) {
-			serverAdminService.logout();
-		} else if (command.equalsIgnoreCase("getMyInformation")) {
-			resultToString(serverAdminService.getMyInformation());
-		} else if (command.equalsIgnoreCase("updateMyInformation")) {
-			serverAdminService.updateMyInformation();
-		} else if (command.equalsIgnoreCase("uploadFile")) {
-			serverAdminService.uploadFile();
-		} else if (command.equalsIgnoreCase("deleteFile")) {
-			serverAdminService.deleteFile(keyword);
-		} else if (command.equalsIgnoreCase("search")) {
-			resultToString(serverAdminService.search(keyword));
-		} else if (command.equalsIgnoreCase("info")) {
-			resultToString(serverAdminService.info(keyword));
-		} else if (command.equalsIgnoreCase("help")) {
-			serverAdminService.help();
-		} else if (command.equalsIgnoreCase("findAllList")) {
-			resultToString(serverAdminService.findAllList());
-		} else {
-			System.out.println("wrong command. If you need help, enter 'nest help'");
-		}
+//			System.out.println("wrong command. If you need help, enter 'nest help'"); exception 확인 후 처리
+
 		return command;
 	}
 
+	public void result(List<Object> list) {
+	    if(list.size() == 1 && list.get(0) instanceof AdminVO) {
+	        resultToString((AdminVO) list.get(0));
+	    }else if(list.size() == 1 && list.get(0) instanceof FileVO) {
+	        resultToString((FileVO) list.get(0));
+	    }else if(list.size() > 1 && list.get(0) instanceof FileVO) {
+	        List<FileVO> fileList  = new ArrayList<FileVO>();
+	        for(Object obj : list) {
+	            fileList.add((FileVO)obj);
+	        }
+	        resultToString(fileList);
+	    }
+	}
 
 	public void resultToString(AdminVO adminVO) {
 		if (adminVO == null) {
