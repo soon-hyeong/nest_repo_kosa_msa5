@@ -32,7 +32,6 @@ public class CommandHandlerMapping {
 			if(!clazz.isInterface() && !Modifier.isAbstract(clazz.getModifiers())) {
 			    if (clazz.getName().equalsIgnoreCase(command + "Command")) {
 					resultCommand = clazz.getDeclaredConstructor().newInstance();
-
 			    }
 			}
 		}
