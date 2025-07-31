@@ -20,9 +20,9 @@ public class CommandHandlerMapping {
 		return instance;
 	}
 	
-	public Command create() throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
+	public Command create(String command) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		
-		Command command = null;
+		Command resultCommand = null;
 		
 		Reflections reflections = new Reflections(Command.class.getPackageName());
 		
@@ -30,9 +30,12 @@ public class CommandHandlerMapping {
 		
 		for(Class<? extends Command> clazz : classes ) {
 			if(!clazz.isInterface() && !Modifier.isAbstract(clazz.getModifiers())) {
-				command = clazz.getDeclaredConstructor().newInstance();
+			    if (clazz.getName().equalsIgnoreCase(command + "Command")) {
+					resultCommand = clazz.getDeclaredConstructor().newInstance();
+
+			    }
 			}
 		}
-		return command;		
+		return resultCommand;		
 	}
 }
