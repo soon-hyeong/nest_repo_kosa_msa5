@@ -87,50 +87,35 @@ public class NetworkWorker {
 			} catch (SQLException e) {
 			    System.err.println("[Error] SQLException occurred: " + e.getMessage());
 			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			    System.err.println("[Error] InstantiationException occurred: " + e.getMessage());
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			    System.err.println("[Error] IllegalAccessException occurred: " + e.getMessage());
 			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			    System.err.println("[Error] IllegalArgumentException occurred: " + e.getMessage());
 			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			    System.err.println("[Error] InvocationTargetException occurred: " + e.getMessage());
 			} catch (NoSuchMethodException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			    System.err.println("[Error] NoSuchMethodException occurred: " + e.getMessage());
 			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			    System.err.println("[Error] SecurityException occurred: " + e.getMessage());
 			} catch (RegisterAdminFailException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			    System.err.println("[Error] RegisterAdminFailException occurred: " + e.getMessage());
 			} catch (LoginException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			    System.err.println("[Error] LoginException occurred: " + e.getMessage());
 			} catch (AdminNotLoginException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			    System.err.println("[Error] AdminNotLoginException occurred: " + e.getMessage());
 			} catch (UpdateAdminInfoFailException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			    System.err.println("[Error] UpdateAdminInfoFailException occurred: " + e.getMessage());
 			} catch (PasswordNotCorrectException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			    System.err.println("[Error] PasswordNotCorrectException occurred: " + e.getMessage());
 			} catch (UploadFileFailException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			    System.err.println("[Error] UploadFileFailException occurred: " + e.getMessage());
 			} catch (FileNotDeletedInDatabase e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			    System.err.println("[Error] FileNotDeletedInDatabase occurred: " + e.getMessage());
 			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			    System.err.println("[Error] FileNotFoundException occurred: " + e.getMessage());
 			} catch (SearchDatabaseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			    System.err.println("[Error] SearchDatabaseException occurred: " + e.getMessage());
 			}
 		}
 		
