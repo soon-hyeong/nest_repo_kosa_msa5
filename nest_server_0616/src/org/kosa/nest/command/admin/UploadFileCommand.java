@@ -13,6 +13,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kosa.nest.command.AdminCommand;
 import org.kosa.nest.command.Command;
 import org.kosa.nest.common.NestConfig;
 import org.kosa.nest.common.ScannerWrapper;
@@ -30,14 +31,14 @@ import org.kosa.nest.service.ServerAdminService;
  * @throws AdminNotLoginException
  * @throws UploadFileFailException
  */
-public class UploadFileCommand implements Command {
+public class UploadFileCommand extends AdminCommand {
     
-    private UploadFileCommand instance;
+    private static UploadFileCommand instance;
     
     private UploadFileCommand() {
     }
     
-    public UploadFileCommand getInstance() {
+    public static UploadFileCommand getInstance() {
         if(instance == null)
             instance = new UploadFileCommand();
         return instance;

@@ -1,8 +1,6 @@
-package org.kosa.nest.command.user;
+package org.kosa.nest.command;
 
 import java.io.ObjectOutputStream;
-
-import org.kosa.nest.command.Command;
 
 public abstract class UserCommand implements Command{
 	
