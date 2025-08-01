@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kosa.nest.common.DatabasePoolManager;
 import org.kosa.nest.common.DatabaseUtil;
 
 
@@ -39,7 +40,7 @@ public class FileDao {
         List<Object> list = new ArrayList<>();
 
         try {
-            con = DatabaseUtil.getConnection();
+            con = DatabasePoolManager.getInstance().getDataSource().getConnection();
             String sql = "SELECT title FROM file";
             pstmt = con.prepareStatement(sql);
             rs = pstmt.executeQuery();
@@ -66,7 +67,7 @@ public class FileDao {
     	PreparedStatement pstmt = null;
     	
     	try {
-    		con = DatabaseUtil.getConnection();
+    		con = DatabasePoolManager.getInstance().getDataSource().getConnection();
     		String sql = "INSERT INTO file (title, tag, description, admin_id, created_at, file_location) "
     				+ " VALUES(?, ?, ?, ?, ?, ?)";
     		pstmt = con.prepareStatement(sql);
@@ -96,7 +97,7 @@ public class FileDao {
     	PreparedStatement pstmt = null;
     	
     	try {
-    		con = DatabaseUtil.getConnection();
+    		con = DatabasePoolManager.getInstance().getDataSource().getConnection();
     		// 파일 정보 업데이트시 제목, 이름, 태그, 설명, 관리자아이디, 파일위치만 변경 가능
     		String sql = "UPDATE file SET title = ?, tag = ?, description = ?, admin_id = ?, file_location = ? WHERE title = ?";
     		pstmt = con.prepareStatement(sql);
@@ -123,7 +124,7 @@ public class FileDao {
     	PreparedStatement pstmt = null;
     	
     	try {
-    		con = DatabaseUtil.getConnection();
+    		con = DatabasePoolManager.getInstance().getDataSource().getConnection();
     		String sql = "DELETE FROM file WHERE title = ?";
     		pstmt = con.prepareStatement(sql);
     		pstmt.setString(1, title);
@@ -147,7 +148,7 @@ public class FileDao {
         List<Object> list = new ArrayList<>();
 
         try {
-            con = DatabaseUtil.getConnection();
+            con = DatabasePoolManager.getInstance().getDataSource().getConnection();
             String sql = "SELECT title " +
                          "FROM file WHERE title LIKE ? OR tag LIKE ? OR created_at LIKE ?";
             pstmt = con.prepareStatement(sql);
@@ -186,7 +187,7 @@ public class FileDao {
         List<Object> list = new ArrayList<>();
 
         try {
-            con = DatabaseUtil.getConnection();
+            con = DatabasePoolManager.getInstance().getDataSource().getConnection();
             String sql = "SELECT id, uploaded_time, title, tag, description, admin_id, created_at, file_location " +
                          "FROM file WHERE title = ?";
             pstmt = con.prepareStatement(sql);

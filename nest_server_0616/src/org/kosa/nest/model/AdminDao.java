@@ -5,12 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import javax.sql.DataSource;
-
-import org.apache.commons.dbcp.BasicDataSource;
 import org.kosa.nest.common.DatabasePoolManager;
 import org.kosa.nest.common.DatabaseUtil;
-import org.kosa.nest.common.DbConfig;
 
 public class AdminDao {
 	
