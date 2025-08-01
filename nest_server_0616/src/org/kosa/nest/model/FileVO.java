@@ -77,7 +77,14 @@ public class FileVO implements Serializable{
 
 	@Override
 	public String toString() {
-		return "FileVO [createdAt=" + createdAt + ", subject=" + subject + ", tag=" + tag + "]";
+		StringBuilder sb = new StringBuilder();
+		sb.append("Subject:").append(subject).append("\n")
+			.append("tag:").append(tag).append("\n")
+			.append("Last Modified Time:").append(createdAt).append("\n")
+			.append("File Address:").append(fileLocation).append("\n")
+			.append("Description:").append(description).append("\n")
+			.append("Server Upload Time:").append(uploadAt).append("\n");
+		return sb.toString();
 	}
 
 //	public FileVO(String string, String string2, Date date) {

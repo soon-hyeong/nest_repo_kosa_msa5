@@ -5,10 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kosa.nest.command.Command;
-import org.kosa.nest.exception.AdminNotLoginException;
 import org.kosa.nest.exception.SearchDatabaseException;
 import org.kosa.nest.model.FileDao;
-import org.kosa.nest.model.FileVO;
 
 public class SearchCommand implements Command {
 

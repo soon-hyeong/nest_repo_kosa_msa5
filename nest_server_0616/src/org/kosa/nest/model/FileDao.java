@@ -163,7 +163,7 @@ public class FileDao {
 
             while (rs.next()) {
                 String subject = rs.getString("title");
-                list.add(new FileVO(subject));
+                list.add(subject);
             }
         } finally {
             DatabaseUtil.closeAll(rs, pstmt, con);

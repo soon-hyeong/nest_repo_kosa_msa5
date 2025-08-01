@@ -45,7 +45,10 @@ public class AdminVO {
 
 	@Override
 	public String toString() {
-		return "AdminVO [id=" + id + ", email=" + email + ", password=" + password + "]";
+		StringBuilder sb = new StringBuilder();
+		sb.append("admin id:").append(id).append("\n")
+			.append("email:").append(email).append("\n");
+		return sb.toString();
 	}
 		
 }
