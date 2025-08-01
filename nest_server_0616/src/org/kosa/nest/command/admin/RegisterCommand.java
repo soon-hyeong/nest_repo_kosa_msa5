@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kosa.nest.command.AdminCommand;
-import org.kosa.nest.command.Command;
 import org.kosa.nest.common.ScannerWrapper;
 import org.kosa.nest.exception.RegisterAdminFailException;
 import org.kosa.nest.model.AdminDao;
@@ -49,6 +48,7 @@ public class RegisterCommand extends AdminCommand {
             throw new RegisterAdminFailException("Register failed, Email already in use:" + e.getMessage()); // 사용자 정의
                                                                                                                 // 예외 전달
         }
+        System.out.println("admin register success");
         return list;
     }
 

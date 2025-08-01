@@ -40,16 +40,13 @@ public class FileDao {
 
         try {
             con = DatabaseUtil.getConnection();
-            String sql = "SELECT title, tag, created_at FROM file";
+            String sql = "SELECT title FROM file";
             pstmt = con.prepareStatement(sql);
             rs = pstmt.executeQuery();
 
             while (rs.next()) {
                 String title = rs.getString("title");
-                String tag = rs.getString("tag");
-                java.sql.Date createDate = rs.getDate("created_at");
-
-                list.add(new FileVO(title, tag, createDate));
+                list.add(title);
             }
         } finally {
             DatabaseUtil.closeAll(rs, pstmt, con);

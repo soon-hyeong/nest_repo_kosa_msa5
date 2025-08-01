@@ -83,7 +83,7 @@ public class FileVO implements Serializable{
 			.append("Last Modified Time:").append(createdAt).append("\n")
 			.append("File Address:").append(fileLocation).append("\n")
 			.append("Description:").append(description).append("\n")
-			.append("Server Upload Time:").append(uploadAt).append("\n");
+			.append("Server Upload Time:").append(uploadAt);
 		return sb.toString();
 	}
 
