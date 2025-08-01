@@ -176,7 +176,7 @@ public class NetworkWorker {
 			
 			try {
 				StringTokenizer st = new StringTokenizer(commandLine);
-				String command = st.nextToken();
+				st.nextToken();
 				String keyword = st.nextToken();
 				
 				UserCommandHandlerMapping.getInstance().create(commandLine, oos).handleRequest(keyword);

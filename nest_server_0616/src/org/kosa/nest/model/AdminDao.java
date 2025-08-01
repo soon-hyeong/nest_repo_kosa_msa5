@@ -5,23 +5,27 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.sql.DataSource;
+
+import org.apache.commons.dbcp.BasicDataSource;
+import org.kosa.nest.common.DatabasePoolManager;
 import org.kosa.nest.common.DatabaseUtil;
+import org.kosa.nest.common.DbConfig;
 
 public class AdminDao {
 	
-	@SuppressWarnings("unused")
 	private static AdminDao instance;
 	private Connection conn;
 	private PreparedStatement pstmt;
 	private ResultSet rs;
 
 	private AdminDao() {
-		
 	}
 	
 	public static AdminDao getInstance() {
-		if(instance == null)
+		if(instance == null) {
 			instance = new AdminDao();
+		}
 		return instance;
 	}
 	/**
@@ -33,7 +37,7 @@ public class AdminDao {
 	 * @throws SQLException
 	 */
 	public int register(AdminVO admin) throws SQLException {
-		conn = DatabaseUtil.getConnection();
+		conn = DatabasePoolManager.getInstance().getDataSource().getConnection();
 		String sql = "INSERT INTO admin (email, password) VALUES(?,?)"; // Email,Password 순으로 입력
 		try {
 			pstmt = conn.prepareStatement(sql);
@@ -56,7 +60,7 @@ public class AdminDao {
 	 * @throws SQLException
 	 */
 	public AdminVO getAdminInfo(String email) throws SQLException {
-		conn = DatabaseUtil.getConnection();
+		conn = DatabasePoolManager.getInstance().getDataSource().getConnection();
 		String sql = "SELECT id, email, password FROM admin WHERE email = ?"; // email를 통해 관리자 정보를 조회
 		try {
 			pstmt = conn.prepareStatement(sql);
@@ -82,7 +86,7 @@ public class AdminDao {
 	 * @throws SQLException
 	 */
 	public void updateAdminInfo(AdminVO admin) throws SQLException {
-		conn = DatabaseUtil.getConnection();
+		conn = DatabasePoolManager.getInstance().getDataSource().getConnection();
 		String sql = "UPDATE admin SET email = ?, password = ? WHERE id = ?"; // Id를 찾아 email과 password를 수정하도록 구현
 		try {
 			pstmt = conn.prepareStatement(sql);

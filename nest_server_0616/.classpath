@@ -12,5 +12,7 @@
 	<classpathentry kind="lib" path="src/slf4j-api-2.0.17.jar"/>
 	<classpathentry kind="lib" path="src/javassist-3.28.0-GA.jar"/>
 	<classpathentry kind="lib" path="src/logback-core-1.5.18.jar"/>
+	<classpathentry kind="lib" path="src/commons-dbcp-1.4.jar"/>
+	<classpathentry kind="lib" path="src/commons-pool-1.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
