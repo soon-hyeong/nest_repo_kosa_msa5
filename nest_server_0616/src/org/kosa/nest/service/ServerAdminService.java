@@ -14,10 +14,8 @@ import org.kosa.nest.exception.RegisterAdminFailException;
 import org.kosa.nest.exception.SearchDatabaseException;
 import org.kosa.nest.exception.UpdateAdminInfoFailException;
 import org.kosa.nest.exception.UploadFileFailException;
-import org.kosa.nest.handlerMapping.CommandHandlerMapping;
-import org.kosa.nest.model.AdminDao;
+import org.kosa.nest.handlerMapping.AdminCommandHandlerMapping;
 import org.kosa.nest.model.AdminVO;
-import org.kosa.nest.model.FileDao;
 
 public class ServerAdminService {
 
@@ -42,7 +40,7 @@ public class ServerAdminService {
     }
     
     public List<Object> executeCommand(String commnad) throws FileNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, SQLException, RegisterAdminFailException, LoginException, AdminNotLoginException, UpdateAdminInfoFailException, PasswordNotCorrectException, UploadFileFailException, IOException, FileNotDeletedInDatabase, org.kosa.nest.exception.FileNotFoundException, SearchDatabaseException{
-        List<Object> list = CommandHandlerMapping.getInstance().create(commnad).handleRequest(commnad);
+        List<Object> list = AdminCommandHandlerMapping.getInstance().create(commnad).handleRequest(commnad);
         return list;
     }
 

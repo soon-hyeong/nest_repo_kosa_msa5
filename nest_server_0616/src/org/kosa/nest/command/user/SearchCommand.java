@@ -1,48 +1,38 @@
 package org.kosa.nest.command.user;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.kosa.nest.command.Command;
 import org.kosa.nest.model.FileDao;
-import org.kosa.nest.model.FileVO;
 
 public class SearchCommand extends UserCommand {
 
 	private static SearchCommand instance;
 
-	private SearchCommand(BufferedInputStream bis, ObjectOutputStream oos) {
-		super(bis, oos);
+	private SearchCommand(ObjectOutputStream oos) {
+		super(oos);
 	}
 
-	public static SearchCommand getInstance(BufferedInputStream bis, ObjectOutputStream oos) {
+	public static SearchCommand getInstance(ObjectOutputStream oos) {
 		if (instance == null)
-			instance = new SearchCommand(bis, oos);
+			instance = new SearchCommand(oos);
 		return instance;
 	}
 
 	@Override
-	public List<Object> handleRequest(String command) throws SQLException, IOException {
+	public List<Object> handleRequest(String keyword) throws SQLException, IOException {
 
 		//반환할 FileVO
 		List<Object> resultFileInfoList = null;
 		
-		//StringTokenizer를 이용하여 명령어에서 키워드를 분리
-		StringTokenizer st = new StringTokenizer(command);
-		st.nextToken();
-		String keyword = st.nextToken();
-		
 		//fileDao를 이용하여 키워드에 해당하는 파일의 정보를 찾아옴
-		resultFileInfoList = FileDao.getInstance().getFileInfo(keyword);
+		resultFileInfoList = FileDao.getInstance().getFileInfoList(keyword);
+		System.out.println("사이즈:" + resultFileInfoList.size());
+		for(Object file : resultFileInfoList)
+			System.out.println(file);
 
         System.out.println("[info] Initiating object transfer.");
 		oos.writeObject(resultFileInfoList);

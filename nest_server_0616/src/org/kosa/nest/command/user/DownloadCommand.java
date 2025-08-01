@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.StringTokenizer;
 
 import org.kosa.nest.model.FileDao;
 import org.kosa.nest.model.FileVO;
@@ -17,25 +16,21 @@ public class DownloadCommand extends UserCommand {
 
 	private static DownloadCommand instance;
 	
-	private DownloadCommand(BufferedInputStream bis, ObjectOutputStream oos) {
-		super(bis, oos);
+	private DownloadCommand(ObjectOutputStream oos) {
+		super(oos);
 	}
 	
-	public static DownloadCommand getInstance(BufferedInputStream bis, ObjectOutputStream oos) {
+	public static DownloadCommand getInstance(ObjectOutputStream oos) {
 		if(instance == null)
-			instance = new DownloadCommand(bis, oos);
+			instance = new DownloadCommand(oos);
 		return instance;
 	}
 	@Override
-	public List<Object> handleRequest(String command) throws SQLException, IOException {
+	public List<Object> handleRequest(String keyword) throws SQLException, IOException {
 	
 		//반환할 FileVO
 		List<Object> resultFileInfoList = null;
 		
-		//StringTokenizer를 이용하여 명령어에서 키워드를 분리
-		StringTokenizer st = new StringTokenizer(command);
-		st.nextToken();
-		String keyword = st.nextToken();
 		
 		//fileDao를 이용하여 키워드에 해당하는 파일의 정보를 찾아옴
 		resultFileInfoList = FileDao.getInstance().getFileInfo(keyword);
@@ -50,13 +45,14 @@ public class DownloadCommand extends UserCommand {
 		oos.flush();
         System.out.println("[info] Object transfer completed successfully.");
 		if(resultFileInfoList.size() > 0) {
-			bis = new BufferedInputStream(new FileInputStream(((FileVO)resultFileInfoList.get(0)).getFileLocation()), 8192);
+			BufferedInputStream bis = new BufferedInputStream(new FileInputStream(((FileVO)resultFileInfoList.get(0)).getFileLocation()), 8192);
             System.out.println("[info] Initiating file transfer.");
 			int data = bis.read();
 			while(data != -1) {
 				oos.write(data);
 				data = bis.read();
 			}
+			bis.close();
 			oos.flush();
             System.out.println("[info] File transfer completed successfully.");
 		} else {
