@@ -3,7 +3,7 @@ package org.kosa.nest.command.admin;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kosa.nest.command.Command;
+import org.kosa.nest.command.AdminCommand;
 import org.kosa.nest.common.ScannerWrapper;
 import org.kosa.nest.exception.LoginException;
 import org.kosa.nest.model.AdminDao;
@@ -20,14 +20,14 @@ import org.kosa.nest.service.ServerAdminService;
  * @throws LoginException
  */
 
-public class LoginCommand implements Command {
+public class LoginCommand extends AdminCommand {
     
-    private LoginCommand instance;
+    private static LoginCommand instance;
     
     private LoginCommand() {
     }
     
-    public LoginCommand getInstance() {
+    public static LoginCommand getInstance() {
         if(instance == null)
             instance = new LoginCommand();
         return instance;

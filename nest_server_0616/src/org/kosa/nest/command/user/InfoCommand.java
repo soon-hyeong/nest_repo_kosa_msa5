@@ -5,6 +5,7 @@ import java.io.ObjectOutputStream;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.kosa.nest.command.UserCommand;
 import org.kosa.nest.model.FileDao;
 
 public class InfoCommand extends UserCommand {

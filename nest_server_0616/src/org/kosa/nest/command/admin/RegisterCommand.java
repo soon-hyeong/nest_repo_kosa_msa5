@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kosa.nest.command.AdminCommand;
 import org.kosa.nest.command.Command;
 import org.kosa.nest.common.ScannerWrapper;
 import org.kosa.nest.exception.RegisterAdminFailException;
@@ -17,14 +18,14 @@ import org.kosa.nest.model.AdminVO;
  * 
  * @throws RegisterAdminFailException
  */
-public class RegisterCommand implements Command {
+public class RegisterCommand extends AdminCommand {
     
-    private RegisterCommand instance;
+    private static RegisterCommand instance;
     
     private RegisterCommand() {
     }
     
-    public RegisterCommand getInstance() {
+    public static RegisterCommand getInstance() {
         if(instance == null)
             instance = new RegisterCommand();
         return instance;
