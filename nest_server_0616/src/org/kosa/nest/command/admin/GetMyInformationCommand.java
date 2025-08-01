@@ -3,6 +3,7 @@ package org.kosa.nest.command.admin;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kosa.nest.command.AdminCommand;
 import org.kosa.nest.command.Command;
 import org.kosa.nest.exception.AdminNotLoginException;
 import org.kosa.nest.service.ServerAdminService;
@@ -16,14 +17,14 @@ import org.kosa.nest.service.ServerAdminService;
  * @return 관리자 정보
  * @throws AdminNotLoginException
  */
-public class GetMyInformationCommand implements Command {
+public class GetMyInformationCommand extends AdminCommand {
     
-    private GetMyInformationCommand instance;
+    private static GetMyInformationCommand instance;
     
     private GetMyInformationCommand() {
     }
     
-    public GetMyInformationCommand getInstance() {
+    public static GetMyInformationCommand getInstance() {
         if(instance == null)
             instance = new GetMyInformationCommand();
         return instance;

@@ -4,6 +4,7 @@ import java.io.File;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.kosa.nest.command.AdminCommand;
 import org.kosa.nest.command.Command;
 import org.kosa.nest.common.NestConfig;
 import org.kosa.nest.exception.AdminNotLoginException;
@@ -12,14 +13,14 @@ import org.kosa.nest.exception.FileNotFoundException;
 import org.kosa.nest.model.FileDao;
 import org.kosa.nest.service.ServerAdminService;
 
-public class DeleteFileCommand implements Command {
+public class DeleteFileCommand extends AdminCommand {
 
-    private DeleteFileCommand instance;
+    private static DeleteFileCommand instance;
     
     private DeleteFileCommand() {
     }
     
-    public DeleteFileCommand getInstance() {
+    public static DeleteFileCommand getInstance() {
         if(instance == null)
             instance = new DeleteFileCommand();
         return instance;

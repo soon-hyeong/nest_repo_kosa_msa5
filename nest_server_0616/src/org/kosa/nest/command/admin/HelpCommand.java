@@ -3,10 +3,10 @@ package org.kosa.nest.command.admin;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kosa.nest.command.AdminCommand;
 import org.kosa.nest.command.Command;
 
-
-public class HelpCommand implements Command {
+public class HelpCommand extends AdminCommand {
 
     private static HelpCommand instance;
     

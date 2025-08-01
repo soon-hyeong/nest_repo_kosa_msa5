@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import org.kosa.nest.command.Command;
-import org.kosa.nest.command.user.UserCommand;
+import org.kosa.nest.command.UserCommand;
 import org.reflections.Reflections;
 
 public class UserCommandHandlerMapping {

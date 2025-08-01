@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.kosa.nest.command.UserCommand;
 import org.kosa.nest.model.FileDao;
 
 public class SearchCommand extends UserCommand {

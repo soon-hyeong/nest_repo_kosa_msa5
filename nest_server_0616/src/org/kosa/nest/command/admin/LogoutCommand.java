@@ -3,6 +3,7 @@ package org.kosa.nest.command.admin;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.kosa.nest.command.AdminCommand;
 import org.kosa.nest.command.Command;
 import org.kosa.nest.exception.AdminNotLoginException;
 import org.kosa.nest.service.ServerAdminService;
@@ -15,14 +16,14 @@ import org.kosa.nest.service.ServerAdminService;
  * @return
  * @throws AdminNotLoginException
  */
-public class LogoutCommand implements Command {
+public class LogoutCommand extends AdminCommand {
     
-    private LogoutCommand instance;
+    private static LogoutCommand instance;
     
     private LogoutCommand() {
     }
     
-    public LogoutCommand getInstance() {
+    public static LogoutCommand getInstance() {
         if(instance == null)
             instance = new LogoutCommand();
         return instance;
