@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kosa.nest.common.DatabasePoolManager;
-import org.kosa.nest.common.DatabaseUtil;
 
 
 public class FileDao {
@@ -50,7 +49,7 @@ public class FileDao {
                 list.add(title);
             }
         } finally {
-            DatabaseUtil.closeAll(rs, pstmt, con);
+            DatabasePoolManager.closeAll(rs, pstmt, con);
         }
 
         return list;
@@ -80,7 +79,7 @@ public class FileDao {
     		pstmt.executeUpdate();
     		
     	} finally {
-    		DatabaseUtil.closeAll(pstmt, con);
+    	    DatabasePoolManager.closeAll(pstmt, con);
     	}
     }
     
@@ -109,7 +108,7 @@ public class FileDao {
     		pstmt.setString(6, currentTitle);
     		pstmt.executeUpdate();
     	} finally {
-    		DatabaseUtil.closeAll(pstmt, con);
+    	    DatabasePoolManager.closeAll(pstmt, con);
     	}
     }
     
@@ -130,7 +129,7 @@ public class FileDao {
     		pstmt.setString(1, title);
     		pstmt.executeUpdate();
     	} finally{
-    		DatabaseUtil.closeAll(pstmt, con);
+    	    DatabasePoolManager.closeAll(pstmt, con);
     	}
     }
 
@@ -164,7 +163,7 @@ public class FileDao {
                 list.add(subject);
             }
         } finally {
-            DatabaseUtil.closeAll(rs, pstmt, con);
+            DatabasePoolManager.closeAll(rs, pstmt, con);
         }
 
         return list;
@@ -208,7 +207,7 @@ public class FileDao {
                 list.add(new FileVO(fileId, filelocation, createdAt, uploadAt, adminId, subject, tag, description));
             }
         } finally {
-            DatabaseUtil.closeAll(rs, pstmt, con);
+            DatabasePoolManager.closeAll(rs, pstmt, con);
         }
 
         return list;
