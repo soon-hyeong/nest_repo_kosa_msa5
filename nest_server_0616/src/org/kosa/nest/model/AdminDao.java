@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.kosa.nest.common.DatabasePoolManager;
-import org.kosa.nest.common.DatabaseUtil;
 
 public class AdminDao {
 	
@@ -42,7 +41,7 @@ public class AdminDao {
 
 			return pstmt.executeUpdate();
 		} finally {
-			DatabaseUtil.closeAll(pstmt, conn);
+		    DatabasePoolManager.closeAll(pstmt, conn);
 		}
 	}
 
@@ -68,7 +67,7 @@ public class AdminDao {
 				throw new SQLException("email doesn't exist");
 			}
 		} finally {
-			DatabaseUtil.closeAll(rs, pstmt, conn);
+		    DatabasePoolManager.closeAll(rs, pstmt, conn);
 		}
 
 	}
@@ -92,7 +91,7 @@ public class AdminDao {
 
 	        pstmt.executeUpdate();
 	    } finally {
-	        DatabaseUtil.closeAll(null, pstmt, conn);
+	        DatabasePoolManager.closeAll(null, pstmt, conn);
 	    }
 	}
 }
