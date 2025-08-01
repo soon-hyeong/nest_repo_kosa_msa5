@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 
 import org.kosa.nest.client.CommandLineInterface;
+import org.kosa.nest.common.ScannerWrapper;
 import org.kosa.nest.exception.AdminNotLoginException;
 import org.kosa.nest.exception.FileNotDeletedInDatabase;
 import org.kosa.nest.exception.FileNotFoundException;
@@ -15,7 +16,6 @@ import org.kosa.nest.exception.RegisterAdminFailException;
 import org.kosa.nest.exception.SearchDatabaseException;
 import org.kosa.nest.exception.UpdateAdminInfoFailException;
 import org.kosa.nest.exception.UploadFileFailException;
-import org.kosa.nest.model.AdminDao;
 import org.kosa.nest.network.NetworkWorker;
 
 public class ThreadHandler {
@@ -77,9 +77,10 @@ public class ThreadHandler {
 		public void run() {
 			while(true) {
 				try {
-					String commandLine = commandLineInterface.getCommand();
+					String commandLine = ScannerWrapper.getInstance().nextLine();
 					if(commandLine.equalsIgnoreCase("quit") || commandLine.equalsIgnoreCase("exit"))
 						break;
+					commandLineInterface.getCommand(commandLine);
 				}catch (RegisterAdminFailException e) {
 					System.err.println(e.getMessage());	
 				} catch (LoginException e) {

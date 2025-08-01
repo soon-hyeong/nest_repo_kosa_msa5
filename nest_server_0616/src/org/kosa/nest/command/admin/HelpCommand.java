@@ -8,6 +8,17 @@ import org.kosa.nest.command.Command;
 
 public class HelpCommand extends AdminCommand {
 
+    private static HelpCommand instance;
+    
+    private HelpCommand() {
+    }
+    
+    public static HelpCommand getInstance() {
+        if(instance == null)
+            instance = new HelpCommand();
+        return instance;
+    }
+    
     @Override
     public List<Object> handleRequest(String command) {
     	StringBuilder stringBuilder = new StringBuilder();
@@ -23,7 +34,7 @@ public class HelpCommand extends AdminCommand {
     	stringBuilder.append("  info <파일명>     - 서버 파일 상세 정보 보기");
     	stringBuilder.append("  download <파일명> - 서버 파일 다운로드");
     	stringBuilder.append("  exit             - 프로그램 종료");
-    	stringBuilder.append("\n");		System.out.println("---- 관리자 명령어 ----");
+    	stringBuilder.append("\"---- 관리자 명령어 ----\"\n");
 		stringBuilder.append("  Register              - 관리자로 회원가입합니다");
 		stringBuilder.append("  Login                 - 로그인합니다");
 		stringBuilder.append("  Logout                - 로그아웃합니다");

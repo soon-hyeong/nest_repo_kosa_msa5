@@ -5,10 +5,13 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.StringTokenizer;
 
+import org.kosa.nest.command.AdminCommand;
 import org.kosa.nest.exception.AdminNotLoginException;
 import org.kosa.nest.exception.FileNotDeletedInDatabase;
 import org.kosa.nest.exception.LoginException;
+import org.kosa.nest.exception.NoCommandLineException;
 import org.kosa.nest.exception.PasswordNotCorrectException;
 import org.kosa.nest.exception.RegisterAdminFailException;
 import org.kosa.nest.exception.SearchDatabaseException;
@@ -39,8 +42,17 @@ public class ServerAdminService {
         this.currentLoginAdmin = currentLoginAdmin;
     }
     
-    public List<Object> executeCommand(String commnad) throws FileNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, SQLException, RegisterAdminFailException, LoginException, AdminNotLoginException, UpdateAdminInfoFailException, PasswordNotCorrectException, UploadFileFailException, IOException, FileNotDeletedInDatabase, org.kosa.nest.exception.FileNotFoundException, SearchDatabaseException{
-        List<Object> list = AdminCommandHandlerMapping.getInstance().create(commnad).handleRequest(commnad);
+    public List<Object> executeCommand(String commnadLine) throws FileNotFoundException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, SQLException, RegisterAdminFailException, LoginException, AdminNotLoginException, UpdateAdminInfoFailException, PasswordNotCorrectException, UploadFileFailException, IOException, FileNotDeletedInDatabase, org.kosa.nest.exception.FileNotFoundException, SearchDatabaseException, NoCommandLineException{
+    	StringTokenizer st = new StringTokenizer(commnadLine);
+    	String command = st.nextToken();
+    	String keyword = null;
+    	if(st.hasMoreTokens())
+    		keyword = st.nextToken();
+        AdminCommand adminCommand = (AdminCommand)AdminCommandHandlerMapping.getInstance().create(command);
+        if(adminCommand == null) {
+        	throw new NoCommandLineException("해당하는 명령어가 존재하지 않습니다");
+        }
+        List<Object> list = adminCommand.handleRequest(keyword);
         return list;
     }
 

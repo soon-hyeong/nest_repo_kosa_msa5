@@ -1,11 +1,13 @@
 package org.kosa.nest.command.admin;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.kosa.nest.command.AdminCommand;
 import org.kosa.nest.command.Command;
 import org.kosa.nest.exception.AdminNotLoginException;
 import org.kosa.nest.service.ServerAdminService;
+
 
 /**
  * AdminVO에 있는 관리자의 정보 확인 클래스 <br>
@@ -30,10 +32,12 @@ public class GetMyInformationCommand extends AdminCommand {
 
     @Override
     public List<Object> handleRequest(String command) throws AdminNotLoginException {
+    	List<Object> list = new ArrayList<Object>();
         if(ServerAdminService.getInstance().getCurrentLoginAdmin() == null)
             throw new AdminNotLoginException("Permission denied!");
         else {
-            return (List<Object>) ServerAdminService.getInstance().getCurrentLoginAdmin();
+        	list.add(ServerAdminService.getInstance().getCurrentLoginAdmin());
+            return list;
         }
     }
 
