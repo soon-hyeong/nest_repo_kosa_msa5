@@ -1,8 +1,6 @@
 package org.kosa.nest.network;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
@@ -12,13 +10,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.StringTokenizer;
 
-import org.kosa.nest.command.Command;
-import org.kosa.nest.command.user.DownloadCommand;
-import org.kosa.nest.command.user.InfoCommand;
-import org.kosa.nest.command.user.SearchCommand;
 import org.kosa.nest.common.NestConfig;
 import org.kosa.nest.exception.AdminNotLoginException;
 import org.kosa.nest.exception.FileNotDeletedInDatabase;
@@ -29,8 +22,7 @@ import org.kosa.nest.exception.RegisterAdminFailException;
 import org.kosa.nest.exception.SearchDatabaseException;
 import org.kosa.nest.exception.UpdateAdminInfoFailException;
 import org.kosa.nest.exception.UploadFileFailException;
-import org.kosa.nest.handlerMapping.CommandHandlerMapping;
-import org.kosa.nest.model.FileVO;
+import org.kosa.nest.handlerMapping.UserCommandHandlerMapping;
 
 public class NetworkWorker {
 
@@ -182,51 +174,12 @@ public class NetworkWorker {
 		 */
 		public void sendResult(String commandLine) throws IOException, SQLException, SocketException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException, RegisterAdminFailException, LoginException, AdminNotLoginException, UpdateAdminInfoFailException, PasswordNotCorrectException, UploadFileFailException, FileNotDeletedInDatabase, FileNotFoundException, SearchDatabaseException {
 			
-			BufferedInputStream bis = null;
-
 			try {
 				StringTokenizer st = new StringTokenizer(commandLine);
 				String command = st.nextToken();
 				String keyword = st.nextToken();
 				
-				CommandHandlerMapping.getInstance().create(command).handleRequest(keyword);
-//				if(command.equalsIgnoreCase("download")) {
-//					List<Object> downloadFileList = DownloadCommand.getInstance(bis, oos).handleRequest(commandLine);
-//                    System.out.println("[info] Initiating object transfer.");
-//					oos.writeObject(downloadFileList);
-//					oos.flush();
-//                    System.out.println("[info] Object transfer completed successfully.");
-//					if(downloadFileList.size() > 0) {
-//						bis = new BufferedInputStream(new FileInputStream(((FileVO)downloadFileList.get(0)).getFileLocation()), 8192);
-//                        System.out.println("[info] Initiating file transfer.");
-//						int data = bis.read();
-//						while(data != -1) {
-//							oos.write(data);
-//							data = bis.read();
-//						}
-//						oos.flush();
-//                        System.out.println("[info] File transfer completed successfully.");
-//					} else {
-//						oos.write(-1);
-//						oos.flush();
-//                        System.out.println("[info] No files found.");
-//					}
-//					
-//				}
-//				else if(command.equalsIgnoreCase("list") || command.equals("search")) {
-//					List<Object> searchFileList = SearchCommand.getInstance().handleRequest(commandLine);
-//                    System.out.println("[info] Initiating object transfer.");
-//                    oos.writeObject(searchFileList);
-//					oos.flush();
-//                    System.out.println("[info] Object transfer completed successfully.");
-//				}
-//				else if(command.equalsIgnoreCase("info")) {
-//					List<Object> infoFileList = InfoCommand.getInstance().handleRequest(commandLine);
-//                    System.out.println("[info] Initiating object transfer.");
-//					oos.writeObject(infoFileList);
-//					oos.flush();
-//                    System.out.println("[info] Object transfer completed successfully.");
-//				}
+				UserCommandHandlerMapping.getInstance().create(commandLine, oos).handleRequest(keyword);
 			} finally {
 				if(socket!= null)
 					socket.close();

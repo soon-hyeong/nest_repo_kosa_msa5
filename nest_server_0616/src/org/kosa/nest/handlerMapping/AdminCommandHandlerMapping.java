@@ -7,16 +7,16 @@ import java.util.Set;
 import org.kosa.nest.command.Command;
 import org.reflections.Reflections;
 
-public class CommandHandlerMapping {
-	private static CommandHandlerMapping instance;
+public class AdminCommandHandlerMapping {
+	private static AdminCommandHandlerMapping instance;
 	
-	private CommandHandlerMapping() {
+	private AdminCommandHandlerMapping() {
 		
 	}
 	
-	public static CommandHandlerMapping getInstance() {
+	public static AdminCommandHandlerMapping getInstance() {
 		if(instance == null)
-			instance = new CommandHandlerMapping();
+			instance = new AdminCommandHandlerMapping();
 		return instance;
 	}
 	
@@ -24,13 +24,16 @@ public class CommandHandlerMapping {
 		
 		Command resultCommand = null;
 		
+		System.out.println(command);
 		Reflections reflections = new Reflections(Command.class.getPackageName());
 		
 		Set<Class<? extends Command>> classes = reflections.getSubTypesOf(Command.class);
 		
 		for(Class<? extends Command> clazz : classes ) {
 			if(!clazz.isInterface() && !Modifier.isAbstract(clazz.getModifiers())) {
-			    if (clazz.getName().equalsIgnoreCase(command + "Command")) {
+				System.out.println("clazz:" + clazz.getName());
+				String[] clazzGetName = clazz.getName().split("\\.");
+			    if (clazzGetName[clazzGetName.length - 1].equalsIgnoreCase(command + "Command")) {
 					resultCommand = clazz.getDeclaredConstructor().newInstance();
 			    }
 			}
