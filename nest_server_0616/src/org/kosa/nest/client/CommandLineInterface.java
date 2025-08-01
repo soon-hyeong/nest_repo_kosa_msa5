@@ -3,11 +3,9 @@ package org.kosa.nest.client;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.kosa.nest.common.ScannerWrapper;
 import org.kosa.nest.exception.AdminNotLoginException;
 import org.kosa.nest.exception.FileNotDeletedInDatabase;
 import org.kosa.nest.exception.FileNotFoundException;
@@ -18,8 +16,6 @@ import org.kosa.nest.exception.RegisterAdminFailException;
 import org.kosa.nest.exception.SearchDatabaseException;
 import org.kosa.nest.exception.UpdateAdminInfoFailException;
 import org.kosa.nest.exception.UploadFileFailException;
-import org.kosa.nest.model.AdminVO;
-import org.kosa.nest.model.FileVO;
 import org.kosa.nest.network.NetworkWorker;
 import org.kosa.nest.service.ServerAdminService;
 
@@ -33,7 +29,9 @@ public class CommandLineInterface {
 	}
 	
 	public static CommandLineInterface getInstance() {
-		return instance = new CommandLineInterface();
+		if(instance == null)
+			instance = new CommandLineInterface();
+		return instance;
 	}
 
 	public String getCommand(String commandLine) throws LoginException, AdminNotLoginException, SQLException, IOException,

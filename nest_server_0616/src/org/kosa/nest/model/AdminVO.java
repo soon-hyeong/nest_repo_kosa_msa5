@@ -47,7 +47,7 @@ public class AdminVO {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("admin id:").append(id).append("\n")
-			.append("email:").append(email).append("\n");
+			.append("email:").append(email);
 		return sb.toString();
 	}
 		

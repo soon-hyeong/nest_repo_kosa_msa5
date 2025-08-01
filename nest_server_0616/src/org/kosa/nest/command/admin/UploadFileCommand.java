@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kosa.nest.command.AdminCommand;
-import org.kosa.nest.command.Command;
 import org.kosa.nest.common.NestConfig;
 import org.kosa.nest.common.ScannerWrapper;
 import org.kosa.nest.exception.AdminNotLoginException;
@@ -88,7 +87,7 @@ public class UploadFileCommand extends AdminCommand {
                     bos.close();
             }
         }
-        return null;
+        return new ArrayList<Object>();
     }
     
     /**
@@ -103,7 +102,7 @@ public class UploadFileCommand extends AdminCommand {
 
         System.out.print("tag:");
         String fileTag = ScannerWrapper.getInstance().nextLine();
-        System.out.println("dscription:");
+        System.out.print("description:");
         String fileDescription = ScannerWrapper.getInstance().nextLine();
         File inputFile = new File(fileAddress);
         LocalDateTime lastModifed = LocalDateTime.ofInstant(Instant.ofEpochMilli(inputFile.lastModified()),
@@ -114,5 +113,4 @@ public class UploadFileCommand extends AdminCommand {
 
         return fileVO;
     }
-
 }

@@ -2,10 +2,10 @@ package org.kosa.nest.command.admin;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.kosa.nest.command.AdminCommand;
-import org.kosa.nest.command.Command;
 import org.kosa.nest.common.NestConfig;
 import org.kosa.nest.exception.AdminNotLoginException;
 import org.kosa.nest.exception.FileNotDeletedInDatabase;
@@ -44,7 +44,7 @@ public class DeleteFileCommand extends AdminCommand {
             }
             System.out.println("File delete success");
         }
-        return null;
+        return new ArrayList<Object>();
     }
 
 }

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.kosa.nest.command.AdminCommand;
-import org.kosa.nest.command.Command;
 import org.kosa.nest.common.ScannerWrapper;
 import org.kosa.nest.exception.AdminNotLoginException;
 import org.kosa.nest.exception.PasswordNotCorrectException;
@@ -70,6 +69,7 @@ public class UpdateMyInformationCommand extends AdminCommand {
             } catch(SQLException e){
                 throw new UpdateAdminInfoFailException("Update Admin Information failed:" + e.getMessage());
             }
+            ServerAdminService.getInstance().setCurrentLoginAdmin(updatedAdmin);
             System.out.println("Update Admin Information success");
             return (List<Object>)list;
         }
